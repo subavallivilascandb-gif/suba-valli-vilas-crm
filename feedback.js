@@ -814,7 +814,7 @@
     // 3. Relative /api/feedback (if hosted under same domain with Cloudflare reverse proxy)
     const cfUrl = new URLSearchParams(window.location.search).get('cf') ||
                   localStorage.getItem('svv_cloudflare_worker_url') ||
-                  '';
+                  'https://svv-crm-gateway.subavallivilas-candb.workers.dev';
     const gsUrl = new URLSearchParams(window.location.search).get('gs') ||
                   localStorage.getItem('svv_gsheet_url') ||
                   '';

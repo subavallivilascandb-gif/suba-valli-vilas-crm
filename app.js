@@ -15,7 +15,7 @@
     currentUser: null,
     currentHourIndex: 0, // 0 = 10AM, 1 = 11AM, etc. (Demo default: 10:00 AM)
     gsheetUrl: localStorage.getItem('svv_gsheet_url') || '',
-    cfWorkerUrl: localStorage.getItem('svv_cloudflare_worker_url') || '',
+    cfWorkerUrl: localStorage.getItem('svv_cloudflare_worker_url') || 'https://svv-crm-gateway.subavallivilas-candb.workers.dev',
     autoSyncGSheet: localStorage.getItem('svv_auto_sync_gsheet') !== 'false',
     lastSyncTime: localStorage.getItem('svv_last_sync_time') || '',
     gsheetConnected: false,

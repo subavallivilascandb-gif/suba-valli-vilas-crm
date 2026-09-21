@@ -1,0 +1,2778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Suba Valli Vilas | CRM Jewellery App & DER Dashboard</title>
+  <!-- Google Fonts for Luxury Jewellery Aesthetic -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="theme-light">
+  <!-- APP HEADER -->
+  <header class="app-header">
+    <div class="header-brand">
+      <div class="brand-logo-badge">
+        <img src="assets/logo.png" alt="Suba Valli Vilas Logo" class="brand-logo-img">
+      </div>
+      <div class="brand-text">
+        <h1 class="brand-title">SUBA VALLI VILAS</h1>
+        <p class="brand-tagline">JEWELLERY CRM & DAILY EXECUTIVE REPORT (DER)</p>
+      </div>
+    </div>
+
+    <!-- HEADER RIGHT CONTROLS -->
+    <div class="header-actions">
+      <!-- Live Clock & Date -->
+      <div class="header-item header-datetime">
+        <span class="live-date" id="headerDate">15/09/2026</span>
+        <span class="live-time" id="headerTime">10:00:00 AM</span>
+      </div>
+
+      <!-- Branch Switcher (Single showroom: Cuddalore) -->
+      <div class="header-item">
+        <label for="branchSelect" class="sr-only">Branch</label>
+        <select id="branchSelect" class="header-select">
+          <option value="Cuddalore (Main Branch)" selected>Cuddalore (Main Branch)</option>
+          <option value="Future Expansion Branch">+ Add Future Branch</option>
+        </select>
+      </div>
+
+      <!-- Multi-Language Selector (5 Languages + Google Translate) -->
+      <div class="header-item lang-selector-wrap">
+        <label for="appLanguageSelect" class="sr-only">Language</label>
+        <div class="lang-dropdown-box">
+          <span class="lang-icon">🌐</span>
+          <select id="appLanguageSelect" class="header-select lang-dropdown" title="Select Language / மொழியைத் தேர்வு செய்க">
+            <option value="en" selected>🇬🇧 English</option>
+            <option value="ta">🇮🇳 தமிழ் (Tamil)</option>
+            <option value="hi">🇮🇳 हिन्दी (Hindi)</option>
+            <option value="kn">🇮🇳 ಕನ್ನಡ (Kannada)</option>
+            <option value="ml">🇮🇳 മലയാളம் (Malayalam)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Active User Profile & Executive Switcher -->
+      <div class="header-item user-profile-box">
+        <div class="user-avatar" id="userAvatar">P</div>
+        <div class="user-info">
+          <div class="user-name-line">
+            <span class="user-name" id="currentUserName">Priya Sharma</span>
+            <span class="user-role-badge badge-admin" id="currentUserRoleBadge">Admin</span>
+          </div>
+          <div class="user-switch-wrap">
+            <select id="quickUserSwitch" class="user-switch-dropdown" title="Switch User Role">
+              <option value="USR-001">Priya Sharma (Admin - Cuddalore)</option>
+              <option value="USR-002">Vijay (Staff - Counter 3)</option>
+              <option value="USR-003">Lakshmi (Telecaller Desk)</option>
+              <option value="USR-004">Balagoud (Staff - Counter 1)</option>
+              <option value="USR-005">Karthik (Store Manager)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Prominent Add Feedback Button in Right Corner -->
+      <button id="btnOpenNewFeedback" class="btn btn-gold btn-add-feedback">
+        <span class="btn-icon">+</span>
+        <span>New Feedback</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- NAVIGATION TABS -->
+  <nav class="app-nav">
+    <div class="nav-container">
+      <button class="nav-tab active" data-tab="der-screen" id="tab-der">
+        <span class="tab-icon">📊</span>
+        <span>DER Dashboard</span>
+      </button>
+      <button class="nav-tab" data-tab="footfall-screen" id="tab-footfall">
+        <span class="tab-icon">👥</span>
+        <span>Footfall Count</span>
+      </button>
+      <button class="nav-tab" data-tab="feedback-screen" id="tab-feedback">
+        <span class="tab-icon">💬</span>
+        <span>Feedback List</span>
+      </button>
+      <button class="nav-tab" data-tab="feedback-entry-screen" id="tab-feedback-entry">
+        <span class="tab-icon">✍️</span>
+        <span>New Feedback & QR</span>
+      </button>
+      <button class="nav-tab" data-tab="divert-screen" id="tab-divert">
+        <span class="tab-icon">📋</span>
+        <span>Divert / GD Tracker</span>
+      </button>
+      <button class="nav-tab" data-tab="telecaller-screen" id="tab-telecaller">
+        <span class="tab-icon">📞</span>
+        <span>Telecaller Desk</span>
+        <span class="nav-badge" id="telecallerQueueCount">4</span>
+      </button>
+      <button class="nav-tab" data-tab="reports-screen" id="tab-reports">
+        <span class="tab-icon">📈</span>
+        <span>Reports Hub</span>
+      </button>
+      <button class="nav-tab" data-tab="users-screen" id="tab-users">
+        <span class="tab-icon">🛡️</span>
+        <span>User Management</span>
+      </button>
+      <button class="nav-tab" data-tab="settings-screen" id="tab-settings">
+        <span class="tab-icon">⚙️</span>
+        <span>Questions & Sheet</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- MAIN APP CONTENT -->
+  <main class="app-main">
+
+    <!-- 1. DER EXECUTIVE DASHBOARD SCREEN (Day End Report) -->
+    <section id="der-screen" class="screen-view active">
+      <!-- Print Banner (Visible only in PDF / Print) -->
+      <div class="print-banner" id="derPrintBanner">
+        <div style="display:flex; align-items:center; justify-content:center; gap:16px;">
+          <img src="assets/logo.png" style="width:48px; height:48px; border-radius:8px;" alt="Suba Valli Vilas Logo">
+          <div style="text-align:left;">
+            <h2 id="derPrintMainHeading" style="font-family:'Cambria', Georgia, serif; color:#580505; margin:0; letter-spacing:0.5px; font-size:1.3rem;">Suba Valli Vilas Jewellery - CRM DER - 20/09/2026</h2>
+            <p style="margin:0; font-size:11px; color:#555; font-weight:600;">DAY END REPORT (DER) — CUDDALORE SHOWROOM EXECUTIVE AUDIT</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="view-header">
+        <div>
+          <h2 class="view-title" id="derScreenHeading">Suba Valli Vilas Jewellery - CRM DER - 20/09/2026</h2>
+          <p class="view-subtitle">Day End Report (DER): Footfall, Bill Conversions, NPS, CSI, Chit Scheme & Diverts Audit</p>
+        </div>
+        <div class="view-actions">
+          <input type="date" id="derDateFilter" class="form-input date-input" value="2026-09-20">
+          <button class="btn btn-outline" id="btnRefreshDER">🔄 Refresh</button>
+          <button class="btn btn-gold" id="btnPrintDER">🖨️ Print / Save PDF</button>
+          <button class="btn btn-outline" id="btnExportDERSummary">📥 Export CSV</button>
+        </div>
+      </div>
+
+      <!-- DER Top KPI Cards (Conversion Benchmark >90%, NPS >+95, CSI >95%, Divert/Footfall*100) -->
+      <div class="kpi-grid">
+        <div class="kpi-card gold-border">
+          <div class="kpi-header">
+            <span class="kpi-label">TOTAL FOOTFALL</span>
+            <span class="kpi-icon">🚶</span>
+          </div>
+          <div class="kpi-value" id="derTotalFootfall">342</div>
+          <div class="kpi-footer text-success">
+            <span id="derFootfallDiff">12 hourly slots (10 AM - 10 PM)</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <span class="kpi-label">TOTAL BILL COUNT</span>
+            <span class="kpi-icon">🧾</span>
+          </div>
+          <div class="kpi-value" id="derTotalBills">118</div>
+          <div class="kpi-footer text-muted">
+            <span>Verified day-end cash bills</span>
+          </div>
+        </div>
+
+        <div class="kpi-card emerald-accent">
+          <div class="kpi-header">
+            <span class="kpi-label">CONVERSION RATE</span>
+            <span class="kpi-icon">🎯</span>
+          </div>
+          <div class="kpi-value" id="derConversionRate">34.5%</div>
+          <div class="kpi-footer">
+            <span class="ratio-pill font-bold" id="derConversionBenchmark">Benchmark &gt; 90%</span>
+            <span class="text-xs text-muted ml-1" id="derFootfallRatio">1:2.9 ratio</span>
+          </div>
+        </div>
+
+        <!-- Net Promoter Score (NPS > +95 Target with clear formula) -->
+        <div class="kpi-card gold-border">
+          <div class="kpi-header">
+            <span class="kpi-label">NPS (NET PROMOTER)</span>
+            <span class="kpi-icon">🏆</span>
+          </div>
+          <div class="kpi-value text-gold" id="derNPSScore">+96<span class="text-sm">/100</span></div>
+          <div class="kpi-footer text-success">
+            <span id="derNPSDetail">Based on: "Would you recommend Suba Valli Vilas?" • Target &gt; +95</span>
+          </div>
+        </div>
+
+        <!-- Customer Satisfaction Index (CSI > 95% Target with clear formula) -->
+        <div class="kpi-card emerald-accent">
+          <div class="kpi-header">
+            <span class="kpi-label">CSI (SATISFACTION INDEX)</span>
+            <span class="kpi-icon">⭐</span>
+          </div>
+          <div class="kpi-value text-success" id="derCSIScore">96.4%</div>
+          <div class="kpi-footer text-success">
+            <span id="derCSIDetail">Formula: 4★ &amp; 5★ Ratings / Total • Target &gt; 95%</span>
+          </div>
+        </div>
+
+        <!-- Diverts & Lost Sales Rate: (Diverts / Footfall) * 100 -->
+        <div class="kpi-card rose-accent">
+          <div class="kpi-header">
+            <span class="kpi-label">DIVERTS &amp; LOSS RATE</span>
+            <span class="kpi-icon">⚠️</span>
+          </div>
+          <div class="kpi-value text-rose" id="derDivertsCount">16 <span class="text-sm font-normal" id="derDivertRatePct">(4.7%)</span></div>
+          <div class="kpi-footer text-rose">
+            <span id="derDivertFormula">Formula: (Diverts / Footfall) * 100</span>
+          </div>
+        </div>
+
+        <div class="kpi-card amber-accent">
+          <div class="kpi-header">
+            <span class="kpi-label">CHIT SCHEME UNAWARE</span>
+            <span class="kpi-icon">💡</span>
+          </div>
+          <div class="kpi-value text-amber" id="derSchemeUnawareCount">38%</div>
+          <div class="kpi-footer text-amber">
+            <span id="derSchemeQueuedCount">32 leads queued in telecaller</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- DER Detailed Analytics Grid: Hourly Footfall Line Graph + Weekly Daily Footfall Horizontal Bars -->
+      <div class="dashboard-analytics-grid">
+        <!-- Card 1: Hourly Footfall with Point Counts (Image 1 Left Reference) -->
+        <div class="card chart-card" id="derHourlyGraphCard">
+          <div class="card-header d-flex justify-between align-center">
+            <div>
+              <h3 class="card-title" id="derHourlyGraphTitle">Hourly Footfall — 20/09/2026</h3>
+              <p class="card-subtitle text-xs text-muted" id="derHourlySlotsSubtitle">10 of 12 slots submitted</p>
+            </div>
+            <span class="badge badge-gold">Live Hourly Trend</span>
+          </div>
+          <div class="card-body">
+            <div class="der-line-chart-wrapper" id="derHourlyChartContainer">
+              <!-- Rendered via JS SVG with count labels above each point -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2: This Week Daily Footfall (Image 1 Right Reference) -->
+        <div class="card chart-card" id="derWeeklyFootfallCard">
+          <div class="card-header d-flex justify-between align-center">
+            <div>
+              <h3 class="card-title">This Week — Daily Footfall</h3>
+              <p class="card-subtitle text-xs text-muted">Last 7 days</p>
+            </div>
+            <span class="badge badge-subtle">7-Day Trend</span>
+          </div>
+          <div class="card-body">
+            <div class="der-weekly-bars-wrapper" id="derWeeklyBarsContainer">
+              <!-- Rendered via JS horizontal bars matching Image 1 -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DER Secondary Analytics Grid: Sentiment & Divert by Counter -->
+      <div class="dashboard-analytics-grid mt-4">
+        <!-- Sentiment & Scheme Awareness Donut/Progress -->
+        <div class="card sentiment-card">
+          <div class="card-header">
+            <h3 class="card-title">Customer Experience & Scheme Awareness</h3>
+            <span class="badge badge-subtle">Feedback Sentiment</span>
+          </div>
+          <div class="card-body">
+            <div class="sentiment-summary-row">
+              <div class="sentiment-stat appreciation">
+                <span class="sentiment-stat-icon">⭐</span>
+                <span class="sentiment-stat-val" id="derApprecCount">68</span>
+                <span class="sentiment-stat-lbl">Appreciation</span>
+              </div>
+              <div class="sentiment-stat neutral">
+                <span class="sentiment-stat-icon">💬</span>
+                <span class="sentiment-stat-val" id="derNeutralCount">12</span>
+                <span class="sentiment-stat-lbl">General Feedback</span>
+              </div>
+              <div class="sentiment-stat concern">
+                <span class="sentiment-stat-icon">⚠️</span>
+                <span class="sentiment-stat-val" id="derConcernCount">4</span>
+                <span class="sentiment-stat-lbl">Concerns Logged</span>
+              </div>
+            </div>
+
+            <hr class="divider">
+
+            <div class="chit-scheme-breakdown">
+              <div class="scheme-header">
+                <strong>Chit Scheme Awareness (Suba Valli Vilas)</strong>
+                <span id="derSchemeAwarePct">62% Aware</span>
+              </div>
+              <div class="progress-bar-container">
+                <div class="progress-bar-fill progress-gold" id="derSchemeBar" style="width: 62%;"></div>
+              </div>
+              <p class="text-xs text-muted mt-1">38% visitors are unaware of chit saving schemes. Direct them to Telecaller Desk for high-conversion outreach.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Divert by Counter -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Diverts Classification by Counter</h3>
+            <span class="badge badge-subtle">Lost Sales Hotspots</span>
+          </div>
+          <div class="card-body">
+            <div class="table-container scrollable-box" style="max-height:200px;">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Counter</th>
+                    <th>Section</th>
+                    <th>Diverts</th>
+                    <th>Share %</th>
+                  </tr>
+                </thead>
+                <tbody id="derDivertCountersBody">
+                  <!-- Rendered via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DER Tertiary Analytics Grid: Divert Reasons & Staff Leaderboard -->
+      <div class="dashboard-analytics-grid mt-4">
+        <!-- Top Divert Reasons -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Diverts Classification by Reason</h3>
+            <span class="badge badge-rose">Stock / Design Cause</span>
+          </div>
+          <div class="card-body">
+            <ul class="divert-rank-list" id="derDivertReasonsList">
+              <!-- Rendered via JS -->
+            </ul>
+          </div>
+        </div>
+
+        <!-- Top Staff Collection Leaderboard -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Staff Feedback Collection Performance</h3>
+            <span class="badge badge-gold">Staff Leaderboard</span>
+          </div>
+          <div class="card-body">
+            <div class="table-container">
+              <table class="data-table" id="derStaffTable">
+                <thead>
+                  <tr>
+                    <th>Staff Name</th>
+                    <th>Branch</th>
+                    <th>Feedbacks</th>
+                    <th>Avg Rating</th>
+                    <th>Diverts Logged</th>
+                  </tr>
+                </thead>
+                <tbody id="derStaffTableBody">
+                  <!-- Rendered via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DER VOICE OF CUSTOMER: WHAT CUSTOMERS LOVE VS WHAT NEEDS IMPROVEMENT -->
+      <div class="der-voc-section">
+        <div class="card">
+          <div class="card-header d-flex justify-between align-center">
+            <div>
+              <h3 class="card-title">Customer Voice — Executive Sentiment Analysis</h3>
+              <p class="card-subtitle">Strategic management feedback: Top 2 Brand Strengths & Top 3 Priority Areas for Immediate Store Improvement</p>
+            </div>
+            <span class="badge badge-gold">Suba Valli Vilas DER Audit</span>
+          </div>
+          <div class="card-body">
+            <div class="voc-grid">
+              <!-- What Customers Love (Top Strengths) -->
+              <div class="voc-card voc-positive">
+                <div class="voc-header">
+                  <span class="voc-icon">💚</span>
+                  <strong class="voc-title text-success">What Customers Love in Suba Valli Vilas (Top Strengths)</strong>
+                </div>
+                <div class="voc-list" id="derPositivePointsList">
+                  <!-- Rendered via JS -->
+                </div>
+              </div>
+
+              <!-- What Needs to Improve (Top Improvement Areas) -->
+              <div class="voc-card voc-negative">
+                <div class="voc-header">
+                  <span class="voc-icon">🔧</span>
+                  <strong class="voc-title text-rose">What Suba Valli Vilas Needs to Improve (Actionable Priorities)</strong>
+                </div>
+                <div class="voc-list" id="derNegativePointsList">
+                  <!-- Rendered via JS -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AUTOMATED AI STORE IMPROVEMENT ADVISOR (Requested by user) -->
+      <div class="ai-advisor-section mt-4" id="derAiAdvisorContainer">
+        <div class="ai-advisor-header">
+          <span style="font-size:1.6rem;">🤖</span>
+          <div>
+            <h3 style="font-size:1.15rem; font-weight:700; color:#580505; margin:0;">AI Executive Store Improvement Advisor</h3>
+            <p style="font-size:0.82rem; color:#64748B; margin:0;">Automated real-time operational recommendations generated from today's Footfall, Diverts & NPS metrics</p>
+          </div>
+        </div>
+        <div class="ai-rec-grid" id="aiRecommendationsList">
+          <!-- Rendered dynamically via JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. FOOTFALL COUNT SCREEN (Today + Yesterday Admin Dashboard) -->
+    <section id="footfall-screen" class="screen-view">
+      <div class="view-header">
+        <div>
+          <h2 class="view-title">Footfall Count & Slot Management</h2>
+          <p class="view-subtitle">Track hourly visitor entries (10:00 AM – 10:00 PM), submit day-end bills, and monitor conversion percentage</p>
+        </div>
+        <div class="view-actions">
+          <span class="badge badge-gold" id="footfallCurrentSlotBadge">Active Slot: 10:00 AM - 11:00 AM</span>
+        </div>
+      </div>
+
+      <!-- Top KPI Row (Matches uploaded UI media_1789450339372.png) -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-header"><span class="kpi-label">TODAY'S FOOTFALL</span></div>
+          <div class="kpi-value" id="ffTodayTotal">0</div>
+          <div class="kpi-footer text-muted"><span>visitors logged</span></div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-header"><span class="kpi-label">SLOTS SUBMITTED</span></div>
+          <div class="kpi-value" id="ffSlotsSubmitted">0 / 12</div>
+          <div class="kpi-footer text-muted"><span>hourly slots</span></div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-header"><span class="kpi-label">ACTIVE SLOT</span></div>
+          <div class="kpi-value text-gold" id="ffActiveSlotLabel">10:00 AM</div>
+          <div class="kpi-footer text-muted"><span id="ffActiveSlotSub">current hour</span></div>
+        </div>
+
+        <div class="kpi-card gold-border">
+          <div class="kpi-header"><span class="kpi-label">PEAK HOUR TODAY</span></div>
+          <div class="kpi-value text-gold" id="ffPeakHour">—</div>
+          <div class="kpi-footer text-muted"><span id="ffPeakHourSub">highest footfall slot today</span></div>
+        </div>
+      </div>
+
+      <!-- Day-end Bill Count Input Banner -->
+      <div class="card day-bill-card">
+        <div class="day-bill-content">
+          <div class="day-bill-info">
+            <span class="day-bill-icon">🧾</span>
+            <div>
+              <strong class="day-bill-title">Day-end Bill Count (Today)</strong>
+              <p class="day-bill-desc">Update daily total cash & digital billing count to calculate live conversion percentage</p>
+            </div>
+          </div>
+          <div class="day-bill-form">
+            <input type="number" id="todayBillsInput" class="form-input" placeholder="Enter bills count" min="0">
+            <button class="btn btn-navy" id="btnSaveTodayBills">Save Bill Count</button>
+            <div class="conversion-pill-box" id="todayConversionBox" style="display:none;">
+              <span>Conversion: <strong id="todayConversionPct">0%</strong></span>
+              <span class="text-xs text-muted" id="todayRatioPct">0 bills/visitor</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Today's Hourly Slots Grid (Top Section) -->
+      <div class="slots-section">
+        <div class="section-title-row">
+          <h3 class="section-heading">TODAY'S HOURLY SLOTS (10:00 AM – 10:00 PM)</h3>
+          <span class="text-xs text-muted">Rule: Slots can only be updated within the active hour. Missed slots lock after closing time.</span>
+        </div>
+        <div class="slots-grid" id="todaySlotsGrid">
+          <!-- 12 Hourly Slot Cards rendered via JS -->
+        </div>
+      </div>
+
+      <!-- YESTERDAY'S & PREVIOUS DAYS SLOTS (BOTTOM SECTION - ADMIN ONLY) -->
+      <div class="card admin-history-card mt-5" id="yesterdayAdminSection">
+        <div class="card-header admin-header">
+          <div class="admin-badge-title">
+            <span class="admin-lock-icon">🔒</span>
+            <div>
+              <h3 class="card-title">Previous Days — Hourly Slots & Bills Update</h3>
+              <p class="card-subtitle">Admin & Store Manager Only: Missed yesterday's slot? Edit & update past 7 days records here.</p>
+            </div>
+          </div>
+          <div class="admin-access-indicator">
+            <span class="badge badge-admin" id="yesterdayAccessStatus">Admin Mode Active</span>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div id="adminLockedNotice" class="locked-notice" style="display:none;">
+            <p>🔒 <strong>Access Restricted:</strong> You are currently viewing as Staff. Only Store Admin and Managers can view and edit yesterday's missed slots or past days bill counts.</p>
+            <button class="btn btn-sm btn-gold mt-2" onclick="app.switchRole('USR-001')">Switch to Admin Profile</button>
+          </div>
+
+          <div id="adminYesterdayContent">
+            <!-- Yesterday's Slot Quick Edit Row -->
+            <div class="yesterday-slot-editor">
+              <div class="yesterday-selector-row">
+                <label for="yesterdayDateSelector"><strong>Select Past Date:</strong></label>
+                <input type="date" id="yesterdayDateSelector" class="form-input date-input" value="2026-09-14">
+                <button class="btn btn-outline btn-sm" id="btnLoadPastDateSlots">Load Slots</button>
+              </div>
+
+              <!-- Past Date Slots Grid -->
+              <div class="past-slots-container mt-3">
+                <h4 class="past-slots-title" id="pastSlotsTitle">Missed Slot Correction for Yesterday (14 Sept 2026)</h4>
+                <div class="past-slots-grid" id="pastSlotsGrid">
+                  <!-- Past slots rendered via JS -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Past 7 Days Bills & Conversion Summary Table -->
+            <div class="past-days-table-wrapper mt-4">
+              <h4 class="table-subheading">Past 7 Days — Bills & Conversion Audit</h4>
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Total Footfall</th>
+                    <th>Day-End Bills</th>
+                    <th>Conversion Rate</th>
+                    <th>Ratio (Footfall/Bill)</th>
+                    <th>Status</th>
+                    <th>Admin Action</th>
+                  </tr>
+                </thead>
+                <tbody id="pastDaysTableBody">
+                  <!-- Rendered via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. FEEDBACK MANAGER SCREEN (Matches uploaded UI media_1789452703021.png & media_1789452959094.png) -->
+    <section id="feedback-screen" class="screen-view">
+      <div class="view-header">
+        <div>
+          <h2 class="view-title">Customer Feedback Hub</h2>
+          <p class="view-subtitle">Review feedback entries, track sentiment categories, manage staff attribution, and launch customer QR portals</p>
+        </div>
+        <div class="view-actions">
+          <button class="btn btn-outline" id="btnOpenCustomerQR">
+            <span>📱 Customer QR Code & Link</span>
+          </button>
+          <button class="btn btn-gold" id="btnFeedbackNewAction">
+            <span>+ Add Feedback</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Feedback Metric Cards (Matches media_1789929579152.png) -->
+      <div class="feedback-stats-row">
+        <div class="fb-metric-card" data-stat-status="ALL" title="Click to view All Feedbacks" style="cursor:pointer;">
+          <span class="fb-metric-label">TOTAL</span>
+          <span class="fb-metric-num" id="fbStatTotal">8,510</span>
+        </div>
+        <div class="fb-metric-card" data-stat-status="NEW" title="Click to filter New" style="cursor:pointer;">
+          <span class="fb-metric-label">NEW</span>
+          <span class="fb-metric-num text-primary" id="fbStatNew">8,035</span>
+        </div>
+        <div class="fb-metric-card" data-stat-status="REVIEWED" title="Click to filter Reviewed" style="cursor:pointer;">
+          <span class="fb-metric-label">REVIEWED</span>
+          <span class="fb-metric-num text-gold" id="fbStatReviewed">123</span>
+        </div>
+        <div class="fb-metric-card" data-stat-status="ACTION TAKEN" title="Click to filter Action Taken" style="cursor:pointer;">
+          <span class="fb-metric-label">ACTION TAKEN</span>
+          <span class="fb-metric-num text-amber" id="fbStatAction">350</span>
+        </div>
+        <div class="fb-metric-card" data-stat-status="CLOSED" title="Click to filter Closed" style="cursor:pointer;">
+          <span class="fb-metric-label">CLOSED</span>
+          <span class="fb-metric-num text-success" id="fbStatClosed">2</span>
+        </div>
+      </div>
+
+      <!-- Filter Controls Bar with Date Range (Requested by user) -->
+      <div class="filter-bar-card card">
+        <div class="filter-controls">
+          <div class="filter-group">
+            <label for="fbFilterStartDate">From Date:</label>
+            <input type="date" id="fbFilterStartDate" class="form-input date-input" title="Filter Start Date">
+          </div>
+
+          <div class="filter-group">
+            <label for="fbFilterEndDate">To Date:</label>
+            <input type="date" id="fbFilterEndDate" class="form-input date-input" title="Filter End Date">
+          </div>
+
+          <div class="filter-group">
+            <label for="fbFilterStatus">Status:</label>
+            <select id="fbFilterStatus" class="form-input">
+              <option value="ALL">All Status</option>
+              <option value="NEW">New</option>
+              <option value="REVIEWED">Reviewed</option>
+              <option value="ACTION TAKEN">Action Taken</option>
+              <option value="CLOSED">Closed</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="fbFilterMood">Mood Category:</label>
+            <select id="fbFilterMood" class="form-input">
+              <option value="ALL">All Categories</option>
+              <option value="Appreciation">⭐ Appreciation</option>
+              <option value="Feedback">💬 General Feedback</option>
+              <option value="Concern">⚠️ Concern</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="fbFilterStaff">Collected By Staff:</label>
+            <select id="fbFilterStaff" class="form-input">
+              <option value="ALL">All Staff Members</option>
+              <option value="Vijay">Vijay (Counter 3)</option>
+              <option value="Balagoud">Balagoud</option>
+              <option value="Nilesh">Nilesh</option>
+              <option value="Valent">Valent</option>
+              <option value="Arun hasbe">Arun hasbe</option>
+              <option value="Swati">Swati</option>
+              <option value="Priya Sharma">Priya Sharma</option>
+              <option value="Customer Self-Fill (QR)">Customer Self-Fill (QR)</option>
+            </select>
+          </div>
+
+          <div class="filter-group-actions">
+            <button type="button" class="btn btn-navy" id="btnFilterApply">🔄 Refresh</button>
+            <button type="button" class="btn btn-outline" id="btnFilterReset">Reset</button>
+          </div>
+        </div>
+        <div class="d-flex justify-between align-center mt-2 pt-2 border-top">
+          <div class="d-flex align-center gap-2">
+            <span class="text-xs text-muted">Quick Range:</span>
+            <button type="button" class="btn btn-xs btn-outline" id="btnRangeToday">Today</button>
+            <button type="button" class="btn btn-xs btn-outline" id="btnRangeYesterday">Yesterday</button>
+            <button type="button" class="btn btn-xs btn-outline" id="btnRange7Days">Last 7 Days</button>
+            <button type="button" class="btn btn-xs btn-outline" id="btnRangeAll">All Time</button>
+          </div>
+          <div class="filter-result-count">
+            <span id="fbResultCount">Showing 8 entries</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Source Filter & Status Pills Toolbar (Requested by User for Tab vs QR Collection) -->
+      <div class="feedback-source-toolbar card mb-3 p-3">
+        <div class="d-flex justify-between align-center flex-wrap gap-2">
+          <div class="d-flex align-center gap-2">
+            <span class="text-xs font-bold text-muted" style="letter-spacing:0.5px;">COLLECTION SOURCE:</span>
+            <div class="pill-group" id="fbSourcePillGroup">
+              <button type="button" class="pill-btn active" data-source="ALL">All Sources</button>
+              <button type="button" class="pill-btn" data-source="Staff">👤 Staff Collected (Tab)</button>
+              <button type="button" class="pill-btn" data-source="QR">📱 Customer QR (Scan)</button>
+            </div>
+          </div>
+          <div class="d-flex align-center gap-2">
+            <span class="text-xs font-bold text-muted" style="letter-spacing:0.5px;">STATUS FILTER:</span>
+            <div class="pill-group" id="fbStatusPillGroup">
+              <button type="button" class="pill-btn active" data-status="ALL">All</button>
+              <button type="button" class="pill-btn" data-status="NEW">New</button>
+              <button type="button" class="pill-btn" data-status="REVIEWED">Reviewed</button>
+              <button type="button" class="pill-btn" data-status="ACTION TAKEN">Action Taken</button>
+              <button type="button" class="pill-btn" data-status="CLOSED">Closed</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- View Switcher: Feedback Cards vs Question-Wise Analysis (media_1789753610815.png) -->
+      <div class="d-flex justify-between align-center mb-3">
+        <div class="view-mode-tabs">
+          <button type="button" class="view-mode-tab active" id="btnViewCardsMode">📋 Feedback Cards List</button>
+          <button type="button" class="view-mode-tab" id="btnViewQuestionsMode">📊 Question-Wise Analysis & Customer Drill-Down</button>
+        </div>
+      </div>
+
+      <!-- Feedback Cards List View (Matches layout in media_1789452959094.png) -->
+      <div class="feedback-cards-container" id="feedbackCardsList">
+        <!-- Rendered via JS -->
+      </div>
+
+      <!-- QUESTION-WISE ANALYSIS REPORT CONTAINER (Matching media_1789753610815.png) -->
+      <div id="questionWiseReportContainer" style="display:none;">
+        <div class="card p-4">
+          <div class="d-flex justify-between align-center mb-2">
+            <div>
+              <h3 class="card-title" style="color:var(--maroon-primary); font-size:1.2rem;">Question-wise Analysis Report</h3>
+              <p class="text-xs text-muted">Interactive breakdown: Click any option bar to view itemized customer details, city, answers & remarks</p>
+            </div>
+            <span class="badge badge-gold">Suba Valli Vilas Analytics</span>
+          </div>
+
+          <!-- Dynamic Question Cards Grid -->
+          <div class="q-analysis-grid" id="questionCardsGrid">
+            <!-- Rendered dynamically via JS -->
+          </div>
+
+          <!-- Interactive Customer Itemized Drill-Down Panel -->
+          <div class="drilldown-panel" id="questionDrilldownPanel" style="display:none;">
+            <div class="drilldown-header">
+              <div>
+                <h4 class="drilldown-title" id="drilldownQuestionTitle">Question: How often do you shop with us?</h4>
+                <p class="text-xs text-muted" id="drilldownOptionSubtitle">Showing customers who selected: <strong id="drilldownOptionLabel" style="color:var(--gold-dark);">First Visit</strong></p>
+              </div>
+              <div class="d-flex align-center gap-2">
+                <span class="drilldown-badge" id="drilldownCountBadge">0 Customers</span>
+                <button type="button" class="btn btn-xs btn-outline" id="btnCloseDrilldown">✕ Close</button>
+              </div>
+            </div>
+            
+            <div class="table-responsive">
+              <table class="data-table" id="drilldownTable">
+                <thead>
+                  <tr>
+                    <th>Customer Name</th>
+                    <th>Mobile</th>
+                    <th>City / Town</th>
+                    <th>Selected Choice</th>
+                    <th>Occasion & Date</th>
+                    <th>Other Key Answers</th>
+                    <th>Customer Remarks</th>
+                    <th>Staff Attributed</th>
+                  </tr>
+                </thead>
+                <tbody id="drilldownTableBody">
+                  <!-- Rendered via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- NEW SCREEN: DEDICATED FEEDBACK ENTRY & QR CODE PORTAL (Requested by user) -->
+    <section id="feedback-entry-screen" class="screen-view">
+      <div class="view-header">
+        <div>
+          <h2 class="view-title">New Feedback Entry & Customer QR Portal</h2>
+          <p class="view-subtitle">Suba Valli Vilas • Collect staff-assisted feedback or share live customer QR link</p>
+        </div>
+        <div class="view-actions">
+          <button class="btn btn-outline" id="btnSyncQuestionsFromSheet" title="Sync latest dynamic questions from Google Sheet">
+            <span>🔄 Sync Questions from Sheet</span>
+          </button>
+          <button class="btn btn-outline" id="btnSwitchToFeedbackList">
+            <span>📋 View Feedback List</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- MULTI-MEDIUM QR STUDIO & STANDEE GENERATOR (Requested by user) -->
+      <div class="qr-link-banner" style="background: linear-gradient(135deg, #2B0303 0%, #580505 50%, #3D0404 100%);">
+        <div class="qr-banner-left">
+          <div class="qr-banner-title d-flex justify-between align-center flex-wrap gap-2">
+            <div class="d-flex align-center gap-2">
+              <span style="font-size: 1.4rem;">🏷️</span>
+              <span>Multi-Medium QR Studio &amp; Standee Generator</span>
+            </div>
+            <span class="badge badge-gold" id="currentMediumBadge">Billing Counter Standee</span>
+          </div>
+          <p class="qr-banner-desc">
+            Generate customized, trackable QR codes and luxury printable standee placards for any showroom placement. Each medium automatically tags the incoming customer feedback!
+          </p>
+
+          <!-- Medium Selector Buttons -->
+          <div class="qr-medium-selector" id="qrMediumSelector">
+            <button type="button" class="qr-medium-btn active" data-medium="Billing Counter Standee" data-source="billing_counter">
+              <span>🏷️ Billing Counter</span>
+            </button>
+            <button type="button" class="qr-medium-btn" data-medium="Lounge Table Tent" data-source="table_tent">
+              <span>🍽️ Dining Lounge Table Tent</span>
+            </button>
+            <button type="button" class="qr-medium-btn" data-medium="Showcase Standee" data-source="showcase_standee">
+              <span>💎 Showcase Standee</span>
+            </button>
+            <button type="button" class="qr-medium-btn" data-medium="Invoice Receipt QR" data-source="invoice_receipt">
+              <span>🧾 Invoice Receipt</span>
+            </button>
+            <button type="button" class="qr-medium-btn" data-medium="WhatsApp Customer Link" data-source="whatsapp_share">
+              <span>📱 WhatsApp Share</span>
+            </button>
+            <button type="button" class="qr-medium-btn" data-medium="Social Media &amp; Hoardings" data-source="social_media">
+              <span>📢 Outdoor &amp; Social</span>
+            </button>
+          </div>
+
+          <!-- Context Attribution Controls -->
+          <div class="qr-context-row">
+            <div style="flex: 1; min-width: 130px;">
+              <label class="text-xs text-muted d-block mb-1" style="color: #F7F1DF !important;">Counter Attribution:</label>
+              <select id="qrStudioCounter" class="qr-context-select" style="width: 100%;">
+                <option value="">-- All Counters --</option>
+                <option value="Counter 1 - Antique">Counter 1 - Antique</option>
+                <option value="Counter 2 - Chains">Counter 2 - Chains</option>
+                <option value="Counter 3 - Bangles" selected>Counter 3 - Bangles</option>
+                <option value="Counter 4 - Rings">Counter 4 - Rings</option>
+                <option value="Counter 5 - Bridal Lounge">Counter 5 - Bridal Lounge</option>
+                <option value="Counter 6 - Silver">Counter 6 - Silver</option>
+                <option value="Counter 7 - Diamonds">Counter 7 - Diamonds</option>
+                <option value="Counter 8 - Bullion &amp; Coins">Counter 8 - Bullion &amp; Coins</option>
+              </select>
+            </div>
+
+            <div style="flex: 1; min-width: 130px;">
+              <label class="text-xs text-muted d-block mb-1" style="color: #F7F1DF !important;">Staff Attribution:</label>
+              <select id="qrStudioStaff" class="qr-context-select" style="width: 100%;">
+                <option value="">-- Any Staff --</option>
+                <option value="Vijay" selected>Vijay (Counter 3)</option>
+                <option value="Balagoud">Balagoud</option>
+                <option value="Nilesh">Nilesh</option>
+                <option value="Valent">Valent</option>
+                <option value="Arun hasbe">Arun hasbe</option>
+                <option value="Swati">Swati</option>
+                <option value="Priya Sharma">Priya Sharma</option>
+              </select>
+            </div>
+
+            <div style="flex: 1; min-width: 130px;">
+              <label class="text-xs text-muted d-block mb-1" style="color: #F7F1DF !important;">Branch:</label>
+              <select id="qrStudioBranch" class="qr-context-select" style="width: 100%;">
+                <option value="Cuddalore (Main Branch)" selected>Cuddalore (Main Branch)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Shareable Feedback Portal Link -->
+          <div class="qr-link-copy-box mt-3">
+            <input type="text" id="onPageShareLink" class="qr-link-input" readonly value="feedback.html?medium=Billing+Counter+Standee&amp;source=billing_counter&amp;counter=Counter+3+-+Bangles&amp;staff=Vijay">
+            <button type="button" class="btn btn-xs btn-gold" id="btnCopyOnPageLink">📋 Copy Link</button>
+          </div>
+
+          <!-- Multi-Medium Action Buttons -->
+          <div class="qr-actions-row">
+            <button type="button" class="btn btn-xs btn-gold" id="btnPrintStandeePlacard">
+              <span>🖨️ Print Luxury Standee Placard (4x6 / A5)</span>
+            </button>
+            <button type="button" class="btn btn-xs btn-outline" id="btnDownloadQRImage" style="background: rgba(255,255,255,0.1); color: #FFF; border-color: rgba(255,255,255,0.4);">
+              <span>📥 Download QR (.svg)</span>
+            </button>
+            <button type="button" class="btn btn-xs btn-gold" id="btnTestCustomerMode">
+              <span>🌐 Open Separate Feedback Link</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="qr-banner-right" style="background: #FFFFFF; border: 2px solid #C5A059; padding: 14px; border-radius: 14px;">
+          <div id="onPageQRSVG" style="cursor: pointer;" title="Click to test Customer Feedback Portal">
+            <!-- Inline SVG QR Code Generated Here -->
+          </div>
+          <div class="qr-caption" id="qrStudioPreviewCaption">Billing Counter • Counter 3</div>
+          <div class="text-xs text-muted mt-1" style="font-size: 0.68rem;">Scan with any phone camera</div>
+        </div>
+      </div>
+
+      <!-- ON-PAGE FEEDBACK ENTRY FORM -->
+      <div class="card p-4">
+        <!-- Interactive Form Language Selector (Requested by user) -->
+        <div class="on-page-lang-bar mb-3 p-2 bg-silk rounded d-flex justify-between align-center border">
+          <div class="d-flex align-center gap-2">
+            <span style="font-size:1.1rem;">🌐</span>
+            <strong id="onPageLangPrompt">Form Language / படிவ மொழி:</strong>
+          </div>
+          <div class="btn-group-segmented">
+            <button type="button" class="btn btn-xs btn-lang-switch active" data-form-lang="en">🇬🇧 English</button>
+            <button type="button" class="btn btn-xs btn-lang-switch" data-form-lang="ta">🇮🇳 தமிழ் (Tamil)</button>
+          </div>
+        </div>
+
+        <form id="onPageFeedbackForm">
+          <!-- Staff Name Highlight Box (Requested by user) -->
+          <div class="staff-highlight-box">
+            <div class="d-flex justify-between align-center mb-2">
+              <label class="form-label" style="font-size: 0.95rem; color: #0B132B;" id="lblStaffHeading">
+                <strong>👤 STAFF NAME (Who is collecting this feedback) *</strong>
+              </label>
+              <span class="badge badge-gold" id="lblStaffAttributionBadge">Staff Attribution Mandatory</span>
+            </div>
+
+            <!-- Quick One-Tap Staff Chips -->
+            <p class="text-xs text-muted mb-1" id="lblStaffChipsSub">Click a staff member below for instant selection:</p>
+            <div class="staff-chips-row" id="staffChipsContainer">
+              <button type="button" class="staff-chip active" data-staff="Vijay">Vijay (Counter 3)</button>
+              <button type="button" class="staff-chip" data-staff="Balagoud">Balagoud</button>
+              <button type="button" class="staff-chip" data-staff="Nilesh">Nilesh</button>
+              <button type="button" class="staff-chip" data-staff="Valent">Valent</button>
+              <button type="button" class="staff-chip" data-staff="Arun hasbe">Arun hasbe</button>
+              <button type="button" class="staff-chip" data-staff="Swati">Swati</button>
+              <button type="button" class="staff-chip" data-staff="Priya Sharma">Priya Sharma</button>
+            </div>
+
+            <!-- Staff Select or Custom Name Entry (Area & Invoice removed as requested) -->
+            <div class="form-row mt-2">
+              <div class="form-group flex-1">
+                <label for="onPageStaffSelect" class="form-label" id="lblStaffSelectTitle">Selected Staff Member *</label>
+                <select id="onPageStaffSelect" class="form-input font-bold" required>
+                  <option value="Vijay">Vijay (Counter 3 - Bangles)</option>
+                  <option value="Balagoud">Balagoud (Counter 1 - Antique)</option>
+                  <option value="Nilesh">Nilesh (Counter 4 - Rings)</option>
+                  <option value="Valent">Valent (Silver & Utensils)</option>
+                  <option value="Arun hasbe">Arun hasbe (Bridal Lounge)</option>
+                  <option value="Swati">Swati (Gold Chains)</option>
+                  <option value="Priya Sharma">Priya Sharma (Store Admin)</option>
+                  <option value="OTHER">Other Staff (Type Name Below)</option>
+                </select>
+              </div>
+              <div class="form-group flex-1" id="onPageCustomStaffGroup" style="display:none;">
+                <label for="onPageCustomStaff" class="form-label" id="lblCustomStaffTitle">Enter Staff Name</label>
+                <input type="text" id="onPageCustomStaff" class="form-input" placeholder="Type staff full name">
+              </div>
+            </div>
+          </div>
+
+          <!-- TOP 3 SENTIMENT / MOOD CARDS -->
+          <div class="sentiment-selector-card card mb-4">
+            <h4 class="selector-title" id="lblExperienceTitle">Tell us about your Experience *</h4>
+            <div class="sentiment-options-grid">
+              <label class="sentiment-choice-card appreciation active">
+                <input type="radio" name="onPageMood" value="Appreciation" checked>
+                <div class="card-inner">
+                  <span class="choice-icon">⭐</span>
+                  <span class="choice-label" id="lblMoodApprec">Appreciation</span>
+                </div>
+              </label>
+
+              <label class="sentiment-choice-card feedback">
+                <input type="radio" name="onPageMood" value="Feedback">
+                <div class="card-inner">
+                  <span class="choice-icon">💬</span>
+                  <span class="choice-label" id="lblMoodFeedback">Feedback</span>
+                </div>
+              </label>
+
+              <label class="sentiment-choice-card concern">
+                <input type="radio" name="onPageMood" value="Concern">
+                <div class="card-inner">
+                  <span class="choice-icon">⚠️</span>
+                  <span class="choice-label" id="lblMoodConcern">Concern</span>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Customer Details Box (Mobile & City are strictly MANDATORY) -->
+          <div class="card customer-details-card mb-4">
+            <div class="card-header pb-2">
+              <h4 class="card-title text-sm" id="lblCustDetailsTitle">Customer Information <span class="text-xs text-rose font-bold">(* Mobile Number & City are Mandatory)</span></h4>
+            </div>
+            <div class="card-body pt-1">
+              <div class="form-row">
+                <div class="form-group flex-1">
+                  <label for="onPageCustName" class="form-label" id="lblOnPageCustName">Customer Name (பெயர்)</label>
+                  <input type="text" id="onPageCustName" class="form-input" placeholder="e.g. Meenakshi Sundaram">
+                </div>
+                <div class="form-group flex-1">
+                  <label for="onPageCustMobile" class="form-label font-bold" id="lblOnPageCustMobile">Mobile Number (கைபேசி எண்) <span class="text-rose">*</span></label>
+                  <input type="tel" id="onPageCustMobile" class="form-input" placeholder="10-digit mobile number" maxlength="10" required>
+                </div>
+                <div class="form-group flex-1">
+                  <label for="onPageCustCity" class="form-label font-bold" id="lblOnPageCustCity">City / Town (ஊர் / நகரம்) <span class="text-rose">*</span></label>
+                  <input type="text" id="onPageCustCity" class="form-input" placeholder="e.g. Cuddalore, Neyveli, Chidambaram" required>
+                </div>
+              </div>
+              <div class="form-row mt-2">
+                <div class="form-group flex-1">
+                  <label for="onPageCustOccupation" class="form-label" id="lblOnPageCustOcc">Occupation (தொழில் / வேலை)</label>
+                  <select id="onPageCustOccupation" class="form-input">
+                    <option value="">-- Select Occupation (தொழில் தேர்வு செய்க) --</option>
+                    <option value="Business / Self Employed">Business / Self Employed (வணிகம் / சுயதொழில்)</option>
+                    <option value="Private Sector / IT">Private Sector / IT (தனியார் துறை)</option>
+                    <option value="Government Employee">Government Employee (அரசு ஊழியர்)</option>
+                    <option value="Homemaker">Homemaker (இல்லத்தரசி)</option>
+                    <option value="Professional (Doctor / Engineer / CA)">Professional (மருத்துவர் / பொறியாளர் / ஆடிட்டர்)</option>
+                    <option value="Student">Student (மாணவர்)</option>
+                    <option value="Retired / Others">Retired / Others (ஓய்வு / பிற)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dynamic Questions List (7 Core Questions) -->
+          <div class="card questions-container-card mb-4">
+            <div class="card-header pb-2 d-flex justify-between align-center">
+              <h4 class="card-title text-sm" id="lblQuestionsCardTitle">Customer Feedback Questions</h4>
+              <span class="badge badge-gold" id="onPageLangNotice">Language: English &amp; தமிழ்</span>
+            </div>
+            <div class="card-body pt-3" id="onPageQuestionsList">
+              <!-- Rendered dynamically via JS -->
+            </div>
+          </div>
+
+          <!-- Customer Remarks & Observations at End of Feedback Form -->
+          <div class="card mb-4">
+            <div class="card-header pb-2">
+              <h4 class="card-title text-sm" id="lblOnPageRemarksHeader">Customer Remarks &amp; Observations (வாடிக்கையாளர் கருத்துக்கள் / குறிப்புகள்)</h4>
+            </div>
+            <div class="card-body pt-2">
+              <textarea id="onPageCustRemarks" rows="3" class="form-input" placeholder="Enter customer specific feedback, special requests, staff notes, or suggestions..."></textarea>
+            </div>
+          </div>
+
+          <!-- Submission Feedback Success Alert (Inactive until submitted) -->
+          <div id="feedbackSuccessAlert" class="feedback-success-banner mb-3" style="display:none;">
+            <span class="success-emoji">😊</span>
+            <div>
+              <h3 class="success-title">Thank you for your valuable feedback and Visit again 😊</h3>
+              <p class="success-sub">சுபா வள்ளி விலாஸ் வருகைக்கு நன்றி! மீண்டும் வருக!</p>
+            </div>
+          </div>
+
+          <!-- Submit Button Row -->
+          <div class="d-flex justify-between align-center mt-3">
+            <span class="text-xs text-muted" id="lblSubmitNotice">Submitting records feedback and resets form ready for the next customer.</span>
+            <div class="d-flex gap-3">
+              <button type="reset" class="btn btn-outline" id="btnResetOnPageForm">Clear Form</button>
+              <button type="submit" class="btn btn-gold btn-lg" id="btnSubmitOnPageFeedback">💾 Submit Feedback to Suba Valli Vilas</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- 4. DIVERT / GD TRACKER SCREEN -->
+    <section id="divert-screen" class="screen-view">
+      <div class="view-header">
+        <div>
+          <h2 class="view-title">Divert / GD Tracker</h2>
+          <p class="view-subtitle">Track unmet customer requirements, out-of-stock design requests, log calls directly, and view management insights</p>
+        </div>
+        <div class="view-actions">
+          <button class="btn btn-gold" id="btnOpenNewDivert">
+            <span>+ Log Customer Divert</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Divert KPI Summary -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-header"><span class="kpi-label">TOTAL DIVERTS LOGGED</span></div>
+          <div class="kpi-value" id="divertTotalCount">28</div>
+          <div class="kpi-footer text-muted"><span>this month</span></div>
+        </div>
+        <div class="kpi-card amber-accent">
+          <div class="kpi-header"><span class="kpi-label">HIGH PRIORITY REQUESTS</span></div>
+          <div class="kpi-value text-amber" id="divertHighCount">9</div>
+          <div class="kpi-footer text-amber"><span>immediate sourcing needed</span></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-header"><span class="kpi-label">PENDING FOLLOW-UP</span></div>
+          <div class="kpi-value" id="divertPendingCount">14</div>
+          <div class="kpi-footer text-muted"><span>queued in telecaller</span></div>
+        </div>
+        <div class="kpi-card emerald-accent">
+          <div class="kpi-header"><span class="kpi-label">CONVERTED TO SALE</span></div>
+          <div class="kpi-value text-success" id="divertConvertedCount">5</div>
+          <div class="kpi-footer text-success"><span>recovered sales</span></div>
+        </div>
+      </div>
+
+      <!-- Divert Executive Classifications: Counter-wise & Reason-wise Breakdown -->
+      <div class="divert-classification-row mt-4">
+        <!-- 1. Counter-wise Classification -->
+        <div class="card flex-1">
+          <div class="card-header pb-2 d-flex justify-between align-center">
+            <h4 class="card-title text-sm" style="color:var(--maroon-primary);">🏛️ Counter-Wise Divert Classification</h4>
+            <span class="badge badge-subtle">By Section &amp; Counter</span>
+          </div>
+          <div class="card-body pt-1">
+            <div class="scrollable-box-wrapper" style="max-height: 180px; overflow-y: auto; padding-right: 4px;">
+              <table class="data-table" style="font-size: 0.82rem;">
+                <thead>
+                  <tr>
+                    <th>Counter</th>
+                    <th>Section</th>
+                    <th>Diverts Logged</th>
+                    <th>Share %</th>
+                  </tr>
+                </thead>
+                <tbody id="divertCounterClassificationBody">
+                  <!-- Rendered via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Reason-wise Classification -->
+        <div class="card flex-1">
+          <div class="card-header pb-2 d-flex justify-between align-center">
+            <h4 class="card-title text-sm" style="color:var(--maroon-primary);">📊 Reason-Wise Divert Classification</h4>
+            <span class="badge badge-rose">Loss Driver Analysis</span>
+          </div>
+          <div class="card-body pt-1">
+            <div class="scrollable-box-wrapper" id="divertReasonClassificationList" style="max-height: 180px; overflow-y: auto; padding-right: 4px;">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Divert Table Card -->
+      <div class="card mt-3">
+        <div class="card-header table-header-flex">
+          <div class="table-search-box">
+            <input type="text" id="divertSearchInput" class="form-input" placeholder="Search by customer, mobile, product or staff...">
+          </div>
+          <div class="table-filter-pills" id="divertFilterPillsGroup">
+            <button class="pill-btn active" data-divert-filter="ALL">All Diverts</button>
+            <button class="pill-btn" data-divert-filter="PENDING">Pending</button>
+            <button class="pill-btn" data-divert-filter="FOLLOWUP">Follow-up</button>
+            <button class="pill-btn" data-divert-filter="CLOSED">Closed</button>
+          </div>
+        </div>
+
+        <div class="card-body p-0">
+          <div class="table-container">
+            <table class="data-table" id="divertsMasterTable">
+              <thead>
+                <tr>
+                  <th>Divert ID</th>
+                  <th>Date & Time</th>
+                  <th>Customer Name</th>
+                  <th>Mobile Number</th>
+                  <th>Section & Counter</th>
+                  <th>Reason</th>
+                  <th>Product & Design</th>
+                  <th>Staff Attribution</th>
+                  <th>Priority</th>
+                  <th>Divert Status</th>
+                  <th>Last Call Status</th>
+                  <th>Last Call Date</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="divertsTableBody">
+                <!-- Rendered via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- MANAGEMENT DECISION INSIGHTS (Requested by user) -->
+      <div class="management-insights-box" id="divertManagementInsights">
+        <div class="d-flex align-center gap-2">
+          <span style="font-size:1.4rem;">💡</span>
+          <div>
+            <h3 style="font-size:1.1rem; font-weight:700; color:var(--maroon-primary); margin:0;">Management Decision Insights & Procurement Actions</h3>
+            <p style="font-size:0.8rem; color:#64748B; margin:0;">Actionable inventory, design & pricing recommendations derived from customer lost sales</p>
+          </div>
+        </div>
+        <div class="insights-grid" id="divertInsightsGrid">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. TELECALLER DESK SCREEN -->
+    <section id="telecaller-screen" class="screen-view">
+      <div class="view-header">
+        <div>
+          <h2 class="view-title">Telecaller Desk & Relationship Calling</h2>
+          <p class="view-subtitle">Categorized smart queues for Chit Scheme Unaware prospects, Service Recovery Concerns, and Divert Arrivals</p>
+        </div>
+        <div class="view-actions">
+          <span class="badge badge-gold" id="callerShiftBadge">Shift: Morning Calling Queue</span>
+        </div>
+      </div>
+
+      <!-- Telecaller Smart Category Tabs (6 Targeted Lead Queues) -->
+      <div class="telecaller-tab-bar">
+        <button class="queue-tab active" data-queue="unaware">
+          <span class="queue-icon">💎</span>
+          <span class="queue-name">Chit Scheme Unaware</span>
+          <span class="queue-pill" id="queueUnawareCount">5</span>
+        </button>
+        <button class="queue-tab" data-queue="divert">
+          <span class="queue-icon">📦</span>
+          <span class="queue-name">Divert Customers</span>
+          <span class="queue-pill" id="queueDivertCount">3</span>
+        </button>
+        <button class="queue-tab" data-queue="occasion">
+          <span class="queue-icon">🎂</span>
+          <span class="queue-name">Birthday &amp; Anniversary (VIP)</span>
+          <span class="queue-pill" id="queueOccasionCount">4</span>
+        </button>
+        <button class="queue-tab" data-queue="concern">
+          <span class="queue-icon">⚠️</span>
+          <span class="queue-name">Concern Feedback</span>
+          <span class="queue-pill badge-rose" id="queueConcernCount">2</span>
+        </button>
+        <button class="queue-tab" data-queue="common">
+          <span class="queue-icon">💬</span>
+          <span class="queue-name">Common Feedback</span>
+          <span class="queue-pill" id="queueCommonCount">8</span>
+        </button>
+        <button class="queue-tab" data-queue="all">
+          <span class="queue-icon">📋</span>
+          <span class="queue-name">All Leads</span>
+          <span class="queue-pill badge-gold" id="queueAllCount">18</span>
+        </button>
+      </div>
+
+      <!-- Telecaller Date Range & Status Filter Bar -->
+      <div class="card p-3 mt-3 mb-2 d-flex justify-between align-center flex-wrap gap-2">
+        <div class="d-flex align-center gap-2">
+          <span class="text-xs font-bold text-muted">📅 Date Range:</span>
+          <input type="date" id="telFilterFromDate" class="form-input form-input-sm" style="width:140px;" value="2026-09-01">
+          <span class="text-xs text-muted">to</span>
+          <input type="date" id="telFilterToDate" class="form-input form-input-sm" style="width:140px;" value="2026-09-20">
+          <button type="button" class="btn btn-xs btn-outline" id="btnTelDateApply">Apply</button>
+          <button type="button" class="btn btn-xs btn-outline" id="btnTelDateReset">Reset</button>
+        </div>
+        <div class="d-flex align-center gap-1">
+          <span class="text-xs font-bold text-muted mr-1">📞 Call Follow Status:</span>
+          <div class="table-filter-pills" id="telStatusFilterGroup">
+            <button class="pill-btn active" data-tel-status="ALL">All Leads</button>
+            <button class="pill-btn" data-tel-status="PENDING">Pending</button>
+            <button class="pill-btn" data-tel-status="FOLLOWUP">Follow-up</button>
+            <button class="pill-btn" data-tel-status="CLOSED">Closed</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Telecaller Calling Grid -->
+      <div class="card mt-2">
+        <div class="card-header pb-2">
+          <div>
+            <h3 class="card-title" id="telecallerQueueTitle">Chit Scheme Unaware Calling Queue</h3>
+            <p class="card-subtitle" id="telecallerQueueDesc">Customers who visited Suba Valli Vilas and indicated they are unaware of saving schemes. Call to introduce attractive chit scheme benefits.</p>
+          </div>
+        </div>
+
+        <div class="card-body p-0">
+          <div class="table-container">
+            <table class="data-table" id="telecallerTable">
+              <thead>
+                <tr>
+                  <th>Customer Name</th>
+                  <th>Mobile Number</th>
+                  <th>City / Town</th>
+                  <th>Customer Categories / Tags</th>
+                  <th>Visit Date / Occasion</th>
+                  <th>Call Follow Status</th>
+                  <th>Last Call Details &amp; Notes</th>
+                  <th>Telecaller Action</th>
+                </tr>
+              </thead>
+              <tbody id="telecallerTableBody">
+                <!-- Rendered via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. DEDICATED REPORTS SCREEN (Requested by user) -->
+    <section id="reports-screen" class="screen-view">
+      <div class="view-header">
+        <div>
+          <h2 class="view-title">Reports & Operational Intelligence</h2>
+          <p class="view-subtitle">In-depth multi-module reporting for Footfall, Feedback, Diverts, and Telecaller with Staff Name attribution and CSV export</p>
+        </div>
+        <div class="view-actions">
+          <button class="btn btn-gold" id="btnExportActiveReport">
+            <span>📥 Export Report (CSV)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Reports Sub-navigation -->
+      <div class="reports-nav-pills">
+        <button class="report-pill active" data-report="footfall">👥 Footfall Reports</button>
+        <button class="report-pill" data-report="feedback">💬 Feedback Reports (Staff Wise)</button>
+        <button class="report-pill" data-report="remarks">⭐ Customer Remarks (Positive / Negative)</button>
+        <button class="report-pill" data-report="diverts">📋 Divert Reports (Staff Wise)</button>
+        <button class="report-pill" data-report="telecaller">📞 Telecaller Performance</button>
+      </div>
+
+      <!-- Common Date & Filter Toolbar -->
+      <div class="card filter-bar-card mt-3">
+        <div class="filter-controls">
+          <div class="filter-group">
+            <label>From Date:</label>
+            <input type="date" id="repFromDate" class="form-input date-input" value="2026-09-10">
+          </div>
+          <div class="filter-group">
+            <label>To Date:</label>
+            <input type="date" id="repToDate" class="form-input date-input" value="2026-09-20">
+          </div>
+          <div class="filter-group">
+            <label>Staff Filter:</label>
+            <select id="repStaffFilter" class="form-input">
+              <option value="ALL">All Staff Members</option>
+              <option value="Vijay">Vijay (Counter 3)</option>
+              <option value="Balagoud">Balagoud</option>
+              <option value="Nilesh">Nilesh</option>
+              <option value="Valent">Valent</option>
+              <option value="Arun hasbe">Arun hasbe</option>
+              <option value="Swati">Swati</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label>Branch:</label>
+            <select id="repBranchFilter" class="form-input">
+              <option value="ALL">All Branches</option>
+              <option value="Main Branch">Main Branch</option>
+              <option value="Bailhongal">Bailhongal</option>
+              <option value="Belgaum">Belgaum</option>
+              <option value="Ankalagi">Ankalagi</option>
+              <option value="Goa">Goa</option>
+            </select>
+          </div>
+          <div class="filter-group-actions">
+            <button class="btn btn-navy" id="btnApplyReportFilter">Generate Report</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Report View 1: Footfall Report Container -->
+      <div id="repFootfallContainer" class="report-subview active mt-4">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Footfall vs Bill Conversion Report</h3>
+            <span class="badge badge-gold">Date Range: Last 7 Days</span>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Branch</th>
+                    <th>Total Footfall</th>
+                    <th>Submitted Slots</th>
+                    <th>Day-end Bills</th>
+                    <th>Conversion %</th>
+                    <th>Ratio (Visitors/Bill)</th>
+                    <th>Peak Traffic Hour</th>
+                  </tr>
+                </thead>
+                <tbody id="repFootfallTableBody">
+                  <!-- Rendered via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Report View 2: Feedback Report Container (with Staff Name and Question Breakdown) -->
+      <div id="repFeedbackContainer" class="report-subview mt-4">
+        <!-- Staff Performance Breakdown Cards -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h3 class="card-title">Feedback Collection Count by Staff Name</h3>
+            <span class="badge badge-subtle">Staff Attribution & Quality</span>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Staff Name</th>
+                    <th>Total Feedbacks Collected</th>
+                    <th>Appreciations ⭐</th>
+                    <th>Suggestions 💬</th>
+                    <th>Concerns ⚠️</th>
+                    <th>Average Rating</th>
+                    <th>Chit Scheme Enrolled</th>
+                  </tr>
+                </thead>
+                <tbody id="repStaffFeedbackBody">
+                  <!-- Rendered via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Question-wise Breakdown Card -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Question-wise Analysis Report</h3>
+            <span class="badge badge-gold">Voice of Customer</span>
+          </div>
+          <div class="card-body">
+            <div class="question-analysis-grid" id="repQuestionAnalysisGrid">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Report View 3: Diverts Report Container (with Staff Name) -->
+      <div id="repDivertsContainer" class="report-subview mt-4">
+        <div class="card mb-4">
+          <div class="card-header">
+            <h3 class="card-title">Staff Divert & Lost Sales Attribution</h3>
+            <span class="badge badge-amber">Staff Logged Count</span>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Staff Name</th>
+                    <th>Branch</th>
+                    <th>Diverts Logged</th>
+                    <th>Top Divert Reason</th>
+                    <th>Counter Attribution</th>
+                    <th>Recovered / Closed</th>
+                  </tr>
+                </thead>
+                <tbody id="repStaffDivertsBody">
+                  <!-- Rendered via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lost Sales by Counter & Reason (No grams) -->
+        <div class="dashboard-analytics-grid">
+          <div class="card">
+            <div class="card-header"><h3 class="card-title">Diverts Classification by Counter</h3></div>
+            <div class="card-body">
+              <div class="progress-list" id="repCounterList">
+                <!-- Rendered via JS -->
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3 class="card-title">Diverts Classification by Primary Reason</h3></div>
+            <div class="card-body">
+              <div class="progress-list" id="repDivertReasonsProgress">
+                <!-- Rendered via JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Report View 4: Telecaller Report Container -->
+      <div id="repTelecallerContainer" class="report-subview mt-4">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Telecaller Performance &amp; Conversion Leaderboard</h3>
+            <span class="badge badge-emerald">Relationship &amp; Sales Closings</span>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Telecaller / Staff Name</th>
+                    <th>Total Calls</th>
+                    <th>Connected Calls</th>
+                    <th>Chit Conversions 💎</th>
+                    <th>Concerns Closed ✅</th>
+                    <th>Diverts Closed 📦</th>
+                    <th>Overall Success %</th>
+                  </tr>
+                </thead>
+                <tbody id="repTelecallerBody">
+                  <!-- Rendered via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Report View 5: Customer Remarks & Sentiment Breakdown (Positive vs Negative) -->
+      <div id="repRemarksContainer" class="report-subview mt-4">
+        <div class="card mb-3 p-3 bg-silk">
+          <div class="d-flex justify-between align-center flex-wrap gap-2">
+            <div>
+              <h3 class="card-title text-maroon">Customer Voice: Positive vs Negative Feedback Remarks</h3>
+              <p class="text-xs text-muted">Analysis of commendations (Appreciations) versus customer concerns with action resolution</p>
+            </div>
+            <span class="badge badge-gold" id="repRemarksTotalBadge">Showing All Filtered Remarks</span>
+          </div>
+        </div>
+
+        <div class="remarks-analysis-layout">
+          <!-- POSITIVE CUSTOMER REMARKS (Appreciations & Praise ⭐) -->
+          <div class="card remarks-sentiment-card border-top-emerald">
+            <div class="card-header d-flex justify-between align-center">
+              <div>
+                <h3 class="card-title text-success font-bold">⭐ Positive Appreciations & Commendations</h3>
+                <p class="text-xs text-muted">Customer delight, staff praise, and high satisfaction ratings</p>
+              </div>
+              <span class="badge badge-emerald" id="repPositiveCountBadge">0 Appreciations</span>
+            </div>
+            <div class="card-body p-0">
+              <div class="remarks-scroll-list" id="repPositiveRemarksList">
+                <!-- Rendered via JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- NEGATIVE CUSTOMER REMARKS & CONCERNS (Action Items ⚠️) -->
+          <div class="card remarks-sentiment-card border-top-rose">
+            <div class="card-header d-flex justify-between align-center">
+              <div>
+                <h3 class="card-title text-rose font-bold">⚠️ Customer Concerns & Resolution Status</h3>
+                <p class="text-xs text-muted">Escalations, out-of-stock items, waiting times, and action tracking</p>
+              </div>
+              <span class="badge badge-rose" id="repNegativeCountBadge">0 Concerns</span>
+            </div>
+            <div class="card-body p-0">
+              <div class="remarks-scroll-list" id="repNegativeRemarksList">
+                <!-- Rendered via JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. USER MANAGEMENT & RBAC SCREEN (Requested by user) -->
+    <section id="users-screen" class="screen-view">
+      <div class="view-header">
+        <div>
+          <h2 class="view-title">User Management & Access Control (RBAC)</h2>
+          <p class="view-subtitle">Create new staff accounts, assign operational roles, and customize granular module permissions</p>
+        </div>
+        <div class="view-actions">
+          <a href="Suba_Valli_Vilas_User_Creation.csv" download="Suba_Valli_Vilas_User_Creation.csv" class="btn btn-outline" id="btnDownloadUserCreationCsv">
+            <span>📥 Download User Creation Sheet (.csv)</span>
+          </a>
+          <a href="Suba_Valli_Vilas_Database_Master.xls" download="Suba_Valli_Vilas_Database_Master.xls" class="btn btn-navy" id="btnDownloadUsersMasterXls">
+            <span>📊 Master Excel (.xls)</span>
+          </a>
+          <button class="btn btn-gold" id="btnOpenCreateUser">
+            <span>+ Create New User</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Roles Legend Card -->
+      <div class="card mb-4">
+        <div class="card-body">
+          <h4 class="mb-2">Default Role Access Matrix:</h4>
+          <div class="role-cards-grid">
+            <div class="role-summary-card">
+              <span class="badge badge-admin">Admin</span>
+              <p class="text-xs mt-1">Full control across all modules, Yesterday's missed slots editing, user creation, dynamic questions & reports.</p>
+            </div>
+            <div class="role-summary-card">
+              <span class="badge badge-staff">Staff</span>
+              <p class="text-xs mt-1">Input only: Today's active footfall slots, Feedback creation with Staff Name, and Divert creation with Staff Name.</p>
+            </div>
+            <div class="role-summary-card">
+              <span class="badge badge-telecaller">Telecaller</span>
+              <p class="text-xs mt-1">Access to Telecaller Calling Queues, Feedback Report view for calling context, and call disposition logging.</p>
+            </div>
+            <div class="role-summary-card">
+              <span class="badge badge-manager">Manager</span>
+              <p class="text-xs mt-1">View reports, approve diverts, view telecaller logs, and edit yesterday's footfall with admin permissions.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Users Master Table -->
+      <div class="card">
+        <div class="card-header d-flex justify-between align-center flex-wrap gap-2">
+          <div>
+            <h3 class="card-title">Registered Users &amp; Active Permissions</h3>
+            <span class="badge badge-subtle">Suba Valli Vilas Team</span>
+          </div>
+          <button class="btn btn-secondary" id="btnSyncUsersFromSheet" title="Pull latest users from USER_CREATION sheet via Google Sheets">
+            👥 Sync Users from Sheet
+          </button>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>User ID</th>
+                  <th>Full Name</th>
+                  <th>Username</th>
+                  <th>Branch</th>
+                  <th>Role</th>
+                  <th>Granted Permissions</th>
+                  <th>Status</th>
+                  <th>Switch / Test</th>
+                </tr>
+              </thead>
+              <tbody id="usersTableBody">
+                <!-- Rendered via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. QUESTION CONFIGURATION & SETTINGS SCREEN (Matches media_1789453394245.png) -->
+    <section id="settings-screen" class="screen-view">
+      <div class="view-header">
+        <div>
+          <h2 class="view-title">Dynamic Questions & Google Sheet Setup</h2>
+          <p class="view-subtitle">Manage question database (Q1–Q7 core + Q8–Q12 extensible slots) matching your Google Sheet structure</p>
+        </div>
+        <div class="view-actions">
+          <a href="Suba_Valli_Vilas_Database_Master.xls" download="Suba_Valli_Vilas_Database_Master.xls" class="btn btn-navy" id="btnDownloadExcelDatabase">
+            <span>📊 Download Master Excel (.xls)</span>
+          </a>
+          <button class="btn btn-outline" id="btnDownloadSheetTemplate">📋 Download CSV Schema</button>
+          <button class="btn btn-secondary" id="btnRefreshQuestionsCloud" title="Pull latest questions from Google Sheets / Cloudflare Worker">
+            <span>🔄 Pull From Cloud</span>
+          </button>
+          <button class="btn btn-gold" id="btnSaveQuestionsConfig">💾 Save Configuration</button>
+        </div>
+      </div>
+
+      <!-- Master Database Sheets & Excel Downloads Section -->
+      <div class="card mb-4">
+        <div class="card-header d-flex justify-between align-center flex-wrap gap-2">
+          <div>
+            <h3 class="card-title">📁 Master Database Spreadsheets &amp; Excel Templates</h3>
+            <p class="card-subtitle text-xs text-muted">Dedicated download templates for User Creation, Feedback Questions, Divert Questions, and the full multi-tab Master Excel database</p>
+          </div>
+          <a href="Suba_Valli_Vilas_Database_Master.xls" download="Suba_Valli_Vilas_Database_Master.xls" class="btn btn-navy btn-sm" id="btnDownloadDatabaseMasterTop">
+            <span>📊 Download All Sheets (.xls)</span>
+          </a>
+        </div>
+        <div class="card-body">
+          <div class="sheet-download-cards-grid">
+            <!-- 1. User Creation Sheet -->
+            <div class="sheet-download-card">
+              <div>
+                <div class="sheet-card-header">
+                  <span class="sheet-card-icon">👤</span>
+                  <div>
+                    <h4 class="sheet-card-title">User Creation Sheet</h4>
+                    <span class="sheet-card-meta"><code>Suba_Valli_Vilas_User_Creation.csv</code></span>
+                  </div>
+                </div>
+                <p class="sheet-card-desc">
+                  Pre-configured master roster with 9 staff &amp; admin accounts, default credentials, counter allocations, and RBAC security permissions.
+                </p>
+              </div>
+              <div class="sheet-card-actions">
+                <a href="Suba_Valli_Vilas_User_Creation.csv" download="Suba_Valli_Vilas_User_Creation.csv" class="btn btn-gold btn-sm flex-1 text-center" id="btnDownloadUserCreationSheet">
+                  <span>📥 Download CSV</span>
+                </a>
+                <button type="button" class="btn btn-outline btn-sm" onclick="document.querySelector('[data-screen=users-screen]')?.click();">
+                  <span>👁️ View Users</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- 2. Feedback Questions Sheet -->
+            <div class="sheet-download-card">
+              <div>
+                <div class="sheet-card-header">
+                  <span class="sheet-card-icon">📝</span>
+                  <div>
+                    <h4 class="sheet-card-title">Feedback Questions Sheet</h4>
+                    <span class="sheet-card-meta"><code>Suba_Valli_Vilas_Feedback_Questions.csv</code></span>
+                  </div>
+                </div>
+                <p class="sheet-card-desc">
+                  13 Questions (Q0–Q12) schema with Tamil &amp; English dual language text, single/multiple choice options, NPS rating scales, and mandatory flags.
+                </p>
+              </div>
+              <div class="sheet-card-actions">
+                <a href="Suba_Valli_Vilas_Feedback_Questions.csv" download="Suba_Valli_Vilas_Feedback_Questions.csv" class="btn btn-gold btn-sm flex-1 text-center" id="btnDownloadFeedbackQuestionsSheet">
+                  <span>📥 Download CSV</span>
+                </a>
+                <a href="#questionsConfigTable" class="btn btn-outline btn-sm">
+                  <span>⚙️ View Matrix</span>
+                </a>
+              </div>
+            </div>
+
+            <!-- 3. Divert Questions Sheet -->
+            <div class="sheet-download-card">
+              <div>
+                <div class="sheet-card-header">
+                  <span class="sheet-card-icon">📦</span>
+                  <div>
+                    <h4 class="sheet-card-title">Divert Question Sheet</h4>
+                    <span class="sheet-card-meta"><code>Suba_Valli_Vilas_Divert_Questions.csv</code></span>
+                  </div>
+                </div>
+                <p class="sheet-card-desc">
+                  10 Standardized divert audit fields: Section, Counter, Reason, Product, Crafting Style, Size, Weight, Visit Purpose, Priority SLA &amp; Staff Attribution.
+                </p>
+              </div>
+              <div class="sheet-card-actions">
+                <a href="Suba_Valli_Vilas_Divert_Questions.csv" download="Suba_Valli_Vilas_Divert_Questions.csv" class="btn btn-gold btn-sm flex-1 text-center" id="btnDownloadDivertQuestionsSheet">
+                  <span>📥 Download CSV</span>
+                </a>
+                <a href="#divertQuestionsConfigTable" class="btn btn-outline btn-sm">
+                  <span>⚙️ View Matrix</span>
+                </a>
+              </div>
+            </div>
+
+            <!-- 4. Master Multi-Tab Excel Document -->
+            <div class="sheet-download-card card-featured">
+              <div>
+                <div class="sheet-card-header">
+                  <span class="sheet-card-icon">📊</span>
+                  <div>
+                    <h4 class="sheet-card-title">Complete Database Workbook</h4>
+                    <span class="sheet-card-meta"><code>Suba_Valli_Vilas_Database_Master.xls</code></span>
+                  </div>
+                </div>
+                <p class="sheet-card-desc">
+                  All 8 database sheets integrated into one multi-tab Excel workbook with luxury Suba Valli Vilas gold/navy formatting, pre-styled headers, and formulas.
+                </p>
+              </div>
+              <div class="sheet-card-actions">
+                <a href="Suba_Valli_Vilas_Database_Master.xls" download="Suba_Valli_Vilas_Database_Master.xls" class="btn btn-navy btn-sm" style="width: 100%; text-align: center;" id="btnDownloadMasterExcelAll">
+                  <span>📊 Download Complete Master Excel (.xls)</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Google Sheets Cloud Database Connection & Live Sync Card -->
+      <div class="card mb-4 gsheet-hub-card">
+        <div class="card-header d-flex justify-between align-center flex-wrap gap-2">
+          <div class="d-flex align-center gap-2">
+            <span class="gsheet-hub-icon" style="font-size: 1.5rem;">📊</span>
+            <div>
+              <h3 class="card-title">Google Sheets Cloud Database &amp; Live Sync</h3>
+              <p class="card-subtitle text-xs text-muted">Connect your Google Spreadsheet to use as the centralized cloud database for Feedbacks, Footfall, Diverts &amp; DER</p>
+            </div>
+          </div>
+          <div class="d-flex align-center gap-2">
+            <span id="gsheetStatusPill" class="badge badge-warning gsheet-status-pill">
+              <span class="gsheet-status-dot dot-amber"></span>
+              <span id="gsheetStatusText">Not Connected (Offline Mode)</span>
+            </span>
+            <span id="gsheetLastSync" class="text-xs text-muted">Last Synced: Never</span>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <!-- 3-Tier Enterprise Architecture Flow Banner -->
+          <div class="architecture-flow-box p-3 mb-3 rounded" style="background: linear-gradient(135deg, #FAF8F5 0%, #F5EFE1 100%); border: 1.5px solid #C5A059;">
+            <div class="d-flex justify-between align-center flex-wrap gap-2 mb-2">
+              <span class="font-bold text-sm" style="color: #580505;">⚡ Enterprise 3-Tier Cloud Architecture:</span>
+              <span class="badge badge-gold">GitHub Pages + Cloudflare + Google Sheets</span>
+            </div>
+            <div class="d-flex align-center justify-between flex-wrap gap-2 text-xs" style="font-family: monospace;">
+              <div class="p-2 rounded bg-white border text-center flex-1" style="min-width: 140px;">
+                <strong>🌐 GitHub Pages</strong><br><span class="text-muted">Static Web UI &amp; Standalone QR Portal</span>
+              </div>
+              <span style="font-size: 1.2rem; color: #C5A059;">──►</span>
+              <div class="p-2 rounded bg-white border text-center flex-1" style="min-width: 140px;">
+                <strong>🛡️ Cloudflare Worker</strong><br><span class="text-muted">Intermediary, CORS &amp; Edge Cache</span>
+              </div>
+              <span style="font-size: 1.2rem; color: #C5A059;">──►</span>
+              <div class="p-2 rounded bg-white border text-center flex-1" style="min-width: 140px;">
+                <strong>📊 Google Sheets</strong><br><span class="text-muted">Apps Script Webhook &amp; Master 8 Sheets</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tier 2: Cloudflare Worker Gateway URL Form -->
+          <div class="form-group mb-3 p-3 rounded" style="background: #FFFDF9; border: 1px solid #EAE5D9;">
+            <label for="cfWorkerGatewayUrl" class="form-label font-bold d-flex justify-between">
+              <span>1. Cloudflare Worker Intermediary Gateway URL (Recommended Proxy)</span>
+              <span class="text-xs text-gold font-bold">Fast Edge Proxy &amp; CORS Bypass</span>
+            </label>
+            <div class="d-flex gap-2 flex-wrap">
+              <input type="url" id="cfWorkerGatewayUrl" class="form-input flex-1" placeholder="https://suba-valli-vilas-crm-api.<your-subdomain>.workers.dev" style="min-width: 280px; font-family: monospace; font-size: 0.85rem;">
+              <button type="button" class="btn btn-gold" id="btnSaveCFWorkerUrl">
+                <span>💾 Save Gateway</span>
+              </button>
+              <button type="button" class="btn btn-outline" id="btnTestCFWorker">
+                <span>⚡ Test Gateway</span>
+              </button>
+            </div>
+            <p class="text-xs text-muted mt-1">
+              ⚡ <em>Proxies browser requests to Google Sheets, avoids cross-origin CORS errors, and edge-caches reads for instant loading on GitHub Pages.</em>
+            </p>
+          </div>
+
+          <!-- Tier 3: Google Apps Script Web App URL Form -->
+          <div class="form-group mb-3 p-3 rounded" style="background: #FAF9F6; border: 1px solid #E2E8F0;">
+            <label for="gsheetWebhookUrl" class="form-label font-bold d-flex justify-between">
+              <span>2. Google Apps Script Web App URL (Target Database Webhook) *</span>
+              <span class="text-xs text-muted">Must end in <code>/exec</code></span>
+            </label>
+            <div class="d-flex gap-2 flex-wrap">
+              <input type="url" id="gsheetWebhookUrl" class="form-input flex-1" placeholder="https://script.google.com/macros/s/AKfycb.../exec" style="min-width: 280px; font-family: monospace; font-size: 0.85rem;">
+              <button type="button" class="btn btn-navy" id="btnSaveGSheetUrl">
+                <span>💾 Save Webhook</span>
+              </button>
+              <button type="button" class="btn btn-outline" id="btnTestGSheet">
+                <span>⚡ Test Direct Connection</span>
+              </button>
+            </div>
+            <p class="text-xs text-muted mt-1">
+              🔒 <em>Direct Google Sheets database endpoint. Configure this URL in your Cloudflare Worker environment secret (<code>GSHEET_WEBHOOK_URL</code>).</em>
+            </p>
+          </div>
+
+          <!-- Cloud Sync Actions Bar -->
+          <div class="gsheet-sync-bar p-3 mb-3 d-flex justify-between align-center flex-wrap gap-3" style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px;">
+            <div class="d-flex align-center gap-3">
+              <label class="custom-switch-label d-flex align-center gap-2 cursor-pointer">
+                <input type="checkbox" id="chkAutoSyncGSheet" checked>
+                <span class="font-bold text-sm">⚡ Auto-Sync on Every Entry</span>
+              </label>
+              <span class="text-xs text-muted">(Instantly saves Feedbacks, Footfall &amp; Diverts via Intermediary / Direct)</span>
+            </div>
+            <div class="d-flex gap-2 flex-wrap">
+              <button type="button" class="btn btn-gold btn-sm" id="btnSyncAllToGSheet">
+                <span>☁️ Sync All Local Data to Sheet</span>
+              </button>
+              <button type="button" class="btn btn-outline btn-sm" id="btnPullFromGSheet">
+                <span>📥 Pull Data from Sheet</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Step-by-Step Setup Guide Accordion (Updated for 3-Tier Architecture) -->
+          <div class="gsheet-guide-container">
+            <div class="gsheet-guide-header d-flex justify-between align-center p-3 cursor-pointer" id="btnToggleGSheetGuide" style="background: #FFFDF9; border: 1px solid #F3E8D2; border-radius: 6px;">
+              <div class="d-flex align-center gap-2">
+                <span style="font-size: 1.1rem;">📖</span>
+                <strong>Step-by-Step Architecture Guide: Google Sheets + Cloudflare + GitHub Pages (Full Setup)</strong>
+              </div>
+              <span id="gsheetGuideChevron" class="text-gold font-bold">▼ Click to Expand</span>
+            </div>
+
+            <div class="gsheet-guide-content p-3 mt-2" id="gsheetGuideContent" style="display: none; background: #FAF9F6; border: 1px solid #EAE5D9; border-radius: 6px;">
+              <ol class="gsheet-steps-list pl-4 text-sm" style="line-height: 1.8;">
+                <li><strong>Part 1: Google Sheet Database Setup (5 Mins)</strong>
+                  <ul class="pl-4 mt-1">
+                    <li>Create a new sheet at <a href="https://sheets.new" target="_blank" class="text-gold font-bold">Google Sheets (sheets.new)</a> and name it <code>Suba Valli Vilas - CRM Database</code>.</li>
+                    <li>Click <code>Extensions</code> &gt; <code>Apps Script</code>. Paste the code from <code>google-apps-script.js</code> (use the Copy button below).</li>
+                    <li>In the toolbar, select <code>setupSubaValliVilasSheets</code> and click <strong>Run</strong> (creates all 8 sheets automatically).</li>
+                    <li>Click <strong>Deploy</strong> &gt; <strong>New deployment</strong> &gt; Select <strong>Web app</strong> &gt; Execute as: <em>Me</em> &gt; Who has access: <em>Anyone</em> &gt; Copy the <code>/exec</code> URL.</li>
+                  </ul>
+                </li>
+                <li><strong>Part 2: Cloudflare Worker Intermediary Setup (3 Mins)</strong>
+                  <ul class="pl-4 mt-1">
+                    <li>Log in to <a href="https://dash.cloudflare.com" target="_blank" class="text-gold font-bold">Cloudflare Dashboard</a> &gt; <strong>Workers &amp; Pages</strong> &gt; <strong>Create application</strong> &gt; <strong>Create Worker</strong>.</li>
+                    <li>Name it <code>suba-valli-vilas-crm-api</code>. Click <strong>Deploy</strong> &gt; Click <strong>Edit code</strong>.</li>
+                    <li>Paste the code from <code>cloudflare-worker.js</code> and click <strong>Deploy</strong>.</li>
+                    <li>In Worker Settings &gt; <strong>Variables and Secrets</strong> &gt; Add secret <code>GSHEET_WEBHOOK_URL</code> with your Google Apps Script URL.</li>
+                    <li>Copy your Worker URL (e.g. <code>https://suba-valli-vilas-crm-api.<subdomain>.workers.dev</code>) and paste it into the field above!</li>
+                  </ul>
+                </li>
+                <li><strong>Part 3: GitHub Pages UI Deployment (2 Mins)</strong>
+                  <ul class="pl-4 mt-1">
+                    <li>Commit and push the project files to your GitHub repository.</li>
+                    <li>In your GitHub repo, go to <strong>Settings</strong> &gt; <strong>Pages</strong> &gt; Source: <strong>Deploy from a branch (main / root)</strong>.</li>
+                    <li>Your CRM dashboard will be live at <code>https://&lt;user&gt;.github.io/&lt;repo&gt;/</code> and the standalone Customer Feedback Portal at <code>https://&lt;user&gt;.github.io/&lt;repo&gt;/feedback.html</code>!</li>
+                  </ul>
+                </li>
+              </ol>
+
+              <div class="d-flex gap-2 mt-3 flex-wrap">
+                <a href="Suba_Valli_Vilas_Database_Master.xls" download="Suba_Valli_Vilas_Database_Master.xls" class="btn btn-navy btn-sm">
+                  <span>📊 Download Excel Database (.xls)</span>
+                </a>
+                <button type="button" class="btn btn-gold btn-sm" id="btnCopyAppsScriptCode">
+                  <span>📋 Copy Apps Script Code to Clipboard</span>
+                </button>
+                <button type="button" class="btn btn-outline btn-sm" id="btnDownloadAppsScript">
+                  <span>📥 Download Code.gs File</span>
+                </button>
+                <a href="google-apps-script.js" target="_blank" class="btn btn-outline btn-sm">
+                  <span>📄 View Code in Browser</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Dynamic Questions Editor Table -->
+      <div class="card" id="questionsConfigTable">
+        <div class="card-header d-flex justify-between align-center flex-wrap gap-2">
+          <div>
+            <h3 class="card-title">Questions Configuration Matrix</h3>
+            <p class="card-subtitle text-xs text-muted">Core (Q0–Q7) + extensible survey questions (Q8–Q12) with dual-language Tamil &amp; English support</p>
+          </div>
+          <div class="d-flex gap-2">
+            <a href="Suba_Valli_Vilas_Feedback_Questions.csv" download="Suba_Valli_Vilas_Feedback_Questions.csv" class="btn btn-outline btn-sm">
+              <span>📥 Download CSV</span>
+            </a>
+            <span class="badge badge-gold">Tamil &amp; English Dual Language</span>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Q ID</th>
+                  <th>Display Order</th>
+                  <th>Question Text (English &amp; Tamil)</th>
+                  <th>Type</th>
+                  <th>Options</th>
+                  <th>Mandatory?</th>
+                  <th>Active?</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="questionsConfigBody">
+                <!-- 12 Questions Rendered via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Divert Questions & Fields Configuration Matrix -->
+      <div class="card mt-4" id="divertQuestionsConfigTable">
+        <div class="card-header d-flex justify-between align-center flex-wrap gap-2">
+          <div>
+            <h3 class="card-title">📦 Customer Divert Fields &amp; Questions Configuration</h3>
+            <p class="card-subtitle text-xs text-muted">10 standardized divert audit fields for tracking lost sales, customer requests &amp; workshop procurement</p>
+          </div>
+          <div class="d-flex gap-2">
+            <a href="Suba_Valli_Vilas_Divert_Questions.csv" download="Suba_Valli_Vilas_Divert_Questions.csv" class="btn btn-outline btn-sm">
+              <span>📥 Download CSV</span>
+            </a>
+            <span class="badge badge-gold">10 Standard Fields</span>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Field ID</th>
+                  <th>Order</th>
+                  <th>Field Label &amp; Purpose</th>
+                  <th>Input Type</th>
+                  <th>Configured Options / Specification</th>
+                  <th>Mandatory?</th>
+                  <th>Workflow Trigger</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="divertQuestionsConfigBody">
+                <!-- Rendered via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================= MODALS & POPUPS ================= -->
+
+  <!-- MODAL 1: NEW FEEDBACK ENTRY (Matches media_1789452703021.png) -->
+  <div class="modal-overlay" id="modalFeedback">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <div class="modal-title-box">
+          <span class="modal-badge-icon">📋</span>
+          <div>
+            <h3 class="modal-title">Customer Feedback Entry</h3>
+            <p class="modal-subtitle">Suba Valli Vilas • Collected by staff or customer self-fill</p>
+          </div>
+        </div>
+        <button class="modal-close" id="btnCloseFeedbackModal">&times;</button>
+      </div>
+
+      <form id="feedbackForm" class="modal-body">
+        <!-- Entry Mode Toggle -->
+        <div class="entry-mode-toggle-box">
+          <button type="button" class="mode-btn active" id="btnModeStaff">
+            <span>👤 Staff Collected</span>
+          </button>
+          <button type="button" class="mode-btn" id="btnModeWalkin">
+            <span>🚶 Walk-in / Self Entry</span>
+          </button>
+        </div>
+
+        <!-- Meta Details: Staff Name, Branch, Area/Zone -->
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label for="fbFormStaffName" class="form-label">Staff Name *</label>
+            <select id="fbFormStaffName" class="form-input" required>
+              <option value="Vijay">Vijay (Counter 3)</option>
+              <option value="Balagoud">Balagoud</option>
+              <option value="Nilesh">Nilesh</option>
+              <option value="Valent">Valent</option>
+              <option value="Arun hasbe">Arun hasbe</option>
+              <option value="Swati">Swati</option>
+              <option value="Priya Sharma">Priya Sharma</option>
+            </select>
+          </div>
+
+          <div class="form-group flex-1">
+            <label for="fbFormInvoice" class="form-label">Invoice Number</label>
+            <input type="text" id="fbFormInvoice" class="form-input" placeholder="e.g. INV-2026-8941">
+          </div>
+
+          <div class="form-group flex-1">
+            <label for="fbFormAreaZone" class="form-label">Area / Zone / Counter *</label>
+            <input type="text" id="fbFormAreaZone" class="form-input" placeholder="e.g. Ground Floor, Gold Section" required value="Ground Floor, Gold Section">
+          </div>
+        </div>
+
+        <!-- TOP 3 SENTIMENT / MOOD CARDS (Matches media_1789452703021.png) -->
+        <div class="sentiment-selector-card card mt-3">
+          <h4 class="selector-title">Tell us about your Experience *</h4>
+          <div class="sentiment-options-grid">
+            <label class="sentiment-choice-card appreciation active">
+              <input type="radio" name="feedbackMood" value="Appreciation" checked>
+              <div class="card-inner">
+                <span class="choice-icon">⭐</span>
+                <span class="choice-label">Appreciation</span>
+              </div>
+            </label>
+
+            <label class="sentiment-choice-card feedback">
+              <input type="radio" name="feedbackMood" value="Feedback">
+              <div class="card-inner">
+                <span class="choice-icon">💬</span>
+                <span class="choice-label">Feedback</span>
+              </div>
+            </label>
+
+            <label class="sentiment-choice-card concern">
+              <input type="radio" name="feedbackMood" value="Concern">
+              <div class="card-inner">
+                <span class="choice-icon">⚠️</span>
+                <span class="choice-label">Concern</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Customer Details Box -->
+        <div class="card customer-details-card mt-3">
+          <div class="card-header pb-2">
+            <h4 class="card-title text-sm">Customer Details <span class="text-xs text-muted font-normal">(Optional — only if customer is willing to share)</span></h4>
+          </div>
+          <div class="card-body pt-1">
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label for="fbCustName" class="form-label">Customer Name</label>
+                <input type="text" id="fbCustName" class="form-input" placeholder="Enter customer name">
+              </div>
+              <div class="form-group flex-1">
+                <label for="fbCustMobile" class="form-label">Mobile Number</label>
+                <input type="tel" id="fbCustMobile" class="form-input" placeholder="10-digit mobile" maxlength="10">
+              </div>
+              <div class="form-group flex-1">
+                <label for="fbCustDOB" class="form-label">Date of Birth / Anniversary</label>
+                <input type="date" id="fbCustDOB" class="form-input">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dynamic Questions List (7 Core + 5 Extensible) -->
+        <div class="card questions-container-card mt-3">
+          <div class="card-header pb-2">
+            <h4 class="card-title text-sm">Customer Feedback Questions</h4>
+            <span class="text-xs text-muted" id="fbLangNotice">Language: English & தமிழ்</span>
+          </div>
+          <div class="card-body pt-1" id="fbDynamicQuestionsList">
+            <!-- Rendered dynamically from questions config -->
+          </div>
+        </div>
+
+        <div class="modal-footer mt-4">
+          <button type="button" class="btn btn-outline" id="btnCancelFeedback">Cancel</button>
+          <button type="submit" class="btn btn-gold btn-lg">Submit Feedback</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 2: FOOTFALL SLOT ENTRY -->
+  <div class="modal-overlay" id="modalFootfallSlot">
+    <div class="modal-card modal-sm">
+      <div class="modal-header">
+        <h3 class="modal-title" id="ffModalSlotTitle">Enter Footfall Count</h3>
+        <button class="modal-close" id="btnCloseFootfallModal">&times;</button>
+      </div>
+      <form id="footfallSlotForm" class="modal-body">
+        <input type="hidden" id="ffModalSlotId">
+        <div class="form-group">
+          <label class="form-label" id="ffModalSlotTimeLabel">Slot: 10:00 AM – 11:00 AM</label>
+          <p class="text-xs text-muted mb-2">Count every visitor (individual or family member) who entered Suba Valli Vilas during this hour.</p>
+          <input type="number" id="ffModalCountInput" class="form-input text-center text-xl font-bold" min="0" placeholder="0" required autofocus>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" id="btnCancelFootfallModal">Cancel</button>
+          <button type="submit" class="btn btn-navy">Save Slot Count</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 3: NEW DIVERT / CUSTOMER GD ENTRY -->
+  <div class="modal-overlay" id="modalDivert">
+    <div class="modal-card modal-md">
+      <div class="modal-header">
+        <div class="modal-title-box">
+          <span class="modal-badge-icon">📋</span>
+          <div>
+            <h3 class="modal-title">Log Customer Divert / GD</h3>
+            <p class="modal-subtitle">Suba Valli Vilas • Missed Sale / Special Requirement</p>
+          </div>
+        </div>
+        <button class="modal-close" id="btnCloseDivertModal">&times;</button>
+      </div>
+
+      <form id="divertForm" class="modal-body">
+        <!-- 1. Mandatory Divert Collector at Top -->
+        <div class="form-group mb-3">
+          <label for="divCollectedBy" class="form-label font-bold" style="color:var(--maroon-primary);">Divert Collected By (Staff Name) <span class="text-rose">*</span></label>
+          <select id="divCollectedBy" class="form-input font-bold" required>
+            <option value="" disabled selected>e.g. Select Staff Member collecting this Divert...</option>
+            <option value="Vijay">Vijay (EMP-101 • Counter 3)</option>
+            <option value="Balagoud">Balagoud (EMP-103 • Counter 1)</option>
+            <option value="Nilesh">Nilesh (EMP-102 • Counter 4)</option>
+            <option value="Valent">Valent (EMP-104 • Counter 6)</option>
+            <option value="Arun hasbe">Arun hasbe (EMP-106 • Counter 5)</option>
+            <option value="Swati">Swati (EMP-105 • Counter 2)</option>
+            <option value="Priya Sharma">Priya Sharma (EMP-100 • Admin)</option>
+          </select>
+        </div>
+
+        <!-- 2. Customer Details -->
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label for="divCustName" class="form-label font-bold">Customer Name <span class="text-rose">*</span></label>
+            <input type="text" id="divCustName" class="form-input" required placeholder="e.g. Meenakshi Sundaram">
+          </div>
+          <div class="form-group flex-1">
+            <label for="divMobile" class="form-label font-bold">Mobile Number <span class="text-rose">*</span></label>
+            <input type="tel" id="divMobile" class="form-input" required placeholder="e.g. 9840123456" maxlength="10">
+          </div>
+        </div>
+
+        <!-- 3. Attended Staff & Counter (Optional) + Section -->
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label for="divAttendedStaff" class="form-label">Attended Staff <span class="text-xs text-muted">(Optional)</span></label>
+            <select id="divAttendedStaff" class="form-input">
+              <option value="" selected>e.g. Select Attended Staff (Optional)...</option>
+              <option value="Vijay">Vijay (Counter 3)</option>
+              <option value="Balagoud">Balagoud (Counter 1)</option>
+              <option value="Nilesh">Nilesh (Counter 4)</option>
+              <option value="Valent">Valent (Counter 6)</option>
+              <option value="Arun hasbe">Arun hasbe (Counter 5)</option>
+              <option value="Swati">Swati (Counter 2)</option>
+            </select>
+          </div>
+          <div class="form-group flex-1">
+            <label for="divCounter" class="form-label">Counter <span class="text-xs text-muted">(Optional)</span></label>
+            <select id="divCounter" class="form-input">
+              <option value="" selected>e.g. Select Counter (Optional)...</option>
+              <option value="Counter 1 - Antique">Counter 1 - Antique</option>
+              <option value="Counter 2 - Chains">Counter 2 - Chains</option>
+              <option value="Counter 3 - Bangles">Counter 3 - Bangles</option>
+              <option value="Counter 4 - Rings">Counter 4 - Rings</option>
+              <option value="Counter 5 - Bridal">Counter 5 - Bridal</option>
+              <option value="Counter 6 - Silver">Counter 6 - Silver</option>
+            </select>
+          </div>
+          <div class="form-group flex-1">
+            <label for="divSection" class="form-label">Section</label>
+            <select id="divSection" class="form-input">
+              <option value="" selected>e.g. Select Section...</option>
+              <option value="Gold">Gold</option>
+              <option value="Diamond">Diamond</option>
+              <option value="Silver">Silver</option>
+              <option value="Platinum">Platinum</option>
+              <option value="Gift / Articles">Gift / Articles</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 4. Reason (No grams) & Product Details -->
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label for="divReason" class="form-label font-bold">Reason for Divert <span class="text-rose">*</span></label>
+            <select id="divReason" class="form-input" required>
+              <option value="" disabled selected>e.g. Select Divert Reason...</option>
+              <option value="Design not available">Design not available</option>
+              <option value="Size out of stock">Size out of stock</option>
+              <option value="Wastage / Price negotiation">Wastage / Price negotiation</option>
+              <option value="Custom order request">Custom order request</option>
+              <option value="Just looking / Comparison">Just looking / Comparison</option>
+              <option value="Other Reason">Other Reason</option>
+            </select>
+          </div>
+          <div class="form-group flex-1">
+            <label for="divProduct" class="form-label font-bold">Product Name <span class="text-rose">*</span></label>
+            <input type="text" id="divProduct" class="form-input" placeholder="e.g. Haram, Antique Bangle, Ring" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label for="divDesign" class="form-label">Design Style</label>
+            <input type="text" id="divDesign" class="form-input" placeholder="e.g. Calcutta, Matte, Casting, Temple">
+          </div>
+          <div class="form-group flex-1">
+            <label for="divSize" class="form-label">Size / Length</label>
+            <input type="text" id="divSize" class="form-input" placeholder="e.g. 2.4, 2.6, 18 inch">
+          </div>
+          <div class="form-group flex-1">
+            <label for="divPriority" class="form-label font-bold">Priority <span class="text-rose">*</span></label>
+            <select id="divPriority" class="form-input" required>
+              <option value="" disabled selected>e.g. Select Priority...</option>
+              <option value="HIGH">High (Hot lead / Urgently needed)</option>
+              <option value="MEDIUM">Medium</option>
+              <option value="LOW">Low</option>
+            </select>
+          </div>
+          <div class="form-group flex-1">
+            <label for="divStatus" class="form-label font-bold">Divert Status</label>
+            <select id="divStatus" class="form-input">
+              <option value="PENDING" selected>Pending</option>
+              <option value="FOLLOWUP">Follow-up</option>
+              <option value="CLOSED">Closed</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="divOtherReason" class="form-label">Requirement Remarks / Staff Observations</label>
+          <textarea id="divOtherReason" class="form-input" rows="2" placeholder="e.g. Customer looking for 24ct matte look with ruby drops for next week function..."></textarea>
+        </div>
+
+        <div class="modal-footer mt-3">
+          <button type="button" class="btn btn-outline" id="btnCancelDivert">Cancel</button>
+          <button type="submit" class="btn btn-gold btn-lg">💾 Save Customer Divert</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 4: CUSTOMER QR CODE & SHAREABLE LINK -->
+  <div class="modal-overlay" id="modalCustomerQR">
+    <div class="modal-card modal-sm text-center">
+      <div class="modal-header">
+        <h3 class="modal-title">Suba Valli Vilas Feedback QR</h3>
+        <button class="modal-close" id="btnCloseQRModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="text-xs text-muted mb-3">Place this QR code at billing counters or dining lounge for instant customer walk-in self-fill.</p>
+        <div class="qr-canvas-box" id="qrCanvasContainer">
+          <!-- Canvas / SVG QR Generated here -->
+        </div>
+        <p class="font-bold mt-3">Scan to Open Bilingual Feedback Form</p>
+        <div class="share-url-box mt-2">
+          <input type="text" id="shareableLinkInput" class="form-input text-xs" readonly value="https://subavallivilas.com/feedback?branch=Main">
+          <button class="btn btn-sm btn-outline" id="btnCopyLink">Copy</button>
+        </div>
+        <button class="btn btn-navy btn-sm mt-3" id="btnOpenSelfFillDemo">Open Customer Screen in New Tab</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 5: TELECALLER ACTION MODAL -->
+  <div class="modal-overlay" id="modalTelecallerAction">
+    <div class="modal-card modal-md">
+      <div class="modal-header">
+        <h3 class="modal-title" id="telActionTitle">Log Telecaller Call</h3>
+        <button class="modal-close" id="btnCloseTelActionModal">&times;</button>
+      </div>
+      <form id="telActionForm" class="modal-body">
+        <input type="hidden" id="telCustId">
+        <input type="hidden" id="telCustCleanMobile">
+        <div class="customer-preview-box">
+          <div class="d-flex justify-between align-center">
+            <strong id="telCustNamePreview" style="font-size:1.05rem; color:var(--maroon-primary);">Customer Name</strong>
+            <span class="text-gold font-bold" id="telCustMobilePreview" style="font-size:1rem;">9876543210</span>
+          </div>
+          <div class="d-flex align-center gap-2 mt-1 flex-wrap" id="telCustTagsPreview">
+            <!-- Multi-category badges rendered dynamically -->
+          </div>
+          <p class="text-xs text-muted mt-1" id="telCustQueueInfo">Queue: Chit Scheme Unaware</p>
+        </div>
+
+        <div class="form-row mt-3">
+          <div class="form-group flex-1">
+            <label class="form-label font-bold">Call Follow-up Status *</label>
+            <select id="telCallStatus" class="form-input font-bold" required>
+              <option value="FOLLOWUP">Follow-up Required (Callback scheduled)</option>
+              <option value="CLOSED">Closed (Lead converted / resolved)</option>
+              <option value="PENDING">Pending (Call not connected / retry)</option>
+            </select>
+          </div>
+          <div class="form-group flex-1">
+            <label class="form-label font-bold">Call Outcome / Disposition *</label>
+            <select id="telDisposition" class="form-input" required>
+              <option value="Connected - Enrolled in Chit Scheme">Connected - Enrolled in Chit Scheme 💎</option>
+              <option value="Connected - Interested / Follow-up">Connected - Interested / Follow-up</option>
+              <option value="Connected - Stock Arrived / Customer Visiting">Connected - Stock Arrived / Customer Visiting 📦</option>
+              <option value="Connected - Concern Resolved">Connected - Concern Resolved ✅</option>
+              <option value="Connected - Birthday / Anniversary Wished">Connected - Birthday / Anniversary Wished 🎂</option>
+              <option value="Call Later / Busy">Call Later / Busy</option>
+              <option value="Ringing / No Response">Ringing / No Response</option>
+              <option value="Not Interested / Closed">Not Interested / Closed</option>
+            </select>
+          </div>
+          <div class="form-group flex-1">
+            <label class="form-label">Next Callback Date</label>
+            <input type="date" id="telCallbackDate" class="form-input">
+          </div>
+        </div>
+
+        <div class="form-group mt-2">
+          <label class="form-label font-bold">Caller Remarks / Discussion Notes</label>
+          <textarea id="telNotes" class="form-input" rows="2" placeholder="e.g. Customer agreed to visit tomorrow to join 11-month gold scheme with bonus..."></textarea>
+        </div>
+
+        <!-- WhatsApp Outreach Helper -->
+        <div class="whatsapp-helper-box mt-3">
+          <div class="d-flex justify-between align-center mb-1">
+            <strong class="text-xs">💬 WhatsApp Message Template:</strong>
+            <button type="button" class="btn btn-xs btn-outline" id="btnGenerateWhatsApp">Generate Pre-filled Message</button>
+          </div>
+          <p class="text-xs text-muted" id="whatsappSnippet">"Vanakkam from Suba Valli Vilas..."</p>
+        </div>
+
+        <div class="modal-footer mt-4">
+          <button type="button" class="btn btn-outline" id="btnCancelTelAction">Cancel</button>
+          <button type="submit" class="btn btn-gold btn-lg">💾 Update &amp; Close Lead Call</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 6: CREATE NEW USER & ASSIGN PERMISSIONS (Requested by user) -->
+  <div class="modal-overlay" id="modalCreateUser">
+    <div class="modal-card modal-md">
+      <div class="modal-header">
+        <div class="modal-title-box">
+          <span class="modal-badge-icon">👤</span>
+          <div>
+            <h3 class="modal-title">Create New User & Assign Permissions</h3>
+            <p class="modal-subtitle">Suba Valli Vilas • Role-Based Access Control (RBAC)</p>
+          </div>
+        </div>
+        <button class="modal-close" id="btnCloseCreateUserModal">&times;</button>
+      </div>
+
+      <form id="createUserForm" class="modal-body">
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label for="newFullName" class="form-label">Full Name (Staff Name) *</label>
+            <input type="text" id="newFullName" class="form-input" required placeholder="e.g. Ramesh Kumar">
+          </div>
+          <div class="form-group flex-1">
+            <label for="newUsername" class="form-label">Username *</label>
+            <input type="text" id="newUsername" class="form-input" required placeholder="e.g. ramesh_svv">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label for="newBranch" class="form-label">Branch *</label>
+            <select id="newBranch" class="form-input" required>
+              <option value="Cuddalore (Main Branch)" selected>Cuddalore (Main Branch)</option>
+              <option value="Future Expansion Branch">Future Expansion Branch</option>
+            </select>
+          </div>
+          <div class="form-group flex-1">
+            <label for="newRolePreset" class="form-label">Base Role Preset *</label>
+            <select id="newRolePreset" class="form-input" required>
+              <option value="Staff">Staff (Input only for Today's Footfall, Feedback &amp; Diverts)</option>
+              <option value="Telecaller">Telecaller (Queues, Call logging &amp; Feedback Reports)</option>
+              <option value="Manager">Manager (Reports, Divert approvals, Past slot edits)</option>
+              <option value="Admin">Admin (Full Unrestricted Access)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Granular Checkbox Permissions -->
+        <div class="permissions-checklist-box mt-3">
+          <label class="form-label mb-2"><strong>Custom Granular Permissions:</strong></label>
+          <div class="checkbox-grid">
+            <label class="checkbox-label">
+              <input type="checkbox" id="perm_ff_today" checked>
+              <span>Footfall Today Slots Entry</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="perm_ff_yesterday">
+              <span>Footfall Yesterday/Past Slots Edit (Admin)</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="perm_fb_entry" checked>
+              <span>Feedback Creation</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="perm_fb_view" checked>
+              <span>Feedback Hub View</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="perm_div_entry" checked>
+              <span>Divert Creation</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="perm_div_view" checked>
+              <span>Divert Tracker View</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="perm_telecaller">
+              <span>Telecaller Desk Access</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="perm_reports">
+              <span>Reports Hub View &amp; Export</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="perm_der">
+              <span>DER Executive Dashboard View</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="perm_users">
+              <span>User Creation &amp; RBAC Management</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="modal-footer mt-4">
+          <button type="button" class="btn btn-outline" id="btnCancelCreateUser">Cancel</button>
+          <button type="submit" class="btn btn-gold">Create User</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 6.5: EDIT QUESTION MODAL (Requested by user) -->
+  <div class="modal-overlay" id="modalEditQuestion">
+    <div class="modal-card modal-md">
+      <div class="modal-header">
+        <div class="modal-title-box">
+          <span class="modal-badge-icon">✏️</span>
+          <div>
+            <h3 class="modal-title">Edit Dynamic Feedback Question</h3>
+            <p class="modal-subtitle">Suba Valli Vilas • Question Configuration &amp; Options</p>
+          </div>
+        </div>
+        <button class="modal-close" id="btnCloseEditQuestionModal">&times;</button>
+      </div>
+
+      <form id="editQuestionForm" class="modal-body">
+        <input type="hidden" id="editQId">
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label class="form-label font-bold">Question ID</label>
+            <input type="text" id="editQIdDisplay" class="form-input" readonly style="background:#F1F5F9;">
+          </div>
+          <div class="form-group flex-1">
+            <label class="form-label font-bold">Display Order</label>
+            <input type="number" id="editQDisplayOrder" class="form-input" min="0" required>
+          </div>
+        </div>
+
+        <div class="form-group mt-2">
+          <label class="form-label font-bold">Question Text (English) *</label>
+          <input type="text" id="editQTextEn" class="form-input" required>
+        </div>
+
+        <div class="form-group mt-2">
+          <label class="form-label font-bold">Question Text (Tamil - தமிழ்) *</label>
+          <input type="text" id="editQTextTa" class="form-input" required>
+        </div>
+
+        <div class="form-group mt-2">
+          <label class="form-label font-bold">Options (Pipe Separated `|` for choices)</label>
+          <textarea id="editQOptionsEn" class="form-input" rows="2" placeholder="Option 1 | Option 2 | Option 3"></textarea>
+          <span class="text-xs text-muted">Separate options with vertical pipe symbol (|)</span>
+        </div>
+
+        <div class="form-group mt-2">
+          <label class="form-label font-bold">Options in Tamil (Pipe Separated `|`)</label>
+          <textarea id="editQOptionsTa" class="form-input" rows="2" placeholder="விருப்பம் 1 | விருப்பம் 2 | விருப்பம் 3"></textarea>
+        </div>
+
+        <div class="form-row mt-3">
+          <div class="form-group flex-1">
+            <label class="form-label font-bold">Is Mandatory?</label>
+            <select id="editQMandatory" class="form-input">
+              <option value="true">YES - Mandatory</option>
+              <option value="false">NO - Optional</option>
+            </select>
+          </div>
+          <div class="form-group flex-1">
+            <label class="form-label font-bold">Question Status</label>
+            <select id="editQActive" class="form-input">
+              <option value="true">Active (Visible in Feedback Forms)</option>
+              <option value="false">Inactive / Disabled</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-footer mt-4">
+          <button type="button" class="btn btn-outline" id="btnCancelEditQuestion">Cancel</button>
+          <button type="submit" class="btn btn-gold btn-lg">💾 Save Question Updates</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 7: WHATSAPP MESSAGE DISPATCHER (Requested by user) -->
+  <div class="modal-overlay" id="modalWhatsAppSender">
+    <div class="modal-card modal-md">
+      <div class="modal-header d-flex justify-between align-center">
+        <div class="d-flex align-center gap-2">
+          <span style="font-size:1.4rem;">💬</span>
+          <div>
+            <h3 class="modal-title">Suba Valli Vilas WhatsApp Messenger</h3>
+            <span class="text-xs text-muted">Send personalized WhatsApp message via wa.me</span>
+          </div>
+        </div>
+        <button class="modal-close" id="btnCloseWAModal">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Customer Info Banner -->
+        <div class="customer-preview-box mb-3 p-3 bg-silk rounded border">
+          <div class="d-flex justify-between align-center">
+            <div>
+              <strong id="waCustNamePreview" style="font-size: 1.05rem;">Customer Name</strong>
+              <span class="text-xs text-muted d-block" id="waCustSectionPreview">Branch: Main Branch</span>
+            </div>
+            <div class="text-right">
+              <span class="text-gold font-bold d-block" style="font-size:1.1rem;" id="waCustMobilePreview">9876543210</span>
+              <span class="badge badge-amber" id="waChitStatusBadge">Non-Chit Customer</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4 Default Message Template Categories (Requested by user) -->
+        <label class="form-label mb-1"><strong>Select Message Template Category:</strong></label>
+        <div class="wa-template-tabs-grid mb-3">
+          <button type="button" class="btn btn-xs btn-outline wa-template-btn active" data-template="chit">
+            💎 Chit Fund (Non-Chit)
+          </button>
+          <button type="button" class="btn btn-xs btn-outline wa-template-btn" data-template="stock">
+            📦 Out of Stock / Divert
+          </button>
+          <button type="button" class="btn btn-xs btn-outline wa-template-btn" data-template="service">
+            🛠️ Service Follow-up
+          </button>
+          <button type="button" class="btn btn-xs btn-outline wa-template-btn" data-template="thankyou">
+            🙏 Thank You Message
+          </button>
+        </div>
+
+        <!-- Language toggle for WhatsApp message -->
+        <div class="d-flex justify-between align-center mb-2">
+          <span class="text-xs text-muted">Template Language:</span>
+          <div class="btn-group-segmented">
+            <button type="button" class="btn btn-xs btn-wa-lang active" data-wa-lang="en">English</button>
+            <button type="button" class="btn btn-xs btn-wa-lang" data-wa-lang="ta">தமிழ் (Tamil)</button>
+          </div>
+        </div>
+
+        <!-- Message Preview & Edit Textarea -->
+        <div class="form-group mb-3">
+          <label for="waMessageTextarea" class="form-label text-xs">Review & Customize Message Content:</label>
+          <textarea id="waMessageTextarea" class="form-input" rows="6" style="font-size:0.9rem; line-height:1.5; font-family:'Cambria', Georgia, serif;"></textarea>
+        </div>
+
+        <!-- Modal Actions -->
+        <div class="modal-footer d-flex justify-between align-center pt-2 border-top">
+          <button type="button" class="btn btn-outline btn-sm" id="btnCopyWAMessage">📋 Copy Message</button>
+          <div class="d-flex gap-2">
+            <button type="button" class="btn btn-outline btn-sm" id="btnCancelWAModal">Cancel</button>
+            <button type="button" class="btn btn-whatsapp btn-sm font-bold" id="btnTriggerWANow" style="background:#25D366; color:#FFFFFF; border:none; padding:8px 16px; border-radius:6px; cursor:pointer;">
+              🚀 Trigger WhatsApp Now
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 8: DEDICATED CUSTOMER SELF-FILL PORTAL (Requested by user) -->
+  <div class="modal-overlay" id="modalCustomerSelfFill">
+    <div class="modal-card modal-lg">
+      <div class="modal-header d-flex justify-between align-center" style="background: linear-gradient(135deg, #4A0404, #580505); color: #FAF8F5;">
+        <div class="d-flex align-center gap-3">
+          <img src="assets/logo.png" style="width:38px; height:38px; border-radius:6px; border:1px solid #C5A059;" alt="Logo">
+          <div>
+            <h3 class="modal-title" style="color: #FAF8F5; margin: 0;">Suba Valli Vilas</h3>
+            <p class="text-xs" style="color: #C5A059; margin: 0;">Customer Feedback & Experience Portal / வாடிக்கையாளர் கருத்துப் படிவம்</p>
+          </div>
+        </div>
+        <button class="modal-close" id="btnCloseCustomerSelfFillModal" style="color: #FAF8F5;">&times;</button>
+      </div>
+
+      <div class="modal-body p-4" style="max-height: 80vh; overflow-y: auto;">
+        <!-- Language Switcher Bar -->
+        <div class="mb-3 p-2 bg-silk rounded d-flex justify-between align-center border">
+          <span class="text-sm font-bold" id="custPortalLangLabel">Preferred Language / மொழியைத் தேர்வு செய்யவும்:</span>
+          <div class="btn-group-segmented">
+            <button type="button" class="btn btn-xs btn-cust-lang active" data-cust-lang="en">🇬🇧 English</button>
+            <button type="button" class="btn btn-xs btn-cust-lang" data-cust-lang="ta">🇮🇳 தமிழ்</button>
+          </div>
+        </div>
+
+        <form id="custSelfFillForm">
+          <!-- Mood Selection -->
+          <div class="sentiment-selector-card card mb-4">
+            <h4 class="selector-title" id="custPortalMoodTitle">How was your visit to Suba Valli Vilas today? *</h4>
+            <div class="sentiment-options-grid">
+              <label class="sentiment-choice-card appreciation active">
+                <input type="radio" name="custPortalMood" value="Appreciation" checked>
+                <div class="card-inner">
+                  <span class="choice-icon">⭐</span>
+                  <span class="choice-label" id="custPortalMoodApprec">Appreciation</span>
+                </div>
+              </label>
+              <label class="sentiment-choice-card feedback">
+                <input type="radio" name="custPortalMood" value="Feedback">
+                <div class="card-inner">
+                  <span class="choice-icon">💬</span>
+                  <span class="choice-label" id="custPortalMoodFeedback">Feedback</span>
+                </div>
+              </label>
+              <label class="sentiment-choice-card concern">
+                <input type="radio" name="custPortalMood" value="Concern">
+                <div class="card-inner">
+                  <span class="choice-icon">⚠️</span>
+                  <span class="choice-label" id="custPortalMoodConcern">Concern</span>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Customer Details with Mandatory Mobile & City -->
+          <div class="card p-3 mb-4">
+            <h4 class="card-title text-sm mb-2" id="custPortalDetailsTitle">Your Details / உங்கள் விவரங்கள் <span class="text-xs text-rose font-bold">(* Mobile &amp; City Mandatory)</span></h4>
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label for="custPortalName" class="form-label" id="custPortalNameLbl">Your Name / உங்கள் பெயர்</label>
+                <input type="text" id="custPortalName" class="form-input" placeholder="e.g. Meenakshi">
+              </div>
+              <div class="form-group flex-1">
+                <label for="custPortalMobile" class="form-label font-bold" id="custPortalMobileLbl">Mobile Number / கைபேசி எண் <span class="text-rose">*</span></label>
+                <input type="tel" id="custPortalMobile" class="form-input" placeholder="10-digit mobile" maxlength="10" required>
+              </div>
+              <div class="form-group flex-1">
+                <label for="custPortalCity" class="form-label font-bold" id="custPortalCityLbl">City / Town / ஊர் <span class="text-rose">*</span></label>
+                <input type="text" id="custPortalCity" class="form-input" placeholder="e.g. Cuddalore, Neyveli" required>
+              </div>
+            </div>
+            <div class="form-row mt-2">
+              <div class="form-group flex-1">
+                <label for="custPortalOccupation" class="form-label" id="custPortalOccLbl">Occupation / தொழில்</label>
+                <select id="custPortalOccupation" class="form-input">
+                  <option value="">-- Select Occupation (தொழில் தேர்வு செய்க) --</option>
+                  <option value="Business / Self Employed">Business / Self Employed (வணிகம் / சுயதொழில்)</option>
+                  <option value="Private Sector / IT">Private Sector / IT (தனியார் துறை)</option>
+                  <option value="Government Employee">Government Employee (அரசு ஊழியர்)</option>
+                  <option value="Homemaker">Homemaker (இல்லத்தரசி)</option>
+                  <option value="Professional (Doctor / Engineer / CA)">Professional (மருத்துவர் / பொறியாளர்)</option>
+                  <option value="Student">Student (மாணவர்)</option>
+                  <option value="Retired / Others">Retired / Others (ஓய்வு / பிற)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dynamic Questions List for Customer Portal -->
+          <div class="card p-3 mb-4">
+            <h4 class="card-title text-sm mb-3" id="custPortalQuestionsHeading">Jewellery Preferences &amp; Feedback / நகை விருப்பங்கள் &amp; கருத்துக்கள்</h4>
+            <div id="custPortalQuestionsList">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Customer Remarks at End of Portal -->
+          <div class="card p-3 mb-4">
+            <h4 class="card-title text-sm mb-2" id="custPortalRemarksHeader">Your Remarks / உங்கள் கருத்துக்கள் &amp; பரிந்துரைகள்</h4>
+            <textarea id="custPortalRemarks" rows="2" class="form-input" placeholder="Any specific suggestions, appreciation or requests..."></textarea>
+          </div>
+
+          <!-- Submission Feedback Success Alert (Portal) -->
+          <div id="custPortalSuccessAlert" class="feedback-success-banner mb-3" style="display:none;">
+            <span class="success-emoji">😊</span>
+            <div>
+              <h3 class="success-title">Thank you for your valuable feedback and Visit again 😊</h3>
+              <p class="success-sub">சுபா வள்ளி விலாஸ் வருகைக்கு நன்றி! மீண்டும் வருக!</p>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="d-flex justify-between align-center">
+            <span class="text-xs text-muted" id="custPortalThankNotice">Suba Valli Vilas values your precious trust.</span>
+            <button type="submit" class="btn btn-gold btn-lg" id="btnSubmitCustPortal">
+              🙏 Submit My Feedback / சமர்ப்பிக்கவும்
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Toast -->
+  <div id="appToast" class="toast-notification"></div>
+
+  <!-- Hidden Google Translate Element & Callback Initialization -->
+  <div id="google_translate_element" style="display:none;"></div>
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+        pageLanguage: 'en',
+        includedLanguages: 'en,ta,hi,kn,ml',
+        autoDisplay: false
+      }, 'google_translate_element');
+    }
+  </script>
+  <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+  <!-- Scripts -->
+  <script src="app.js"></script>
+</body>
+</html>

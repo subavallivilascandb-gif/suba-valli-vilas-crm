@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Suba Valli Vilas - Customer Feedback & Delight Experience</title>
+  <meta name="description" content="Share your valuable feedback with Suba Valli Vilas Jewellery. Traditional 916 purity and exceptional customer service.">
+  <meta name="theme-color" content="#580505">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Dedicated Standalone Customer Portal Styles */
+    body.feedback-portal-body {
+      background: #FAF8F5;
+      margin: 0;
+      padding: 0;
+      font-family: 'Cambria', 'Noto Sans Tamil', Georgia, serif;
+      color: #1E293B;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .portal-container {
+      width: 100%;
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 16px 14px 40px;
+      box-sizing: border-box;
+    }
+
+    /* Royal Header */
+    .portal-header {
+      background: linear-gradient(135deg, #3F0202 0%, #580505 50%, #4A0404 100%);
+      color: #FFFFFF;
+      border-radius: 16px;
+      padding: 22px 18px;
+      text-align: center;
+      box-shadow: 0 8px 24px rgba(88, 5, 5, 0.25);
+      border: 1px solid #C5A059;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    .portal-header::before {
+      content: "";
+      position: absolute;
+      top: -40px;
+      right: -40px;
+      width: 120px;
+      height: 120px;
+      background: radial-gradient(circle, rgba(197, 160, 89, 0.25) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .portal-crest {
+      width: 52px;
+      height: 52px;
+      margin: 0 auto 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1.5px solid #C5A059;
+      border-radius: 50%;
+    }
+
+    .portal-crest svg {
+      width: 32px;
+      height: 32px;
+    }
+
+    .portal-brand-title {
+      font-size: 1.45rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: #FFFFFF;
+      margin: 0;
+      text-transform: uppercase;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+    }
+
+    .portal-brand-subtitle {
+      font-size: 0.8rem;
+      color: #C5A059;
+      letter-spacing: 1.5px;
+      margin-top: 4px;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .portal-context-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(197, 160, 89, 0.5);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      color: #F7F1DF;
+      margin-top: 10px;
+    }
+
+    /* Language Bar */
+    .portal-lang-bar {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+      background: #FFFFFF;
+      padding: 8px 12px;
+      border-radius: 12px;
+      border: 1px solid #E8E2D7;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+    }
+
+    .lang-pill {
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      color: #475569;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .lang-pill:hover, .lang-pill.active {
+      background: #580505;
+      color: #FFFFFF;
+      border-color: #580505;
+      box-shadow: 0 2px 8px rgba(88, 5, 5, 0.25);
+    }
+
+    /* Section Cards */
+    .portal-card {
+      background: #FFFFFF;
+      border-radius: 14px;
+      padding: 20px 16px;
+      margin-bottom: 16px;
+      border: 1px solid #EAE5D9;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    .portal-card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #F1ECE1;
+    }
+
+    .portal-card-icon {
+      font-size: 1.35rem;
+      background: #FAF8F5;
+      border: 1px solid #E8E2D7;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .portal-card-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #580505;
+      margin: 0;
+    }
+
+    .portal-card-subtitle {
+      font-size: 0.78rem;
+      color: #64748B;
+      margin-top: 2px;
+    }
+
+    /* 10-Point Rating Scale */
+    .nps-rating-grid {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 5px;
+      margin: 16px 0 10px;
+    }
+
+    .nps-btn {
+      background: #F8FAFC;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      padding: 10px 0;
+      text-align: center;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #334155;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      position: relative;
+    }
+
+    .nps-btn:hover {
+      border-color: #C5A059;
+      background: #FAF6EE;
+      transform: translateY(-2px);
+    }
+
+    .nps-btn.active {
+      background: #580505;
+      color: #FFFFFF;
+      border-color: #580505;
+      box-shadow: 0 4px 12px rgba(88, 5, 5, 0.35);
+      transform: scale(1.08);
+    }
+
+    .nps-btn.promoter.active {
+      background: #15803D;
+      border-color: #15803D;
+      box-shadow: 0 4px 12px rgba(21, 128, 61, 0.35);
+    }
+
+    .nps-btn.passive.active {
+      background: #D97706;
+      border-color: #D97706;
+      box-shadow: 0 4px 12px rgba(217, 119, 6, 0.35);
+    }
+
+    .nps-btn.detractor.active {
+      background: #B91C1C;
+      border-color: #B91C1C;
+      box-shadow: 0 4px 12px rgba(185, 28, 28, 0.35);
+    }
+
+    .nps-labels-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      color: #64748B;
+      font-weight: 600;
+      padding: 0 4px;
+    }
+
+    /* Sentiment Mood Selector */
+    .mood-selector-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 12px 0 16px;
+    }
+
+    .mood-radio-card {
+      position: relative;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 10px;
+      padding: 12px 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      background: #FAF8F5;
+    }
+
+    .mood-radio-card:hover {
+      border-color: #C5A059;
+      background: #FFFFFF;
+    }
+
+    .mood-radio-card.active {
+      border-color: #580505;
+      background: #FFFDF9;
+      box-shadow: 0 4px 12px rgba(88, 5, 5, 0.12);
+    }
+
+    .mood-radio-card input {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .mood-emoji {
+      font-size: 1.5rem;
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    .mood-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #1E293B;
+      display: block;
+    }
+
+    .mood-sub {
+      font-size: 0.7rem;
+      color: #64748B;
+      display: block;
+    }
+
+    /* Form Option Chips */
+    .chips-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 8px 0 16px;
+    }
+
+    .chip-item {
+      background: #F8FAFC;
+      border: 1px solid #CBD5E1;
+      padding: 7px 13px;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      color: #334155;
+      user-select: none;
+    }
+
+    .chip-item:hover {
+      background: #FAF6EE;
+      border-color: #C5A059;
+    }
+
+    .chip-item.active {
+      background: #580505;
+      color: #FFFFFF;
+      border-color: #580505;
+      box-shadow: 0 2px 8px rgba(88, 5, 5, 0.2);
+    }
+
+    /* Form Inputs */
+    .portal-field-label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #334155;
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    .portal-field-sub {
+      font-size: 0.72rem;
+      color: #64748B;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .portal-input, .portal-textarea {
+      width: 100%;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 0.9rem;
+      box-sizing: border-box;
+      font-family: inherit;
+      background: #FFFFFF;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .portal-input:focus, .portal-textarea:focus {
+      outline: none;
+      border-color: #580505;
+      box-shadow: 0 0 0 3px rgba(88, 5, 5, 0.12);
+    }
+
+    /* Submit Button */
+    .btn-portal-submit {
+      width: 100%;
+      background: linear-gradient(135deg, #580505 0%, #3F0202 100%);
+      color: #FFFFFF;
+      border: 1.5px solid #C5A059;
+      border-radius: 12px;
+      padding: 15px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(88, 5, 5, 0.3);
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .btn-portal-submit:hover {
+      background: linear-gradient(135deg, #6B0808 0%, #580505 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(88, 5, 5, 0.4);
+    }
+
+    .btn-portal-submit:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Thank You Overlay Screen */
+    .thankyou-card {
+      display: none;
+      text-align: center;
+      padding: 40px 20px;
+      background: #FFFFFF;
+      border-radius: 16px;
+      border: 2px solid #C5A059;
+      box-shadow: 0 10px 30px rgba(88, 5, 5, 0.15);
+      animation: popIn 0.35s ease forwards;
+    }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .thankyou-badge {
+      width: 72px;
+      height: 72px;
+      background: #E8F8F0;
+      border: 2px solid #86EFAC;
+      color: #15803D;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      margin: 0 auto 16px;
+    }
+
+    .thankyou-title {
+      font-size: 1.5rem;
+      color: #580505;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .thankyou-desc {
+      font-size: 0.95rem;
+      color: #475569;
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    .google-review-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: #FFFFFF;
+      color: #1E293B;
+      border: 1.5px solid #CBD5E1;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-weight: 700;
+      text-decoration: none;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      margin-bottom: 14px;
+      transition: all 0.15s ease;
+    }
+
+    .google-review-btn:hover {
+      border-color: #4285F4;
+      background: #F8FAFC;
+      transform: translateY(-2px);
+    }
+
+    /* Small screens */
+    @media (max-width: 480px) {
+      .nps-rating-grid {
+        gap: 3px;
+      }
+      .nps-btn {
+        font-size: 0.85rem;
+        padding: 8px 0;
+      }
+      .portal-header {
+        padding: 18px 14px;
+      }
+      .portal-brand-title {
+        font-size: 1.25rem;
+      }
+    }
+  </style>
+</head>
+<body class="feedback-portal-body">
+
+  <div class="portal-container">
+
+    <!-- Royal Header -->
+    <header class="portal-header">
+      <div class="portal-crest">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L14.5 8.5H21.5L16 12.5L18 19L12 15L6 19L8 12.5L2.5 8.5H9.5L12 2Z" fill="#C5A059" stroke="#FFF" stroke-width="1.2"/>
+        </svg>
+      </div>
+      <h1 class="portal-brand-title">Suba Valli Vilas</h1>
+      <div class="portal-brand-subtitle">Jewellery • Since 1948 • Cuddalore</div>
+      <div class="portal-context-tag" id="portalContextTag" style="display: none;">
+        <span>📍</span>
+        <span id="portalContextText">Billing Counter • Main Branch</span>
+      </div>
+    </header>
+
+    <!-- Language Selector Bar -->
+    <div class="portal-lang-bar">
+      <button type="button" class="lang-pill active" data-lang="en">English</button>
+      <button type="button" class="lang-pill" data-lang="ta">தமிழ் (Tamil)</button>
+      <button type="button" class="lang-pill" data-lang="hi">हिंदी (Hindi)</button>
+      <button type="button" class="lang-pill" data-lang="kn">ಕನ್ನಡ (Kannada)</button>
+      <button type="button" class="lang-pill" data-lang="ml">മലയാളം (Malayalam)</button>
+    </div>
+
+    <!-- MAIN FEEDBACK FORM -->
+    <form id="portalFeedbackForm">
+
+      <!-- CARD 1: NPS RATING (1 to 10) -->
+      <div class="portal-card">
+        <div class="portal-card-header">
+          <span class="portal-card-icon">⭐</span>
+          <div>
+            <h2 class="portal-card-title" id="lblNpsTitle">How likely are you to recommend Suba Valli Vilas? *</h2>
+            <div class="portal-card-subtitle" id="lblNpsSub">சுபா வள்ளி விலாஸை உங்கள் நண்பர்கள் அல்லது குடும்பத்தினருக்கு பரிந்துரைக்க எவ்வளவு வாய்ப்புள்ளது?</div>
+          </div>
+        </div>
+
+        <div class="nps-rating-grid">
+          <button type="button" class="nps-btn detractor" data-score="1">1</button>
+          <button type="button" class="nps-btn detractor" data-score="2">2</button>
+          <button type="button" class="nps-btn detractor" data-score="3">3</button>
+          <button type="button" class="nps-btn detractor" data-score="4">4</button>
+          <button type="button" class="nps-btn detractor" data-score="5">5</button>
+          <button type="button" class="nps-btn detractor" data-score="6">6</button>
+          <button type="button" class="nps-btn passive" data-score="7">7</button>
+          <button type="button" class="nps-btn passive" data-score="8">8</button>
+          <button type="button" class="nps-btn promoter" data-score="9">9</button>
+          <button type="button" class="nps-btn promoter active" data-score="10">10</button>
+        </div>
+        <input type="hidden" id="npsRatingInput" name="rating" value="10">
+
+        <div class="nps-labels-row">
+          <span id="lblNotLikely">1 = Not at all likely (வாய்ப்பில்லை)</span>
+          <span id="lblExtremelyLikely">10 = Extremely likely (நிச்சயமாக)</span>
+        </div>
+      </div>
+
+      <!-- CARD 2: EXPERIENCE MOOD & CATEGORY -->
+      <div class="portal-card">
+        <div class="portal-card-header">
+          <span class="portal-card-icon">💖</span>
+          <div>
+            <h2 class="portal-card-title" id="lblMoodTitle">Your Overall Experience Category *</h2>
+            <div class="portal-card-subtitle" id="lblMoodSub">உங்கள் ஒட்டுமொத்த அனுபவ வகை</div>
+          </div>
+        </div>
+
+        <div class="mood-selector-grid">
+          <label class="mood-radio-card active" id="cardMoodApprec">
+            <input type="radio" name="feedbackMood" value="Appreciation" checked>
+            <span class="mood-emoji">🌟</span>
+            <span class="mood-title" id="lblMoodApprec">Appreciation</span>
+            <span class="mood-sub" id="lblMoodApprecSub">பாராட்டு (Delighted)</span>
+          </label>
+          <label class="mood-radio-card" id="cardMoodFeedback">
+            <input type="radio" name="feedbackMood" value="Feedback">
+            <span class="mood-emoji">💬</span>
+            <span class="mood-title" id="lblMoodFeedback">Feedback</span>
+            <span class="mood-sub" id="lblMoodFeedbackSub">பின்னூட்டம் (Suggestion)</span>
+          </label>
+          <label class="mood-radio-card" id="cardMoodConcern">
+            <input type="radio" name="feedbackMood" value="Concern">
+            <span class="mood-emoji">⚠️</span>
+            <span class="mood-title" id="lblMoodConcern">Concern</span>
+            <span class="mood-sub" id="lblMoodConcernSub">குறைபாடு (Attention)</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- CARD 3: CORE EXPERIENCE QUESTIONS -->
+      <div class="portal-card">
+        <div class="portal-card-header">
+          <span class="portal-card-icon">💎</span>
+          <div>
+            <h2 class="portal-card-title" id="lblStoreExpTitle">Store Experience & Delight Questions</h2>
+            <div class="portal-card-subtitle" id="lblStoreExpSub">கடை அனுபவம் மற்றும் திருப்தி கேள்விகள்</div>
+          </div>
+        </div>
+
+        <div id="portalDynamicQuestionsList">
+          <!-- Q0: Shopping Frequency -->
+          <div class="form-group mb-3">
+            <label class="portal-field-label" id="lblQ0">How often do you shop with us?</label>
+            <span class="portal-field-sub" id="lblQ0Sub">எங்களுடன் எத்தனை முறை ஷாப்பிங் செய்கிறீர்கள்?</span>
+            <div class="chips-group" data-target="q0Input">
+              <span class="chip-item" data-value="First Visit">First Visit (முதல் முறை)</span>
+              <span class="chip-item active" data-value="Occasionally">Occasionally (அவ்வப்போது)</span>
+              <span class="chip-item" data-value="Monthly">Monthly (மாதந்தோறும்)</span>
+              <span class="chip-item" data-value="Regular Customer">Regular Customer (வழக்கமான வாடிக்கையாளர்)</span>
+            </div>
+            <input type="hidden" id="q0Input" name="q0" value="Occasionally">
+          </div>
+
+          <!-- Q1: Marketing Attribution -->
+          <div class="form-group mb-3">
+            <label class="portal-field-label" id="lblQ1">How did you hear about Suba Valli Vilas? *</label>
+            <span class="portal-field-sub" id="lblQ1Sub">சுபா வள்ளி விலாஸ் பற்றி உங்களுக்கு எப்படி தெரியும்?</span>
+            <div class="chips-group" data-target="q1Input">
+              <span class="chip-item active" data-value="Friends & Relatives">Friends &amp; Relatives (நண்பர்கள்/உறவினர்கள்)</span>
+              <span class="chip-item" data-value="Bill Boards/Hoardings">Bill Boards / Hoardings (விளம்பர பலகை)</span>
+              <span class="chip-item" data-value="Social Media">Social Media (சமூக ஊடகம்)</span>
+              <span class="chip-item" data-value="TV/Radio">TV / Radio / FM</span>
+              <span class="chip-item" data-value="Newspaper">Newspaper (செய்திதாள்)</span>
+            </div>
+            <input type="hidden" id="q1Input" name="q1" value="Friends & Relatives">
+          </div>
+
+          <!-- Q2: What did you like most? -->
+          <div class="form-group mb-3">
+            <label class="portal-field-label" id="lblQ2">What did you like the most about Suba Valli Vilas? *</label>
+            <span class="portal-field-sub" id="lblQ2Sub">சுபா வள்ளி விலாஸில் உங்களுக்கு மிகவும் பிடித்தது எது?</span>
+            <div class="chips-group" data-target="q2Input">
+              <span class="chip-item active" data-value="Design Collections & Variety">Design Collections &amp; Variety (நகை கலெக்ஷன்)</span>
+              <span class="chip-item" data-value="Staff Hospitality & Explanation">Staff Hospitality &amp; Explanation (உபசரிப்பு)</span>
+              <span class="chip-item" data-value="Purity & Trust">916 Purity &amp; Trust (தூய்மை &amp; நம்பிக்கை)</span>
+              <span class="chip-item" data-value="Making Charges & Pricing">Transparent Pricing &amp; V.A (சேதாரம்)</span>
+              <span class="chip-item" data-value="Store Ambiance">Store Ambiance (கடை சூழல்)</span>
+            </div>
+            <input type="hidden" id="q2Input" name="q2" value="Design Collections & Variety">
+          </div>
+
+          <!-- Q3: Service Improvement -->
+          <div class="form-group mb-3">
+            <label class="portal-field-label" id="lblQ3">What could we improve about our service?</label>
+            <span class="portal-field-sub" id="lblQ3Sub">எங்கள் சேவையில் நீங்கள் எதை மேம்படுத்த விரும்புகிறீர்கள்?</span>
+            <div class="chips-group" data-target="q3Input">
+              <span class="chip-item active" data-value="Everything is Excellent">Everything is Excellent (அனைத்தும் நன்று)</span>
+              <span class="chip-item" data-value="Billing Speed">Faster Billing (விரைவான பில்லிங்)</span>
+              <span class="chip-item" data-value="More Lightweight Designs">More Lightweight Designs (எடை குறைந்த நகைகள்)</span>
+              <span class="chip-item" data-value="More Antique Jewellery">More Antique Pieces (ஆண்டிக் நகைகள்)</span>
+              <span class="chip-item" data-value="Parking Facility">Parking Facility (வாகன நிறுத்தம்)</span>
+            </div>
+            <input type="hidden" id="q3Input" name="q3" value="Everything is Excellent">
+          </div>
+
+          <!-- Q4: Occasion -->
+          <div class="form-group mb-3">
+            <label class="portal-field-label" id="lblQ4">What occasion do you purchase for? *</label>
+            <span class="portal-field-sub" id="lblQ4Sub">நீங்கள் எந்த சுப நிகழ்ச்சிக்கு நகை வாங்குகிறீர்கள்?</span>
+            <div class="chips-group" data-target="q4Input">
+              <span class="chip-item active" data-value="Wedding / Bridal">Wedding / Bridal (திருமணம்)</span>
+              <span class="chip-item" data-value="Festival">Festival (தீபாவளி/பொங்கல்/அட்சய திருதியை)</span>
+              <span class="chip-item" data-value="Birthday / Anniversary">Birthday / Anniversary (பிறந்தநாள்/திருமணநாள்)</span>
+              <span class="chip-item" data-value="Monthly Savings">Monthly Savings / Investment (சேமிப்பு)</span>
+              <span class="chip-item" data-value="Gifts">Gift / Casual Purchase (பரிசு)</span>
+            </div>
+            <input type="hidden" id="q4Input" name="q4" value="Wedding / Bridal">
+          </div>
+
+          <!-- Q5: Chit Scheme Awareness -->
+          <div class="form-group mb-1">
+            <label class="portal-field-label" id="lblQ5">Are you aware of our Suba Valli Vilas Gold Chit Schemes? *</label>
+            <span class="portal-field-sub" id="lblQ5Sub">எங்கள் தங்க நகை சேமிப்பு திட்டம் (சிட்) பற்றி உங்களுக்கு தெரியுமா?</span>
+            <div class="chips-group" data-target="q5Input">
+              <span class="chip-item active" data-value="Yes - Already Enrolled">Yes - Already Enrolled (ஏற்கனவே சேர்ந்துள்ளேன்)</span>
+              <span class="chip-item" data-value="Yes - Aware but not joined">Yes - Aware but not joined (தெரியும், சேரவில்லை)</span>
+              <span class="chip-item" data-value="No - Not aware at all">No - Please explain scheme (தெரியாது, விவரம் தேவை)</span>
+            </div>
+            <input type="hidden" id="q5Input" name="q5" value="Yes - Already Enrolled">
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 4: CUSTOMER DETAILS & OPEN REMARKS -->
+      <div class="portal-card">
+        <div class="portal-card-header">
+          <span class="portal-card-icon">👤</span>
+          <div>
+            <h2 class="portal-card-title" id="lblCustDetailsTitle">Customer Details & Remarks</h2>
+            <div class="portal-card-subtitle" id="lblCustDetailsSub">வாடிக்கையாளர் விவரங்கள் &amp; கருத்துகள்</div>
+          </div>
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="portalCustName" class="portal-field-label" id="lblCustName">Your Full Name *</label>
+          <input type="text" id="portalCustName" name="customerName" class="portal-input" placeholder="e.g. Meena Sundaram" required>
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="portalCustMobile" class="portal-field-label" id="lblCustMobile">Mobile Number * (10 Digits)</label>
+          <input type="tel" id="portalCustMobile" name="mobile" class="portal-input" placeholder="e.g. 9840123456" pattern="[0-9]{10}" maxlength="10" required>
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="portalCustCity" class="portal-field-label" id="lblCustCity">City / Town / Area</label>
+          <input type="text" id="portalCustCity" name="city" class="portal-input" placeholder="e.g. Cuddalore / Panruti / Neyveli">
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="portalCustOccasionDate" class="portal-field-label" id="lblCustOccasionDate">Upcoming Birthday or Anniversary Date (For Special Offers)</label>
+          <input type="date" id="portalCustOccasionDate" name="occasionDate" class="portal-input">
+        </div>
+
+        <div class="form-group mb-1">
+          <label for="portalCustRemarks" class="portal-field-label" id="lblCustRemarks">Your Valuable Remarks or Staff Appreciation</label>
+          <span class="portal-field-sub" id="lblCustRemarksSub">உங்கள் கருத்துகள் அல்லது பாராட்டுக்களைப் பகிருங்கள்</span>
+          <textarea id="portalCustRemarks" name="remarks" class="portal-textarea" rows="3" placeholder="Tell us about your showroom visit, staff service, or jewelry selections..."></textarea>
+        </div>
+      </div>
+
+      <!-- HIDDEN METADATA FIELDS (Populated via URL params) -->
+      <input type="hidden" id="metaSource" name="source" value="QR">
+      <input type="hidden" id="metaMedium" name="medium" value="Billing Counter Standee">
+      <input type="hidden" id="metaBranch" name="branch" value="Cuddalore (Main Branch)">
+      <input type="hidden" id="metaCounter" name="counter" value="General">
+      <input type="hidden" id="metaStaff" name="staff" value="Showroom Staff">
+      <input type="hidden" id="metaInvoice" name="invoice" value="">
+
+      <!-- SUBMIT BUTTON -->
+      <button type="submit" class="btn-portal-submit" id="btnSubmitFeedback">
+        <span>✨ Submit Feedback</span>
+      </button>
+    </form>
+
+    <!-- THANK YOU / SUCCESS SCREEN -->
+    <div class="thankyou-card" id="thankYouCard">
+      <div class="thankyou-badge">✓</div>
+      <h2 class="thankyou-title" id="lblThankYouTitle">நன்றி! Thank You!</h2>
+      <p class="thankyou-desc" id="lblThankYouDesc">
+        Your feedback has been received and directly submitted to the management desk. We deeply cherish your relationship with <strong>Suba Valli Vilas</strong>.
+      </p>
+
+      <!-- Google Review Redirection Button -->
+      <a href="https://g.page/r/subavallivilas/review" target="_blank" class="google-review-btn">
+        <svg width="20" height="20" viewBox="0 0 24 24">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+        </svg>
+        <span>Share Your 5★ Review on Google</span>
+      </a>
+
+      <div>
+        <button type="button" class="btn btn-outline btn-sm" id="btnSubmitAnother">
+          <span>🔄 Submit Another Response</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="text-center text-xs text-muted mt-4" style="line-height: 1.6;">
+      <div>Suba Valli Vilas Jewellery • 916 BIS Hallmarked Purity</div>
+      <div>Customer Care &amp; WhatsApp: +91 98401 00001</div>
+    </footer>
+
+  </div>
+
+  <script src="feedback.js"></script>
+</body>
+</html>

@@ -6,6 +6,7 @@
   <title>Suba Valli Vilas - Customer Feedback & Delight Experience</title>
   <meta name="description" content="Share your valuable feedback with Suba Valli Vilas Jewellery. Traditional 916 purity and exceptional customer service.">
   <meta name="theme-color" content="#580505">
+  <link rel="icon" type="image/png" href="svv-logo.png">
   <link rel="stylesheet" href="style.css">
   <style>
     /* Dedicated Standalone Customer Portal Styles */
@@ -490,13 +491,11 @@
 
     <!-- Royal Header -->
     <header class="portal-header">
-      <div class="portal-crest">
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2L14.5 8.5H21.5L16 12.5L18 19L12 15L6 19L8 12.5L2.5 8.5H9.5L12 2Z" fill="#C5A059" stroke="#FFF" stroke-width="1.2"/>
-        </svg>
+      <div class="portal-crest" style="border: none; background: transparent; width: 64px; height: 64px;">
+        <img src="svv-logo.png" alt="Suba Valli Vilas" style="width: 60px; height: 60px; object-fit: contain; border-radius: 50%; border: 2px solid #C5A059; box-shadow: 0 4px 12px rgba(0,0,0,0.35);">
       </div>
       <h1 class="portal-brand-title">Suba Valli Vilas</h1>
-      <div class="portal-brand-subtitle">Jewellery • Since 1948 • Cuddalore</div>
+      <div class="portal-brand-subtitle">Jewellery • Since 1921 • Cuddalore</div>
       <div class="portal-context-tag" id="portalContextTag" style="display: none;">
         <span>📍</span>
         <span id="portalContextText">Billing Counter • Main Branch</span>
@@ -515,37 +514,7 @@
     <!-- MAIN FEEDBACK FORM -->
     <form id="portalFeedbackForm">
 
-      <!-- CARD 1: NPS RATING (1 to 10) -->
-      <div class="portal-card">
-        <div class="portal-card-header">
-          <span class="portal-card-icon">⭐</span>
-          <div>
-            <h2 class="portal-card-title" id="lblNpsTitle">How likely are you to recommend Suba Valli Vilas? *</h2>
-            <div class="portal-card-subtitle" id="lblNpsSub">சுபா வள்ளி விலாஸை உங்கள் நண்பர்கள் அல்லது குடும்பத்தினருக்கு பரிந்துரைக்க எவ்வளவு வாய்ப்புள்ளது?</div>
-          </div>
-        </div>
-
-        <div class="nps-rating-grid">
-          <button type="button" class="nps-btn detractor" data-score="1">1</button>
-          <button type="button" class="nps-btn detractor" data-score="2">2</button>
-          <button type="button" class="nps-btn detractor" data-score="3">3</button>
-          <button type="button" class="nps-btn detractor" data-score="4">4</button>
-          <button type="button" class="nps-btn detractor" data-score="5">5</button>
-          <button type="button" class="nps-btn detractor" data-score="6">6</button>
-          <button type="button" class="nps-btn passive" data-score="7">7</button>
-          <button type="button" class="nps-btn passive" data-score="8">8</button>
-          <button type="button" class="nps-btn promoter" data-score="9">9</button>
-          <button type="button" class="nps-btn promoter active" data-score="10">10</button>
-        </div>
-        <input type="hidden" id="npsRatingInput" name="rating" value="10">
-
-        <div class="nps-labels-row">
-          <span id="lblNotLikely">1 = Not at all likely (வாய்ப்பில்லை)</span>
-          <span id="lblExtremelyLikely">10 = Extremely likely (நிச்சயமாக)</span>
-        </div>
-      </div>
-
-      <!-- CARD 2: EXPERIENCE MOOD & CATEGORY -->
+      <!-- CARD 1: EXPERIENCE MOOD & CATEGORY -->
       <div class="portal-card">
         <div class="portal-card-header">
           <span class="portal-card-icon">💖</span>
@@ -556,8 +525,8 @@
         </div>
 
         <div class="mood-selector-grid">
-          <label class="mood-radio-card active" id="cardMoodApprec">
-            <input type="radio" name="feedbackMood" value="Appreciation" checked>
+          <label class="mood-radio-card" id="cardMoodApprec">
+            <input type="radio" name="feedbackMood" value="Appreciation">
             <span class="mood-emoji">🌟</span>
             <span class="mood-title" id="lblMoodApprec">Appreciation</span>
             <span class="mood-sub" id="lblMoodApprecSub">பாராட்டு (Delighted)</span>
@@ -574,6 +543,69 @@
             <span class="mood-title" id="lblMoodConcern">Concern</span>
             <span class="mood-sub" id="lblMoodConcernSub">குறைபாடு (Attention)</span>
           </label>
+        </div>
+      </div>
+
+      <!-- CARD 2: CUSTOMER DETAILS (Moved right after Category selection as requested) -->
+      <div class="portal-card">
+        <div class="portal-card-header">
+          <span class="portal-card-icon">👤</span>
+          <div>
+            <h2 class="portal-card-title" id="lblCustDetailsTitle">Customer Details</h2>
+            <div class="portal-card-subtitle" id="lblCustDetailsSub">வாடிக்கையாளர் விவரங்கள்</div>
+          </div>
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="portalCustName" class="portal-field-label" id="lblCustName">Your Full Name *</label>
+          <input type="text" id="portalCustName" name="customerName" class="portal-input" placeholder="e.g. Meena Sundaram" required>
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="portalCustMobile" class="portal-field-label" id="lblCustMobile">Mobile Number * (10 Digits)</label>
+          <input type="tel" id="portalCustMobile" name="mobile" class="portal-input" placeholder="e.g. 9840123456" pattern="[0-9]{10}" maxlength="10" required>
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="portalCustCity" class="portal-field-label" id="lblCustCity">City / Town / Area *</label>
+          <input type="text" id="portalCustCity" name="city" list="cuddaloreAreasList" class="portal-input" placeholder="Type or select town (e.g. Cuddalore, Panruti, Neyveli)" required>
+          <datalist id="cuddaloreAreasList">
+            <option value="Cuddalore Town (கடலூர் நகரம்) - Core Zone">
+            <option value="Cuddalore OT (கடலூர் பழைய நகரம்) - Core Zone">
+            <option value="Thirupapuliyur (திருப்பாதிரிப்புலியூர்) - Core Zone">
+            <option value="Manjakuppam (மஞ்சக்குப்பம்) - Core Zone">
+            <option value="Semmandalam (செம்மண்டலம்) - Core Zone">
+            <option value="Nellikuppam (நெல்லிக்குப்பம்) - Core Zone">
+            <option value="Panruti (பண்ருட்டி) - West Zone">
+            <option value="Neyveli (நெய்வேலி) - West Zone">
+            <option value="Vriddhachalam (விருத்தாசலம்) - West Zone">
+            <option value="Ulundurpet (உளுந்தூர்பேட்டை) - West Zone">
+            <option value="Pennadam (பெண்ணாடம்) - West Zone">
+            <option value="Chidambaram (சிதம்பரம்) - South Zone">
+            <option value="Kattumannarkoil (காட்டுமன்னார்கோவில்) - South Zone">
+            <option value="Vadalur (வடலூர்) - South Zone">
+            <option value="Sirkazhi (சீர்காழி) - South Zone">
+            <option value="Bhuvanagiri (புவனகிரி) - South Zone">
+            <option value="Parangipettai (பரங்கிப்பேட்டை) - South Zone">
+            <option value="Puducherry / Pondicherry (புதுச்சேரி) - North Zone">
+            <option value="Villupuram (விழுப்புரம்) - North Zone">
+            <option value="Tindivanam (திண்டிவனம்) - North Zone">
+          </datalist>
+        </div>
+
+        <div class="form-group mb-2">
+          <label for="portalCustOccupation" class="portal-field-label" id="lblCustOccupation">Occupation (தொழில் / வேலை)</label>
+          <select id="portalCustOccupation" name="occupation" class="portal-input">
+            <option value="" disabled selected>Select Occupation (தொழில் தேர்வு செய்க)</option>
+            <option value="Business / Self Employed">Business / Self Employed (தொழில் / சுயதொழில்)</option>
+            <option value="Private Employee">Private Employee (தனியார் துறை)</option>
+            <option value="Government Employee">Government Employee (அரசு ஊழியர்)</option>
+            <option value="Homemaker">Homemaker (இல்லத்தரசி)</option>
+            <option value="Professional (Doctor/Engineer)">Professional (மருத்துவர் / பொறியாளர் / வழக்கறிஞர்)</option>
+            <option value="Student">Student (மாணவர்)</option>
+            <option value="Retired">Retired (ஓய்வு பெற்றவர்)</option>
+            <option value="Other">Other (மற்றவை)</option>
+          </select>
         </div>
       </div>
 
@@ -594,39 +626,39 @@
             <span class="portal-field-sub" id="lblQ0Sub">எங்களுடன் எத்தனை முறை ஷாப்பிங் செய்கிறீர்கள்?</span>
             <div class="chips-group" data-target="q0Input">
               <span class="chip-item" data-value="First Visit">First Visit (முதல் முறை)</span>
-              <span class="chip-item active" data-value="Occasionally">Occasionally (அவ்வப்போது)</span>
+              <span class="chip-item" data-value="Occasionally">Occasionally (அவ்வப்போது)</span>
               <span class="chip-item" data-value="Monthly">Monthly (மாதந்தோறும்)</span>
               <span class="chip-item" data-value="Regular Customer">Regular Customer (வழக்கமான வாடிக்கையாளர்)</span>
             </div>
-            <input type="hidden" id="q0Input" name="q0" value="Occasionally">
+            <input type="hidden" id="q0Input" name="q0" value="">
           </div>
 
           <!-- Q1: Marketing Attribution -->
           <div class="form-group mb-3">
             <label class="portal-field-label" id="lblQ1">How did you hear about Suba Valli Vilas? *</label>
-            <span class="portal-field-sub" id="lblQ1Sub">சுபா வள்ளி விலாஸ் பற்றி உங்களுக்கு எப்படி தெரியும்?</span>
+            <span class="portal-field-sub" id="lblQ1Sub">சுப வள்ளி விலாஸ் பற்றி உங்களுக்கு எப்படி தெரியும்?</span>
             <div class="chips-group" data-target="q1Input">
-              <span class="chip-item active" data-value="Friends & Relatives">Friends &amp; Relatives (நண்பர்கள்/உறவினர்கள்)</span>
+              <span class="chip-item" data-value="Friends & Relatives">Friends &amp; Relatives (நண்பர்கள்/உறவினர்கள்)</span>
               <span class="chip-item" data-value="Bill Boards/Hoardings">Bill Boards / Hoardings (விளம்பர பலகை)</span>
               <span class="chip-item" data-value="Social Media">Social Media (சமூக ஊடகம்)</span>
               <span class="chip-item" data-value="TV/Radio">TV / Radio / FM</span>
               <span class="chip-item" data-value="Newspaper">Newspaper (செய்திதாள்)</span>
             </div>
-            <input type="hidden" id="q1Input" name="q1" value="Friends & Relatives">
+            <input type="hidden" id="q1Input" name="q1" value="">
           </div>
 
           <!-- Q2: What did you like most? -->
           <div class="form-group mb-3">
             <label class="portal-field-label" id="lblQ2">What did you like the most about Suba Valli Vilas? *</label>
-            <span class="portal-field-sub" id="lblQ2Sub">சுபா வள்ளி விலாஸில் உங்களுக்கு மிகவும் பிடித்தது எது?</span>
+            <span class="portal-field-sub" id="lblQ2Sub">சுப வள்ளி விலாஸில் உங்களுக்கு மிகவும் பிடித்தது எது?</span>
             <div class="chips-group" data-target="q2Input">
-              <span class="chip-item active" data-value="Design Collections & Variety">Design Collections &amp; Variety (நகை கலெக்ஷன்)</span>
+              <span class="chip-item" data-value="Design Collections & Variety">Design Collections &amp; Variety (நகை கலெக்ஷன்)</span>
               <span class="chip-item" data-value="Staff Hospitality & Explanation">Staff Hospitality &amp; Explanation (உபசரிப்பு)</span>
               <span class="chip-item" data-value="Purity & Trust">916 Purity &amp; Trust (தூய்மை &amp; நம்பிக்கை)</span>
               <span class="chip-item" data-value="Making Charges & Pricing">Transparent Pricing &amp; V.A (சேதாரம்)</span>
               <span class="chip-item" data-value="Store Ambiance">Store Ambiance (கடை சூழல்)</span>
             </div>
-            <input type="hidden" id="q2Input" name="q2" value="Design Collections & Variety">
+            <input type="hidden" id="q2Input" name="q2" value="">
           </div>
 
           <!-- Q3: Service Improvement -->
@@ -634,77 +666,113 @@
             <label class="portal-field-label" id="lblQ3">What could we improve about our service?</label>
             <span class="portal-field-sub" id="lblQ3Sub">எங்கள் சேவையில் நீங்கள் எதை மேம்படுத்த விரும்புகிறீர்கள்?</span>
             <div class="chips-group" data-target="q3Input">
-              <span class="chip-item active" data-value="Everything is Excellent">Everything is Excellent (அனைத்தும் நன்று)</span>
+              <span class="chip-item" data-value="Everything is Excellent">Everything is Excellent (அனைத்தும் நன்று)</span>
               <span class="chip-item" data-value="Billing Speed">Faster Billing (விரைவான பில்லிங்)</span>
               <span class="chip-item" data-value="More Lightweight Designs">More Lightweight Designs (எடை குறைந்த நகைகள்)</span>
               <span class="chip-item" data-value="More Antique Jewellery">More Antique Pieces (ஆண்டிக் நகைகள்)</span>
               <span class="chip-item" data-value="Parking Facility">Parking Facility (வாகன நிறுத்தம்)</span>
             </div>
-            <input type="hidden" id="q3Input" name="q3" value="Everything is Excellent">
+            <input type="hidden" id="q3Input" name="q3" value="">
           </div>
 
-          <!-- Q4: Occasion -->
+          <!-- Q4: Occasion (Shows Date only when Birthday or Wedding Anniversary is selected) -->
           <div class="form-group mb-3">
             <label class="portal-field-label" id="lblQ4">What occasion do you purchase for? *</label>
             <span class="portal-field-sub" id="lblQ4Sub">நீங்கள் எந்த சுப நிகழ்ச்சிக்கு நகை வாங்குகிறீர்கள்?</span>
-            <div class="chips-group" data-target="q4Input">
-              <span class="chip-item active" data-value="Wedding / Bridal">Wedding / Bridal (திருமணம்)</span>
+            <div class="chips-group" data-target="q4Input" id="q4ChipsGroup">
+              <span class="chip-item" data-value="Wedding / Bridal">Wedding / Bridal (திருமணம்)</span>
               <span class="chip-item" data-value="Festival">Festival (தீபாவளி/பொங்கல்/அட்சய திருதியை)</span>
-              <span class="chip-item" data-value="Birthday / Anniversary">Birthday / Anniversary (பிறந்தநாள்/திருமணநாள்)</span>
+              <span class="chip-item" data-value="Birthday">Birthday (பிறந்தநாள்)</span>
+              <span class="chip-item" data-value="Wedding Anniversary">Wedding Anniversary (திருமண நாள்)</span>
               <span class="chip-item" data-value="Monthly Savings">Monthly Savings / Investment (சேமிப்பு)</span>
               <span class="chip-item" data-value="Gifts">Gift / Casual Purchase (பரிசு)</span>
+              <span class="chip-item" data-value="General Walk-in">General Walk-in (பொதுவான வருகை)</span>
             </div>
-            <input type="hidden" id="q4Input" name="q4" value="Wedding / Bridal">
+            <input type="hidden" id="q4Input" name="q4" value="">
+
+            <!-- Conditional Date picker shown ONLY for Birthday or Wedding Anniversary -->
+            <div id="portalCustOccasionDateGroup" class="mt-2 p-3 bg-silk rounded border" style="display: none; background: #FAF6EE; border: 1px solid #E5D5B8; border-radius: 8px;">
+              <label for="portalCustOccasionDate" class="portal-field-label" id="lblCustOccasionDate" style="color:#580505;">🎂 Select Occasion Date</label>
+              <span class="portal-field-sub" id="lblCustOccasionDateSub">தேதியைத் தேர்வு செய்க</span>
+              <input type="date" id="portalCustOccasionDate" name="occasionDate" class="portal-input">
+            </div>
           </div>
 
           <!-- Q5: Chit Scheme Awareness -->
-          <div class="form-group mb-1">
+          <div class="form-group mb-3">
             <label class="portal-field-label" id="lblQ5">Are you aware of our Suba Valli Vilas Gold Chit Schemes? *</label>
             <span class="portal-field-sub" id="lblQ5Sub">எங்கள் தங்க நகை சேமிப்பு திட்டம் (சிட்) பற்றி உங்களுக்கு தெரியுமா?</span>
             <div class="chips-group" data-target="q5Input">
-              <span class="chip-item active" data-value="Yes - Already Enrolled">Yes - Already Enrolled (ஏற்கனவே சேர்ந்துள்ளேன்)</span>
+              <span class="chip-item" data-value="Yes - Already Enrolled">Yes - Already Enrolled (ஏற்கனவே சேர்ந்துள்ளேன்)</span>
               <span class="chip-item" data-value="Yes - Aware but not joined">Yes - Aware but not joined (தெரியும், சேரவில்லை)</span>
               <span class="chip-item" data-value="No - Not aware at all">No - Please explain scheme (தெரியாது, விவரம் தேவை)</span>
             </div>
-            <input type="hidden" id="q5Input" name="q5" value="Yes - Already Enrolled">
+            <input type="hidden" id="q5Input" name="q5" value="">
+          </div>
+
+          <!-- Q6: Overall Shopping Experience (CSI Question) -->
+          <div class="form-group mb-3">
+            <label class="portal-field-label" id="lblQ6">Overall Shopping Experience at Suba Valli Vilas? *</label>
+            <span class="portal-field-sub" id="lblQ6Sub">சுப வள்ளி விலாஸில் உங்கள் ஒட்டுமொத்த ஷாப்பிங் அனுபவம் எப்படி இருந்தது?</span>
+            <div class="chips-group" data-target="q6Input" id="q6ChipsGroup">
+              <span class="chip-item" data-value="Excellent" style="border-color: #15803D; color: #15803D;" id="chipQ6Ex">🌟 Excellent (மிகச் சிறப்பு)</span>
+              <span class="chip-item" data-value="Good" style="border-color: #2563EB; color: #2563EB;" id="chipQ6Good">👍 Good (நல்லது)</span>
+              <span class="chip-item" data-value="Average" style="border-color: #D97706; color: #D97706;" id="chipQ6Avg">😐 Average (சராசரி)</span>
+              <span class="chip-item" data-value="Needs Improvement" style="border-color: #B91C1C; color: #B91C1C;" id="chipQ6Need">⚠️ Needs Improvement (மேம்பாடு தேவை)</span>
+            </div>
+            <input type="hidden" id="q6Input" name="overallShoppingExperience" value="">
+          </div>
+
+          <!-- Q_RECOMMEND: 3-Option NPS Recommendation Question (Placed right before Remarks) -->
+          <div class="form-group mb-1 pt-2 border-top">
+            <label class="portal-field-label" id="lblQRec">Would you recommend Suba Valli Vilas to friends or family? *</label>
+            <span class="portal-field-sub" id="lblQRecSub">சுப வள்ளி விலாஸை உங்கள் நண்பர்கள் அல்லது குடும்பத்தினருக்கு பரிந்துரைப்பீர்களா?</span>
+            <div class="chips-group nps-3option-chips" data-target="npsRatingInput">
+              <span class="chip-item" data-value="Yes, definitely" data-score="10">🌟 Yes, definitely (ஆம், நிச்சயமாக)</span>
+              <span class="chip-item" data-value="Not sure" data-score="7">🤔 Not sure (உறுதியாக தெரியவில்லை)</span>
+              <span class="chip-item" data-value="No, Not recommended" data-score="3">👎 No, Not recommended (பரிந்துரைக்க மாட்டேன்)</span>
+            </div>
+            <input type="hidden" id="npsRatingInput" name="rating" value="">
+            <input type="hidden" id="npsChoiceInput" name="recommendationChoice" value="">
+            <input type="hidden" id="q7Input" name="q7" value="">
+          </div>
+
+          <!-- EXTENSIBLE CUSTOM QUESTION 1 (Active/Deactive toggleable from Cloud/CRM) -->
+          <div class="form-group mb-3 custom-extensible-q pt-2 border-top" id="portalCustomQ1Group" style="display: none;">
+            <label class="portal-field-label" id="lblCustomQ1Title">Custom Question 1</label>
+            <span class="portal-field-sub" id="lblCustomQ1Sub">கூடுதல் கேள்வி 1</span>
+            <div class="chips-group" id="customQ1ChipsGroup" data-target="customQ1Input">
+              <!-- Populated dynamically when activated by admin -->
+            </div>
+            <input type="hidden" id="customQ1Input" name="customQ1" value="">
+          </div>
+
+          <!-- EXTENSIBLE CUSTOM QUESTION 2 (Active/Deactive toggleable from Cloud/CRM) -->
+          <div class="form-group mb-3 custom-extensible-q pt-2 border-top" id="portalCustomQ2Group" style="display: none;">
+            <label class="portal-field-label" id="lblCustomQ2Title">Custom Question 2</label>
+            <span class="portal-field-sub" id="lblCustomQ2Sub">கூடுதல் கேள்வி 2</span>
+            <div class="chips-group" id="customQ2ChipsGroup" data-target="customQ2Input">
+              <!-- Populated dynamically when activated by admin -->
+            </div>
+            <input type="hidden" id="customQ2Input" name="customQ2" value="">
           </div>
         </div>
       </div>
 
-      <!-- CARD 4: CUSTOMER DETAILS & OPEN REMARKS -->
+      <!-- CARD 4: CUSTOMER VALUABLE REMARKS & SUBMIT -->
       <div class="portal-card">
         <div class="portal-card-header">
-          <span class="portal-card-icon">👤</span>
+          <span class="portal-card-icon">✍️</span>
           <div>
-            <h2 class="portal-card-title" id="lblCustDetailsTitle">Customer Details & Remarks</h2>
-            <div class="portal-card-subtitle" id="lblCustDetailsSub">வாடிக்கையாளர் விவரங்கள் &amp; கருத்துகள்</div>
+            <h2 class="portal-card-title" id="lblCustRemarksTitle">Customer Remarks &amp; Suggestions</h2>
+            <div class="portal-card-subtitle" id="lblCustRemarksSubtitle">உங்கள் கருத்துகள் அல்லது பாராட்டுக்களைப் பகிருங்கள்</div>
           </div>
         </div>
 
-        <div class="form-group mb-3">
-          <label for="portalCustName" class="portal-field-label" id="lblCustName">Your Full Name *</label>
-          <input type="text" id="portalCustName" name="customerName" class="portal-input" placeholder="e.g. Meena Sundaram" required>
-        </div>
-
-        <div class="form-group mb-3">
-          <label for="portalCustMobile" class="portal-field-label" id="lblCustMobile">Mobile Number * (10 Digits)</label>
-          <input type="tel" id="portalCustMobile" name="mobile" class="portal-input" placeholder="e.g. 9840123456" pattern="[0-9]{10}" maxlength="10" required>
-        </div>
-
-        <div class="form-group mb-3">
-          <label for="portalCustCity" class="portal-field-label" id="lblCustCity">City / Town / Area</label>
-          <input type="text" id="portalCustCity" name="city" class="portal-input" placeholder="e.g. Cuddalore / Panruti / Neyveli">
-        </div>
-
-        <div class="form-group mb-3">
-          <label for="portalCustOccasionDate" class="portal-field-label" id="lblCustOccasionDate">Upcoming Birthday or Anniversary Date (For Special Offers)</label>
-          <input type="date" id="portalCustOccasionDate" name="occasionDate" class="portal-input">
-        </div>
-
-        <div class="form-group mb-1">
+        <div class="form-group mb-2">
           <label for="portalCustRemarks" class="portal-field-label" id="lblCustRemarks">Your Valuable Remarks or Staff Appreciation</label>
-          <span class="portal-field-sub" id="lblCustRemarksSub">உங்கள் கருத்துகள் அல்லது பாராட்டுக்களைப் பகிருங்கள்</span>
-          <textarea id="portalCustRemarks" name="remarks" class="portal-textarea" rows="3" placeholder="Tell us about your showroom visit, staff service, or jewelry selections..."></textarea>
+          <span class="portal-field-sub" id="lblCustRemarksSub">Tell us about your showroom visit, staff service, or jewelry selections...</span>
+          <textarea id="portalCustRemarks" name="remarks" class="portal-textarea" rows="3" style="width: 100%; max-width: 100%; box-sizing: border-box; resize: vertical;" placeholder="Tell us about your showroom visit, staff service, or jewelry selections..."></textarea>
         </div>
       </div>
 
@@ -730,8 +798,8 @@
         Your feedback has been received and directly submitted to the management desk. We deeply cherish your relationship with <strong>Suba Valli Vilas</strong>.
       </p>
 
-      <!-- Google Review Redirection Button -->
-      <a href="https://g.page/r/subavallivilas/review" target="_blank" class="google-review-btn">
+      <!-- Google Review Redirection Button (Shown ONLY for customer QR feedback, hidden for showroom tab) -->
+      <a href="https://www.google.com/search?q=suba+valli+vilas+jewellery+cuddalore&sca_esv=033d84a1d3790378&rlz=1C1CHBD_enIN1146IN1146&sxsrf=APpeQnsxodVpTpQo1oCZuRYM9Pm_PxBBLQ%3A1790248222499&ei=HgW1avyBHv72seMPxdygwAQ&uact=5&oq=suba+valli+vilas+jewellery+cuddalore&gs_lp=Egxnd3Mtd2l6LXNlcnAiJHN1YmEgdmFsbGkgdmlsYXMgamV3ZWxsZXJ5IGN1ZGRhbG9yZTIEECMYJzIKECMY8AUYtAQYJzIOEC4YgAQYxwEYrwEYjgUyBhAAGBYYHjICECYyCxAAGIAEGIoFGIYDMgsQABiABBiKBRiGAzILEAAYgAQYigUYhgMyCxAAGIAEGIoFGIYDMgsQABiABBiKBRiGA0iaPFC4DFj_N3ABeACQAQCYAacBoAH4DKoBBDIuMTK4AQPIAQD4AQGYAgmgAvgHwgIOEAAYgAQYigUYhgMYsAPCAgcQIxiwAhgnwgIFECEYoAGYAwCIBgGQBgWSBwMxLjigB_FvsgcDMC44uAf0B8IHBTAuMy42yAckgAgB&sclient=gws-wiz-serp#lrd=0x3a54986302ea3615:0x385b44f3c5d65ca3,3,,,," target="_blank" class="google-review-btn" id="googleReviewActionBtn">
         <svg width="20" height="20" viewBox="0 0 24 24">
           <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
           <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>

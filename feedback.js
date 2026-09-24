@@ -35,7 +35,7 @@
       q_id: 'Q1',
       display_order: 1,
       q_text_en: 'How did you hear about Suba Valli Vilas?',
-      q_text_ta: 'சுபா வள்ளி விலாஸ் பற்றி உங்களுக்கு எப்படி தெரியும்?',
+      q_text_ta: 'சுப வள்ளி விலாஸ் பற்றி உங்களுக்கு எப்படி தெரியும்?',
       q_type: 'single_choice',
       options_en: ['Friends & Relatives', 'Bill Boards/Hoardings', 'Social Media', 'TV/Radio', 'Newspaper'],
       options_ta: ['Friends & Relatives (நண்பர்கள்/உறவினர்கள்)', 'Bill Boards / Hoardings (விளம்பர பலகை)', 'Social Media (சமூக ஊடகம்)', 'TV / Radio / FM', 'Newspaper (செய்திதாள்)'],
@@ -46,7 +46,7 @@
       q_id: 'Q2',
       display_order: 2,
       q_text_en: 'What did you like the most about Suba Valli Vilas?',
-      q_text_ta: 'சுபா வள்ளி விலாஸில் உங்களுக்கு மிகவும் பிடித்தது எது?',
+      q_text_ta: 'சுப வள்ளி விலாஸில் உங்களுக்கு மிகவும் பிடித்தது எது?',
       q_type: 'single_choice',
       options_en: ['Design Collections & Variety', 'Staff Hospitality & Explanation', '916 Purity & Trust', 'Transparent Pricing & V.A', 'Store Ambiance'],
       options_ta: ['Design Collections & Variety (நகை கலெக்ஷன்)', 'Staff Hospitality & Explanation (உபசரிப்பு)', '916 Purity & Trust (தூய்மை & நம்பிக்கை)', 'Transparent Pricing & V.A (சேதாரம்)', 'Store Ambiance (கடை சூழல்)'],
@@ -70,8 +70,8 @@
       q_text_en: 'What occasion do you purchase for?',
       q_text_ta: 'நீங்கள் எந்த சுப நிகழ்ச்சிக்கு நகை வாங்குகிறீர்கள்?',
       q_type: 'single_choice',
-      options_en: ['Wedding / Bridal', 'Festival', 'Birthday / Anniversary', 'Monthly Savings', 'Gifts'],
-      options_ta: ['Wedding / Bridal (திருமணம்)', 'Festival (தீபாவளி/பொங்கல்/அட்சய திருதியை)', 'Birthday / Anniversary (பிறந்தநாள்/திருமணநாள்)', 'Monthly Savings / Investment (சேமிப்பு)', 'Gift / Casual Purchase (பரிசு)'],
+      options_en: ['Wedding / Bridal', 'Festival', 'Birthday', 'Wedding Anniversary', 'Monthly Savings', 'Gifts', 'General Walk-in'],
+      options_ta: ['Wedding / Bridal (திருமணம்)', 'Festival (தீபாவளி/பொங்கல்/அட்சய திருதியை)', 'Birthday (பிறந்தநாள்)', 'Wedding Anniversary (திருமண நாள்)', 'Monthly Savings / Investment (சேமிப்பு)', 'Gift / Casual Purchase (பரிசு)', 'General Walk-in (பொதுவான வருகை)'],
       is_mandatory: true,
       is_active: true
     },
@@ -85,13 +85,59 @@
       options_ta: ['Yes - Already Enrolled (ஏற்கனவே சேர்ந்துள்ளேன்)', 'Yes - Aware but not joined (தெரியும், சேரவில்லை)', 'No - Please explain scheme (தெரியாது, விவரம் தேவை)'],
       is_mandatory: true,
       is_active: true
+    },
+    {
+      q_id: 'Q6',
+      display_order: 6,
+      q_text_en: 'Overall Shopping Experience at Suba Valli Vilas?',
+      q_text_ta: 'சுப வள்ளி விலாஸில் உங்கள் ஒட்டுமொத்த ஷாப்பிங் அனுபவம் எப்படி இருந்தது?',
+      q_type: 'single_choice',
+      options_en: ['Excellent', 'Good', 'Average', 'Needs Improvement'],
+      options_ta: ['🌟 Excellent (மிகச் சிறப்பு)', '👍 Good (நல்லது)', '😐 Average (சராசரி)', '⚠️ Needs Improvement (மேம்பாடு தேவை)'],
+      is_mandatory: true,
+      is_active: true
+    },
+    {
+      q_id: 'Q7',
+      display_order: 7,
+      q_text_en: 'Would you recommend Suba Valli Vilas to friends or family?',
+      q_text_ta: 'சுப வள்ளி விலாஸை உங்கள் நண்பர்கள் அல்லது குடும்பத்தினருக்கு பரிந்துரைப்பீர்களா?',
+      q_type: 'single_choice',
+      options_en: ['Yes, definitely', 'Not sure', 'No, Not recommended'],
+      options_ta: ['🌟 Yes, definitely (ஆம், நிச்சயமாக)', '🤔 Not sure (உறுதியாக தெரியவில்லை)', '👎 No, Not recommended (பரிந்துரைக்க மாட்டேன்)'],
+      is_mandatory: true,
+      is_active: true
+    },
+    {
+      q_id: 'Q8_CUSTOM1',
+      display_order: 8,
+      target_kpi: 'Custom Metric 1',
+      q_text_en: 'Custom Question 1',
+      q_text_ta: 'கூடுதல் கேள்வி 1',
+      q_type: 'single_choice',
+      options_en: ['Option A', 'Option B', 'Option C'],
+      options_ta: ['விருப்பம் A', 'விருப்பம் B', 'விருப்பம் C'],
+      is_mandatory: false,
+      is_active: false
+    },
+    {
+      q_id: 'Q9_CUSTOM2',
+      display_order: 9,
+      target_kpi: 'Custom Metric 2',
+      q_text_en: 'Custom Question 2',
+      q_text_ta: 'கூடுதல் கேள்வி 2',
+      q_type: 'single_choice',
+      options_en: ['Option 1', 'Option 2', 'Option 3'],
+      options_ta: ['விருப்பம் 1', 'விருப்பம் 2', 'விருப்பம் 3'],
+      is_mandatory: false,
+      is_active: false
     }
   ];
 
   // Translations dictionary for 5 languages
   const I18N = {
     en: {
-      brandSub: 'Jewellery • Since 1948 • Cuddalore',
+      brandSub: 'Jewellery • Since 1921 • Cuddalore',
       npsTitle: 'How likely are you to recommend Suba Valli Vilas? *',
       npsSub: '1 to 10 recommendation scale',
       lblNotLikely: '1 = Not at all likely',
@@ -132,7 +178,7 @@
     },
     ta: {
       brandSub: 'பாரம்பரிய 916 தங்க நகை மாளிகை • கடலூர்',
-      npsTitle: 'சுபா வள்ளி விலாஸை உங்கள் நண்பர்கள் அல்லது குடும்பத்தினருக்கு பரிந்துரைக்க எவ்வளவு வாய்ப்புள்ளது? *',
+      npsTitle: 'சுப வள்ளி விலாஸை உங்கள் நண்பர்கள் அல்லது குடும்பத்தினருக்கு பரிந்துரைக்க எவ்வளவு வாய்ப்புள்ளது? *',
       npsSub: '1 முதல் 10 வரை மதிப்பிடுங்கள்',
       lblNotLikely: '1 = வாய்ப்பில்லை (குறைவு)',
       lblExtremelyLikely: '10 = நிச்சயமாக (முழு திருப்தி)',
@@ -148,9 +194,9 @@
       storeExpSub: 'எங்கள் சேவையை மெருகேற்ற உதவுங்கள்',
       lblQ0: 'எங்களுடன் எத்தனை முறை ஷாப்பிங் செய்கிறீர்கள்?',
       lblQ0Sub: 'வாடிக்கையாளர் வருகை முறை',
-      lblQ1: 'சுபா வள்ளி விலாஸ் பற்றி உங்களுக்கு எப்படி தெரியும்? *',
+      lblQ1: 'சுப வள்ளி விலாஸ் பற்றி உங்களுக்கு எப்படி தெரியும்? *',
       lblQ1Sub: 'விளம்பர ஊடகம்',
-      lblQ2: 'சுபா வள்ளி விலாஸில் உங்களுக்கு மிகவும் பிடித்தது எது? *',
+      lblQ2: 'சுப வள்ளி விலாஸில் உங்களுக்கு மிகவும் பிடித்தது எது? *',
       lblQ2Sub: 'சிறப்பு அம்சங்கள்',
       lblQ3: 'எங்கள் சேவையில் நீங்கள் எதை மேம்படுத்த விரும்புகிறீர்கள்?',
       lblQ3Sub: 'சேவை மேம்பாடு',
@@ -168,7 +214,7 @@
       lblRemarksSub: 'நகை வேலைப்பாடு மற்றும் ஊழியர்களின் உபசரிப்பு பற்றி குறிப்பிடவும்...',
       btnSubmit: '✨ கருத்தைப் பதிவு செய்',
       thankYouTitle: 'மிக்க நன்றி!',
-      thankYouDesc: 'உங்கள் மேலான கருத்துகள் நிர்வாக அலுவலகத்திற்கு நேரடியாக அனுப்பி வைக்கப்பட்டுள்ளன. உங்கள் ஆதரவுக்கு சுபா வள்ளி விலாஸின் மனமார்ந்த நன்றிகள்.'
+      thankYouDesc: 'உங்கள் மேலான கருத்துகள் நிர்வாக அலுவலகத்திற்கு நேரடியாக அனுப்பி வைக்கப்பட்டுள்ளன. உங்கள் ஆதரவுக்கு சுப வள்ளி விலாஸின் மனமார்ந்த நன்றிகள்.'
     },
     hi: {
       brandSub: 'पारंपरिक 916 सोने के आभूषण • कुड्डालोर',
@@ -315,8 +361,11 @@
     custName: document.getElementById('portalCustName'),
     custMobile: document.getElementById('portalCustMobile'),
     custCity: document.getElementById('portalCustCity'),
+    custOccupation: document.getElementById('portalCustOccupation'),
     custOccasionDate: document.getElementById('portalCustOccasionDate'),
-    custRemarks: document.getElementById('portalCustRemarks')
+    custOccasionDateGroup: document.getElementById('portalCustOccasionDateGroup'),
+    custRemarks: document.getElementById('portalCustRemarks'),
+    googleReviewActionBtn: document.getElementById('googleReviewActionBtn')
   };
 
   // ================= DYNAMIC QUESTIONS & SCHEMA SYNC ENGINE =================
@@ -397,12 +446,13 @@
   }
 
   async function fetchQuestionsFromCloud() {
+    const DEFAULT_CF_WORKER = 'https://svv-crm-gateway.subavallivilas-candb.workers.dev';
     const cfUrl = new URLSearchParams(window.location.search).get('cf') ||
                   localStorage.getItem('svv_cloudflare_worker_url') ||
-                  '';
+                  DEFAULT_CF_WORKER;
     const gsUrl = new URLSearchParams(window.location.search).get('gs') ||
                   localStorage.getItem('svv_gsheet_url') ||
-                  '';
+                  'https://script.google.com/macros/s/AKfycbxScZV2koc5d68t1F9851fRi-H_60r3UJe_GwilkdDFR-2K-710v2IdB1PiHpUUztJEiA/exec';
 
     if (!cfUrl && !gsUrl) return;
 
@@ -426,9 +476,83 @@
     }
   }
 
+  function checkAndRenderCustomQuestions() {
+    const qList = (state.questionsConfig && state.questionsConfig.length > 0)
+      ? state.questionsConfig
+      : DEFAULT_QUESTIONS;
+
+    const lang = state.currentLang || 'en';
+    const isTa = lang === 'ta';
+
+    // Check Custom Q1 (Q8_CUSTOM1 / Q8)
+    const q1Obj = qList.find(q => q.q_id === 'Q8_CUSTOM1' || q.q_id === 'Q8' || q.q_id === 'Q8_CUSTOM');
+    const group1 = document.getElementById('portalCustomQ1Group');
+    const title1 = document.getElementById('lblCustomQ1Title');
+    const sub1 = document.getElementById('lblCustomQ1Sub');
+    const chips1 = document.getElementById('customQ1ChipsGroup');
+
+    if (group1 && q1Obj && (q1Obj.is_active === true || String(q1Obj.is_active).toLowerCase() === 'true')) {
+      group1.style.display = 'block';
+      if (title1) title1.textContent = (isTa && q1Obj.q_text_ta ? q1Obj.q_text_ta : q1Obj.q_text_en) + (q1Obj.is_mandatory ? ' *' : '');
+      if (sub1) sub1.textContent = (isTa ? q1Obj.q_text_en : q1Obj.q_text_ta) || '';
+      if (chips1) {
+        const optsEn = q1Obj.options_en || [];
+        const optsTa = q1Obj.options_ta || optsEn;
+        const opts = (isTa && optsTa.length) ? optsTa : optsEn;
+        const curVal = document.getElementById('customQ1Input')?.value || '';
+        chips1.innerHTML = opts.map((optLabel, idx) => {
+          const val = optsEn[idx] || optLabel;
+          const isSel = curVal && curVal === val;
+          return `<span class="chip-item ${isSel ? 'active' : ''}" data-value="${escapeHtml(val)}">${escapeHtml(optLabel)}</span>`;
+        }).join('');
+      }
+    } else if (group1) {
+      group1.style.display = 'none';
+      const inp = document.getElementById('customQ1Input');
+      if (inp) inp.value = '';
+    }
+
+    // Check Custom Q2 (Q9_CUSTOM2 / Q9)
+    const q2Obj = qList.find(q => q.q_id === 'Q9_CUSTOM2' || q.q_id === 'Q9' || q.q_id === 'Q9_CUSTOM');
+    const group2 = document.getElementById('portalCustomQ2Group');
+    const title2 = document.getElementById('lblCustomQ2Title');
+    const sub2 = document.getElementById('lblCustomQ2Sub');
+    const chips2 = document.getElementById('customQ2ChipsGroup');
+
+    if (group2 && q2Obj && (q2Obj.is_active === true || String(q2Obj.is_active).toLowerCase() === 'true')) {
+      group2.style.display = 'block';
+      if (title2) title2.textContent = (isTa && q2Obj.q_text_ta ? q2Obj.q_text_ta : q2Obj.q_text_en) + (q2Obj.is_mandatory ? ' *' : '');
+      if (sub2) sub2.textContent = (isTa ? q2Obj.q_text_en : q2Obj.q_text_ta) || '';
+      if (chips2) {
+        const optsEn = q2Obj.options_en || [];
+        const optsTa = q2Obj.options_ta || optsEn;
+        const opts = (isTa && optsTa.length) ? optsTa : optsEn;
+        const curVal = document.getElementById('customQ2Input')?.value || '';
+        chips2.innerHTML = opts.map((optLabel, idx) => {
+          const val = optsEn[idx] || optLabel;
+          return `<span class="chip-item ${curVal && curVal === val ? 'active' : ''}" data-value="${escapeHtml(val)}">${escapeHtml(optLabel)}</span>`;
+        }).join('');
+      }
+    } else if (group2) {
+      group2.style.display = 'none';
+      const inp = document.getElementById('customQ2Input');
+      if (inp) inp.value = '';
+    }
+
+    setupChipsSelection();
+  }
+
   function renderDynamicQuestions() {
     const container = document.getElementById('portalDynamicQuestionsList');
     if (!container) return;
+
+    checkAndRenderCustomQuestions();
+
+    // If the HTML already has static questions defined, preserve the handcrafted layout!
+    if (container.children.length > 0) {
+      setupChipsSelection();
+      return;
+    }
 
     const activeList = (state.questionsConfig && state.questionsConfig.length > 0)
       ? state.questionsConfig.filter(q => q.is_active !== false)
@@ -456,7 +580,7 @@
 
       const inputId = `${q.q_id.toLowerCase()}Input`;
       const existingInput = document.getElementById(inputId);
-      const currentSelectedVal = existingInput ? existingInput.value : (optsEn[0] || '');
+      const currentSelectedVal = existingInput ? existingInput.value : '';
 
       html += `
         <div class="form-group mb-3 dynamic-portal-q" data-qid="${q.q_id}">
@@ -467,7 +591,7 @@
           <div class="chips-group" data-target="${inputId}">
             ${opts.map((optLabel, oIdx) => {
               const val = optsEn[oIdx] || optLabel;
-              const isSelected = (val === currentSelectedVal) || (!currentSelectedVal && oIdx === 0);
+              const isSelected = !!currentSelectedVal && (val === currentSelectedVal);
               return `
                 <span class="chip-item ${isSelected ? 'active' : ''}" data-value="${escapeHtml(val)}">
                   ${escapeHtml(optLabel)}
@@ -475,7 +599,18 @@
               `;
             }).join('')}
           </div>
-          <input type="hidden" id="${inputId}" name="${q.q_id.toLowerCase()}" value="${escapeHtml(currentSelectedVal || optsEn[0] || '')}">
+          <input type="hidden" id="${inputId}" name="${q.q_id.toLowerCase()}" value="${escapeHtml(currentSelectedVal)}">
+          ${q.q_id === 'Q4' ? `
+            <div id="portalCustOccasionDateGroup" class="mt-2 p-3 bg-silk rounded border" style="display: ${(currentSelectedVal === 'Birthday' || currentSelectedVal === 'Wedding Anniversary') ? 'block' : 'none'}; background: #FAF6EE; border: 1px solid #E5D5B8; border-radius: 8px;">
+              <label for="portalCustOccasionDate" class="portal-field-label" id="lblCustOccasionDate" style="color:#580505;">
+                ${currentSelectedVal === 'Wedding Anniversary' ? '💍 Select Wedding Anniversary Date (திருமண நாள் தேதி)' : '🎂 Select Birthday Date (பிறந்தநாள் தேதி)'}
+              </label>
+              <span class="portal-field-sub" id="lblCustOccasionDateSub">
+                ${currentSelectedVal === 'Wedding Anniversary' ? 'Capture wedding anniversary for couple blessings & special discount' : 'Capture customer birthday for birthday gift voucher & wishes'}
+              </span>
+              <input type="date" id="portalCustOccasionDate" name="occasionDate" class="portal-input">
+            </div>
+          ` : ''}
         </div>
       `;
     });
@@ -523,15 +658,18 @@
     }, 60000);
   }
 
-  // Parse URL Parameters (Supports multi-medium QR links)
+  // Parse URL Parameters (Supports 2 dedicated channels: ?src=qr vs ?src=tab)
   function parseUrlParameters() {
     const params = new URLSearchParams(window.location.search);
+    const src = (params.get('src') || params.get('source') || 'qr').toLowerCase();
+    const isTab = (src === 'tab' || src === 'tablet' || src === 'staff');
+
     state.urlParams = {
-      source: params.get('source') || 'QR',
-      medium: params.get('medium') || 'Billing Counter Standee',
+      source: isTab ? 'Showroom Tab' : 'QR Code',
+      medium: isTab ? 'Showroom Tablet' : 'Showroom Standee QR',
       branch: params.get('branch') || 'Cuddalore (Main Branch)',
-      counter: params.get('counter') || '',
-      staff: params.get('staff') || '',
+      counter: params.get('counter') || (isTab ? 'Showroom Floor' : 'General Walk-in'),
+      staff: params.get('staff') || (isTab ? 'Store Staff Hand-off' : 'Customer Walk-in'),
       invoice: params.get('invoice') || '',
       lang: params.get('lang') || 'en'
     };
@@ -544,14 +682,11 @@
     if (dom.metaStaff) dom.metaStaff.value = state.urlParams.staff;
     if (dom.metaInvoice) dom.metaInvoice.value = state.urlParams.invoice;
 
-    // Display context tag if counter or staff is specified
-    if (state.urlParams.counter || state.urlParams.staff || state.urlParams.medium) {
-      let desc = state.urlParams.medium;
-      if (state.urlParams.counter) desc += ` • ${state.urlParams.counter}`;
-      if (state.urlParams.staff) desc += ` • Staff: ${state.urlParams.staff}`;
-      if (dom.contextText) dom.contextText.textContent = desc;
-      if (dom.contextTag) dom.contextTag.style.display = 'inline-flex';
+    // Display context tag
+    if (dom.contextText) {
+      dom.contextText.textContent = isTab ? '📟 Showroom Tab Mode • Cuddalore' : '📱 Showroom QR Feedback • Cuddalore';
     }
+    if (dom.contextTag) dom.contextTag.style.display = 'inline-flex';
 
     // Language override from URL
     if (I18N[state.urlParams.lang]) {
@@ -688,8 +823,49 @@
         chip.onclick = () => {
           chips.forEach(c => c.classList.remove('active'));
           chip.classList.add('active');
+          const val = chip.getAttribute('data-value');
           if (targetInput) {
-            targetInput.value = chip.getAttribute('data-value');
+            targetInput.value = val;
+          }
+          // If this chip defines a numerical score (e.g. Recommendation question), map to rating
+          const score = chip.getAttribute('data-score');
+          if (score && dom.npsInput) {
+            dom.npsInput.value = score;
+          }
+          const choiceInput = document.getElementById('npsChoiceInput');
+          if (choiceInput && score) {
+            choiceInput.value = val;
+            const q7Inp = document.getElementById('q7Input');
+            if (q7Inp) q7Inp.value = val;
+          }
+
+          // If Q6 Overall Shopping Experience is clicked, auto-align mood
+          if (targetId === 'q6Input') {
+            const m = (val === 'Excellent' || val === 'Good') ? 'Appreciation' : (val === 'Average' ? 'Feedback' : 'Concern');
+            selectMood(m);
+          }
+
+          // If Q4 occasion question, show date ONLY for Birthday or Wedding Anniversary
+          if (targetId === 'q4Input') {
+            const dateGroup = document.getElementById('portalCustOccasionDateGroup');
+            const dateLabel = document.getElementById('lblCustOccasionDate');
+            const dateSub = document.getElementById('lblCustOccasionDateSub');
+            if (dateGroup) {
+              const lowerVal = (val || '').toLowerCase();
+              if (lowerVal.includes('birthday') || val === 'Birthday') {
+                dateGroup.style.display = 'block';
+                if (dateLabel) dateLabel.innerHTML = '🎂 Select Birthday Date (பிறந்தநாள் தேதியைத் தேர்வு செய்க)';
+                if (dateSub) dateSub.textContent = 'Capture customer birthday for special gifts & wishes';
+              } else if (lowerVal.includes('anniversary') || val === 'Wedding Anniversary') {
+                dateGroup.style.display = 'block';
+                if (dateLabel) dateLabel.innerHTML = '💍 Select Wedding Anniversary Date (திருமண நாள் தேதியைத் தேர்வு செய்க)';
+                if (dateSub) dateSub.textContent = 'Capture wedding anniversary for couple blessings & special discount';
+              } else {
+                dateGroup.style.display = 'none';
+                const dateInp = document.getElementById('portalCustOccasionDate');
+                if (dateInp) dateInp.value = '';
+              }
+            }
           }
         };
       });
@@ -728,6 +904,66 @@
       const isoDate = now.toISOString().split('T')[0];
       const feedbackId = `SVV-QR-${now.getTime().toString().slice(-6)}`;
 
+      const q0 = document.getElementById('q0Input')?.value || 'Regular Customer';
+      const q1 = document.getElementById('q1Input')?.value || '';
+      const q2 = document.getElementById('q2Input')?.value || '';
+      const q3 = document.getElementById('q3Input')?.value || 'Everything is Excellent';
+      const q4 = document.getElementById('q4Input')?.value || '';
+      const occasionDate = document.getElementById('portalCustOccasionDate')?.value || '';
+      const q5 = document.getElementById('q5Input')?.value || '';
+      const q6Answer = (document.getElementById('q6Input')?.value || '').trim();
+      const npsChoice = document.getElementById('npsChoiceInput')?.value || document.getElementById('q7Input')?.value || (parseInt(dom.npsInput?.value) >= 9 ? 'Yes, definitely' : (parseInt(dom.npsInput?.value) <= 6 ? 'No, Not recommended' : 'Not sure'));
+
+      if (!q1) {
+        alert('Please answer: How did you hear about Suba Valli Vilas?');
+        document.getElementById('q1Input')?.parentElement?.scrollIntoView({ behavior: 'smooth' });
+        state.isSubmitting = false;
+        dom.btnSubmit.disabled = false;
+        dom.btnSubmit.innerHTML = '<span>✨ Submit Feedback</span>';
+        return;
+      }
+      if (!q2) {
+        alert('Please answer: What did you like the most about Suba Valli Vilas?');
+        document.getElementById('q2Input')?.parentElement?.scrollIntoView({ behavior: 'smooth' });
+        state.isSubmitting = false;
+        dom.btnSubmit.disabled = false;
+        dom.btnSubmit.innerHTML = '<span>✨ Submit Feedback</span>';
+        return;
+      }
+      if (!q4) {
+        alert('Please answer: What occasion do you purchase for?');
+        document.getElementById('q4Input')?.parentElement?.scrollIntoView({ behavior: 'smooth' });
+        state.isSubmitting = false;
+        dom.btnSubmit.disabled = false;
+        dom.btnSubmit.innerHTML = '<span>✨ Submit Feedback</span>';
+        return;
+      }
+      if (!q5) {
+        alert('Please answer: Are you aware of our Suba Valli Vilas Gold Chit Schemes?');
+        document.getElementById('q5Input')?.parentElement?.scrollIntoView({ behavior: 'smooth' });
+        state.isSubmitting = false;
+        dom.btnSubmit.disabled = false;
+        dom.btnSubmit.innerHTML = '<span>✨ Submit Feedback</span>';
+        return;
+      }
+      if (!q6Answer) {
+        alert('Please answer: Overall Shopping Experience at Suba Valli Vilas?');
+        document.getElementById('q6Input')?.parentElement?.scrollIntoView({ behavior: 'smooth' });
+        state.isSubmitting = false;
+        dom.btnSubmit.disabled = false;
+        dom.btnSubmit.innerHTML = '<span>✨ Submit Feedback</span>';
+        return;
+      }
+
+      // Derive mood from Q6 answer if q6 was explicitly answered
+      const derivedMood = q6Answer === 'Excellent' ? 'Appreciation'
+                        : q6Answer === 'Good' ? 'Appreciation'
+                        : q6Answer === 'Average' ? 'Feedback'
+                        : q6Answer === 'Needs Improvement' ? 'Concern'
+                        : state.mood;
+
+      const calcRating = npsChoice === 'Yes, definitely' ? 10 : (npsChoice === 'Not sure' ? 7 : 3);
+
       const newRecord = {
         id: feedbackId,
         timestamp: dateStr,
@@ -735,57 +971,47 @@
         branch: dom.metaBranch?.value || 'Cuddalore (Main Branch)',
         section: dom.metaCounter?.value || 'General Showroom',
         invoiceNo: dom.metaInvoice?.value || 'QR-WALKIN',
-        source: 'QR',
-        medium: dom.metaMedium?.value || 'Billing Counter Standee',
-        staffName: dom.metaStaff?.value || 'Showroom Staff',
+        source: actualSource,
+        medium: dom.metaMedium?.value || state.urlParams?.medium || 'Billing Counter Standee',
+        staffName: dom.metaStaff?.value || state.urlParams?.staff || 'Showroom Staff',
         customerName: name,
         mobile: mobile,
         city: dom.custCity?.value || '',
-        occasionDate: dom.custOccasionDate?.value || '',
-        rating: parseInt(dom.npsInput?.value) || 10,
-        mood: state.mood,
+        occupation: dom.custOccupation?.value || 'Customer',
+        occasionDate: occasionDate,
+        rating: calcRating,
+        mood: derivedMood,
         remarks: (dom.custRemarks?.value || '').trim(),
-        status: 'NEW'
+        actionRemark: '',
+        status: 'NEW',
+        q0: q0,
+        q1: q1,
+        q2: q2,
+        q3: q3,
+        q4: q4,
+        q5: q5,
+        q6: '22K Gold Antique',
+        q7: npsChoice,
+        recommendationChoice: npsChoice,
+        overallShoppingExperience: q6Answer || (derivedMood === 'Appreciation' ? 'Excellent' : (derivedMood === 'Concern' ? 'Needs Improvement' : 'Good')),
+        customQ1: document.getElementById('customQ1Input')?.value || '',
+        customQ2: document.getElementById('customQ2Input')?.value || ''
       };
 
-      // Dynamically attach all active question answers from schema
-      const activeQs = (state.questionsConfig && state.questionsConfig.length > 0)
-        ? state.questionsConfig.filter(q => q.is_active !== false)
-        : DEFAULT_QUESTIONS;
-
-      for (const q of activeQs) {
-        const inputId = `${q.q_id.toLowerCase()}Input`;
-        const inputEl = document.getElementById(inputId);
-        const ans = inputEl ? inputEl.value : '';
-
-        if (q.is_mandatory && !ans) {
-          alert(`Please answer the required question: ${q.q_text_en}`);
-          inputEl?.parentElement?.scrollIntoView({ behavior: 'smooth' });
-          state.isSubmitting = false;
-          dom.btnSubmit.disabled = false;
-          dom.btnSubmit.innerHTML = '<span>✨ Submit Feedback</span>';
-          return;
-        }
-
-        newRecord[q.q_id.toLowerCase()] = ans;
-        newRecord[q.q_id] = ans;
-      }
-
-      // 1. Save to localStorage offline cache
-      try {
-        const cached = JSON.parse(localStorage.getItem('svv_offline_feedbacks') || '[]');
-        cached.unshift(newRecord);
-        localStorage.setItem('svv_offline_feedbacks', JSON.stringify(cached));
-      } catch (err) {
-        console.warn('LocalStorage save warning:', err);
-      }
-
-      // 2. Dispatch to Cloudflare Worker Intermediary / Google Apps Script
+      // Direct save to Google Sheets only (No localStorage storage as requested)
       await dispatchFeedbackToCloud(newRecord);
 
-      // 3. Show Celebration Screen
+      // Show Celebration Screen
       dom.form.style.display = 'none';
       if (dom.thankYouCard) {
+        // Only show Google review button if channel is QR Code, hide for Showroom Tab (User Request #11)
+        const isTabMode = actualSource.toLowerCase().includes('tab');
+        const googleBtn = document.getElementById('googleReviewActionBtn');
+        if (googleBtn) {
+          googleBtn.href = "https://www.google.com/search?q=suba+valli+vilas+jewellery+cuddalore&sca_esv=033d84a1d3790378&rlz=1C1CHBD_enIN1146IN1146&sxsrf=APpeQnsxodVpTpQo1oCZuRYM9Pm_PxBBLQ%3A1790248222499&ei=HgW1avyBHv72seMPxdygwAQ&uact=5&oq=suba+valli+vilas+jewellery+cuddalore&gs_lp=Egxnd3Mtd2l6LXNlcnAiJHN1YmEgdmFsbGkgdmlsYXMgamV3ZWxsZXJ5IGN1ZGRhbG9yZTIEECMYJzIKECMY8AUYtAQYJzIOEC4YgAQYxwEYrwEYjgUyBhAAGBYYHjICECYyCxAAGIAEGIoFGIYDMgsQABiABBiKBRiGAzILEAAYgAQYigUYhgMyCxAAGIAEGIoFGIYDMgsQABiABBiKBRiGA0iaPFC4DFj_N3ABeACQAQCYAacBoAH4DKoBBDIuMTK4AQPIAQD4AQGYAgmgAvgHwgIOEAAYgAQYigUYhgMYsAPCAgcQIxiwAhgnwgIFECEYoAGYAwCIBgGQBgWSBwMxLjigB_FvsgcDMC44uAf0B8IHBTAuMy42yAckgAgB&sclient=gws-wiz-serp#lrd=0x3a54986302ea3615:0x385b44f3c5d65ca3,3,,,,";
+          googleBtn.style.display = isTabMode ? 'none' : 'inline-flex';
+        }
+
         dom.thankYouCard.style.display = 'block';
         dom.thankYouCard.scrollIntoView({ behavior: 'smooth' });
       }
@@ -806,55 +1032,83 @@
     }
   }
 
-  // Cloud Dispatch Engine (Cloudflare Worker -> Google Apps Script)
+  // Cloud Dispatch Engine (Cloudflare Gateway Intermediary -> Google Sheet Base)
   async function dispatchFeedbackToCloud(record) {
-    // Check endpoints in order of priority:
-    // 1. Cloudflare Worker URL from localStorage or URL query (?cf=...)
-    // 2. Google Apps Script Webhook URL from localStorage or URL query (?gs=...)
-    // 3. Relative /api/feedback (if hosted under same domain with Cloudflare reverse proxy)
+    const DEFAULT_CF_WORKER = 'https://svv-crm-gateway.subavallivilas-candb.workers.dev';
+    const DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycbxScZV2koc5d68t1F9851fRi-H_60r3UJe_GwilkdDFR-2K-710v2IdB1PiHpUUztJEiA/exec';
+
     const cfUrl = new URLSearchParams(window.location.search).get('cf') ||
                   localStorage.getItem('svv_cloudflare_worker_url') ||
-                  'https://svv-crm-gateway.subavallivilas-candb.workers.dev';
+                  DEFAULT_CF_WORKER;
     const gsUrl = new URLSearchParams(window.location.search).get('gs') ||
                   localStorage.getItem('svv_gsheet_url') ||
-                  '';
+                  DEFAULT_GAS_URL;
 
     const payload = {
       action: 'ADD_FEEDBACK',
+      ...record,
       data: record,
       sourceMedium: record.medium
     };
 
-    // Try Cloudflare Worker first
+    console.log('[SVV Feedback] Submitting feedback:', { cfUrl, gsUrl, payload });
+
+    let sentViaCf = false;
+
+    // 1. Primary: Push via Cloudflare Worker Intermediary
     if (cfUrl) {
       try {
-        const target = cfUrl.replace(/\/+$/, '') + '/api/feedback';
-        const res = await fetch(target, {
+        const cfEndpoint = `${cfUrl.replace(/\/+$/, '')}/api/feedback`;
+        const res = await fetch(cfEndpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
         if (res.ok) {
-          console.log('✅ Feedback successfully submitted via Cloudflare Worker Intermediary!');
-          return;
+          const resJson = await res.json().catch(() => ({}));
+          console.log('✅ [SVV Feedback] Successfully pushed to Google Sheet via Cloudflare Gateway!', resJson);
+          sentViaCf = true;
+        } else {
+          console.warn(`[SVV Feedback] Cloudflare responded with HTTP ${res.status}, trying Apps Script fallback...`);
         }
-      } catch (err) {
-        console.warn('Cloudflare Worker dispatch attempt failed, trying fallback...', err);
+      } catch (cfErr) {
+        console.warn('[SVV Feedback] Cloudflare Worker push warning, using Apps Script fallback:', cfErr);
       }
     }
 
-    // Direct Google Apps Script fallback
-    if (gsUrl) {
+    // 2. Fallback: If Cloudflare push did not succeed, send directly to Google Apps Script
+    if (!sentViaCf && gsUrl) {
       try {
         await fetch(gsUrl, {
           method: 'POST',
           mode: 'no-cors',
+          cache: 'no-cache',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify(payload)
         });
-        console.log('✅ Feedback submitted directly to Google Apps Script!');
+        console.log('✅ [SVV Feedback] Dispatched via Google Apps Script fallback!');
       } catch (err) {
-        console.warn('Google Apps Script direct post error:', err);
+        console.warn('[SVV Feedback] Direct Apps Script POST warning:', err);
+      }
+
+      // JSONP GET fallback
+      try {
+        const encoded = encodeURIComponent(JSON.stringify(payload));
+        const cbName = 'svv_cb_' + Date.now();
+        const script = document.createElement('script');
+        script.src = `${gsUrl}${gsUrl.includes('?') ? '&' : '?'}action=ADD_FEEDBACK&data=${encoded}&callback=${cbName}`;
+        window[cbName] = function(resp) {
+          delete window[cbName];
+          script.remove();
+          console.log('✅ [SVV Feedback] Confirmed write via Apps Script JSONP:', resp);
+        };
+        script.onerror = function() {
+          delete window[cbName];
+          script.remove();
+        };
+        document.head.appendChild(script);
+      } catch (e) {
+        console.warn('[SVV Feedback] JSONP backup notice:', e);
       }
     }
   }

@@ -1515,6 +1515,10 @@
     }
   }
 
+  function saveSlotsToStorage() {
+    saveTodaySlotsToStorage();
+  }
+
   function loadTodaySlotsFromStorage() {
     try {
       const todayDate = new Date().toISOString().split('T')[0];
@@ -1539,6 +1543,10 @@
     } catch (e) {
       console.warn('Storage load failed:', e);
     }
+  }
+
+  function loadSlotsFromStorage() {
+    loadTodaySlotsFromStorage();
   }
 
   function saveFeedbacksToStorage() {
@@ -2033,7 +2041,7 @@
           if (s.count > 0) s.status = 'SUBMITTED';
         });
         state.todayBills = found.bills;
-        saveSlotsToStorage();
+        saveTodaySlotsToStorage();
       }
     } catch (e) {
       console.warn('localStorage error:', e);
@@ -5520,7 +5528,7 @@
                 if (s.count > 0) s.status = 'SUBMITTED';
               });
               if (bills > 0) state.todayBills = bills;
-              saveSlotsToStorage();
+              saveTodaySlotsToStorage();
             }
           });
         }

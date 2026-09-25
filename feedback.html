@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Suba Valli Vilas - Customer Feedback & Delight Experience</title>
+  <title>Ungal Veetu Kadai - Suba Valli Vilas | Customer Feedback & Delight Experience</title>
   <meta name="description" content="Share your valuable feedback with Suba Valli Vilas Jewellery. Traditional 916 purity and exceptional customer service.">
   <meta name="theme-color" content="#580505">
   <link rel="icon" type="image/png" href="svv-logo.png">
@@ -495,7 +495,8 @@
         <img src="svv-logo.png" alt="Suba Valli Vilas" style="width: 60px; height: 60px; object-fit: contain; border-radius: 50%; border: 2px solid #C5A059; box-shadow: 0 4px 12px rgba(0,0,0,0.35);">
       </div>
       <h1 class="portal-brand-title">Suba Valli Vilas</h1>
-      <div class="portal-brand-subtitle">Jewellery • Since 1921 • Cuddalore</div>
+      <div class="portal-brand-subtitle" id="portalBrandSubtitle">Ungal Veetu Kadai - Suba Valli Vilas • Since 1921 • Cuddalore</div>
+      <div class="portal-tamil-slogan" id="portalTamilSlogan" style="color: #F7E7CE; font-size: 0.85rem; margin-top: 4px; font-weight: 600; letter-spacing: 0.5px;">உங்கள் வீட்டு கடை - சுபா வள்ளி விலாஸ்</div>
       <div class="portal-context-tag" id="portalContextTag" style="display: none;">
         <span>📍</span>
         <span id="portalContextText">Billing Counter • Main Branch</span>
@@ -710,51 +711,46 @@
             <input type="hidden" id="q5Input" name="q5" value="">
           </div>
 
-          <!-- Q6: Overall Shopping Experience (CSI Question) -->
+          <!-- Q6: Specific jewellery types interested in? (Matches Google Sheet Q6) -->
           <div class="form-group mb-3">
-            <label class="portal-field-label" id="lblQ6">Overall Shopping Experience at Suba Valli Vilas? *</label>
-            <span class="portal-field-sub" id="lblQ6Sub">சுப வள்ளி விலாஸில் உங்கள் ஒட்டுமொத்த ஷாப்பிங் அனுபவம் எப்படி இருந்தது?</span>
+            <label class="portal-field-label" id="lblQ6">Specific jewellery types interested in? *</label>
+            <span class="portal-field-sub" id="lblQ6Sub">நீங்கள் விரும்பும் நகைப் பிரிவுகள் யாவை?</span>
             <div class="chips-group" data-target="q6Input" id="q6ChipsGroup">
-              <span class="chip-item" data-value="Excellent" style="border-color: #15803D; color: #15803D;" id="chipQ6Ex">🌟 Excellent (மிகச் சிறப்பு)</span>
-              <span class="chip-item" data-value="Good" style="border-color: #2563EB; color: #2563EB;" id="chipQ6Good">👍 Good (நல்லது)</span>
-              <span class="chip-item" data-value="Average" style="border-color: #D97706; color: #D97706;" id="chipQ6Avg">😐 Average (சராசரி)</span>
-              <span class="chip-item" data-value="Needs Improvement" style="border-color: #B91C1C; color: #B91C1C;" id="chipQ6Need">⚠️ Needs Improvement (மேம்பாடு தேவை)</span>
+              <span class="chip-item" data-value="22K Gold Antique">✨ 22K Gold Antique (22K ஆண்டிக் நகைகள்)</span>
+              <span class="chip-item" data-value="Diamond Solitaire & Sets">💎 Diamond Solitaire &amp; Sets (வைர நகைகள்)</span>
+              <span class="chip-item" data-value="Daily Wear Light Weight">🌟 Daily Wear Light Weight (குறைந்த எடை நகைகள்)</span>
+              <span class="chip-item" data-value="Traditional Temple Jewellery">🛕 Traditional Temple Jewellery (கோவில் நகைகள்)</span>
+              <span class="chip-item" data-value="Silver Utensils">🪙 Silver Utensils (வெள்ளி பொருட்கள்)</span>
             </div>
-            <input type="hidden" id="q6Input" name="overallShoppingExperience" value="">
+            <input type="hidden" id="q6Input" name="q6" value="">
           </div>
 
-          <!-- Q_RECOMMEND: 3-Option NPS Recommendation Question (Placed right before Remarks) -->
-          <div class="form-group mb-1 pt-2 border-top">
+          <!-- Q7: Would you recommend Suba Valli Vilas to friends or family? (Matches Google Sheet Q7) -->
+          <div class="form-group mb-3 pt-2 border-top">
             <label class="portal-field-label" id="lblQRec">Would you recommend Suba Valli Vilas to friends or family? *</label>
             <span class="portal-field-sub" id="lblQRecSub">சுப வள்ளி விலாஸை உங்கள் நண்பர்கள் அல்லது குடும்பத்தினருக்கு பரிந்துரைப்பீர்களா?</span>
-            <div class="chips-group nps-3option-chips" data-target="npsRatingInput">
+            <div class="chips-group nps-3option-chips" data-target="q7Input">
               <span class="chip-item" data-value="Yes, definitely" data-score="10">🌟 Yes, definitely (ஆம், நிச்சயமாக)</span>
               <span class="chip-item" data-value="Not sure" data-score="7">🤔 Not sure (உறுதியாக தெரியவில்லை)</span>
               <span class="chip-item" data-value="No, Not recommended" data-score="3">👎 No, Not recommended (பரிந்துரைக்க மாட்டேன்)</span>
             </div>
-            <input type="hidden" id="npsRatingInput" name="rating" value="">
-            <input type="hidden" id="npsChoiceInput" name="recommendationChoice" value="">
-            <input type="hidden" id="q7Input" name="q7" value="">
+            <input type="hidden" id="npsRatingInput" name="rating" value="10">
+            <input type="hidden" id="npsChoiceInput" name="recommendationChoice" value="Yes, definitely">
+            <input type="hidden" id="q7Input" name="q7" value="Yes, definitely">
           </div>
 
-          <!-- EXTENSIBLE CUSTOM QUESTION 1 (Active/Deactive toggleable from Cloud/CRM) -->
-          <div class="form-group mb-3 custom-extensible-q pt-2 border-top" id="portalCustomQ1Group" style="display: none;">
-            <label class="portal-field-label" id="lblCustomQ1Title">Custom Question 1</label>
-            <span class="portal-field-sub" id="lblCustomQ1Sub">கூடுதல் கேள்வி 1</span>
-            <div class="chips-group" id="customQ1ChipsGroup" data-target="customQ1Input">
-              <!-- Populated dynamically when activated by admin -->
+          <!-- Q8: Overall shopping experience (Matches Google Sheet Q8) -->
+          <div class="form-group mb-3 pt-2 border-top">
+            <label class="portal-field-label" id="lblQ8">Overall shopping experience *</label>
+            <span class="portal-field-sub" id="lblQ8Sub">ஒட்டுமொத்த ஷாப்பிங் அனுபவம்</span>
+            <div class="chips-group" data-target="overallShoppingExpInput" id="q8ChipsGroup">
+              <span class="chip-item" data-value="Excellent" style="border-color: #059669; color: #059669;">🌟 Excellent (சிறப்பானது)</span>
+              <span class="chip-item" data-value="Good" style="border-color: #2563EB; color: #2563EB;">👍 Good (நல்லது)</span>
+              <span class="chip-item" data-value="Average" style="border-color: #D97706; color: #D97706;">😐 Average (சராசரி)</span>
+              <span class="chip-item" data-value="Need Improvement" style="border-color: #B91C1C; color: #B91C1C;">⚠️ Need Improvement (மேம்பாடு தேவை)</span>
             </div>
-            <input type="hidden" id="customQ1Input" name="customQ1" value="">
-          </div>
-
-          <!-- EXTENSIBLE CUSTOM QUESTION 2 (Active/Deactive toggleable from Cloud/CRM) -->
-          <div class="form-group mb-3 custom-extensible-q pt-2 border-top" id="portalCustomQ2Group" style="display: none;">
-            <label class="portal-field-label" id="lblCustomQ2Title">Custom Question 2</label>
-            <span class="portal-field-sub" id="lblCustomQ2Sub">கூடுதல் கேள்வி 2</span>
-            <div class="chips-group" id="customQ2ChipsGroup" data-target="customQ2Input">
-              <!-- Populated dynamically when activated by admin -->
-            </div>
-            <input type="hidden" id="customQ2Input" name="customQ2" value="">
+            <input type="hidden" id="overallShoppingExpInput" name="overallShoppingExperience" value="Excellent">
+            <input type="hidden" id="q8Input" name="q8" value="Excellent">
           </div>
         </div>
       </div>
@@ -817,9 +813,10 @@
     </div>
 
     <!-- FOOTER -->
-    <footer class="text-center text-xs text-muted mt-4" style="line-height: 1.6;">
-      <div>Suba Valli Vilas Jewellery • 916 BIS Hallmarked Purity</div>
-      <div>Customer Care &amp; WhatsApp: +91 98401 00001</div>
+    <footer class="text-center text-xs text-muted mt-4" style="line-height: 1.7; padding-bottom: 20px;">
+      <div style="font-weight: 700; color: #580505; font-size: 0.9rem;">Ungal Veetu Kadai - Suba Valli Vilas Jewellery</div>
+      <div style="font-size: 0.78rem; color: #64748B;">உங்கள் வீட்டு கடை - சுபா வள்ளி விலாஸ் • 916 BIS Hallmarked Purity</div>
+      <div style="margin-top: 4px; font-size: 0.82rem; color: #334155;">Customer Care &amp; WhatsApp: <strong>+91 94432 22188</strong> (Cuddalore Main Branch)</div>
     </footer>
 
   </div>

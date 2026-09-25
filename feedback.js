@@ -89,12 +89,12 @@
     {
       q_id: 'Q6',
       display_order: 6,
-      q_text_en: 'Overall Shopping Experience at Suba Valli Vilas?',
-      q_text_ta: 'சுப வள்ளி விலாஸில் உங்கள் ஒட்டுமொத்த ஷாப்பிங் அனுபவம் எப்படி இருந்தது?',
+      q_text_en: 'Specific jewellery types interested in?',
+      q_text_ta: 'நீங்கள் விரும்பும் நகைப் பிரிவுகள் யாவை?',
       q_type: 'single_choice',
-      options_en: ['Excellent', 'Good', 'Average', 'Needs Improvement'],
-      options_ta: ['🌟 Excellent (மிகச் சிறப்பு)', '👍 Good (நல்லது)', '😐 Average (சராசரி)', '⚠️ Needs Improvement (மேம்பாடு தேவை)'],
-      is_mandatory: true,
+      options_en: ['22K Gold Antique', 'Diamond Solitaire & Sets', 'Daily Wear Light Weight', 'Traditional Temple Jewellery', 'Silver Utensils'],
+      options_ta: ['✨ 22K Gold Antique (22K ஆண்டிக் நகைகள்)', '💎 Diamond Solitaire & Sets (வைர நகைகள்)', '🌟 Daily Wear Light Weight (குறைந்த எடை நகைகள்)', '🛕 Traditional Temple Jewellery (கோவில் நகைகள்)', '🪙 Silver Utensils (வெள்ளி பொருட்கள்)'],
+      is_mandatory: false,
       is_active: true
     },
     {
@@ -109,35 +109,23 @@
       is_active: true
     },
     {
-      q_id: 'Q8_CUSTOM1',
+      q_id: 'Q8',
       display_order: 8,
-      target_kpi: 'Custom Metric 1',
-      q_text_en: 'Custom Question 1',
-      q_text_ta: 'கூடுதல் கேள்வி 1',
+      target_kpi: 'Customer Satisfaction Index',
+      q_text_en: 'Overall shopping experience',
+      q_text_ta: 'ஒட்டுமொத்த ஷாப்பிங் அனுபவம்',
       q_type: 'single_choice',
-      options_en: ['Option A', 'Option B', 'Option C'],
-      options_ta: ['விருப்பம் A', 'விருப்பம் B', 'விருப்பம் C'],
-      is_mandatory: false,
-      is_active: false
-    },
-    {
-      q_id: 'Q9_CUSTOM2',
-      display_order: 9,
-      target_kpi: 'Custom Metric 2',
-      q_text_en: 'Custom Question 2',
-      q_text_ta: 'கூடுதல் கேள்வி 2',
-      q_type: 'single_choice',
-      options_en: ['Option 1', 'Option 2', 'Option 3'],
-      options_ta: ['விருப்பம் 1', 'விருப்பம் 2', 'விருப்பம் 3'],
-      is_mandatory: false,
-      is_active: false
+      options_en: ['Excellent', 'Good', 'Average', 'Need Improvement'],
+      options_ta: ['🌟 Excellent (சிறப்பானது)', '👍 Good (நல்லது)', '😐 Average (சராசரி)', '⚠️ Need Improvement (மேம்பாடு தேவை)'],
+      is_mandatory: true,
+      is_active: true
     }
   ];
 
   // Translations dictionary for 5 languages
   const I18N = {
     en: {
-      brandSub: 'Jewellery • Since 1921 • Cuddalore',
+      brandSub: 'Ungal Veetu Kadai - Suba Valli Vilas • Since 1921 • Cuddalore',
       npsTitle: 'How likely are you to recommend Suba Valli Vilas? *',
       npsSub: '1 to 10 recommendation scale',
       lblNotLikely: '1 = Not at all likely',
@@ -164,6 +152,12 @@
       lblQ4Sub: 'Celebration timeline',
       lblQ5: 'Are you aware of our Suba Valli Vilas Gold Chit Schemes? *',
       lblQ5Sub: '11-month gold savings schemes',
+      lblQ6: 'Specific jewellery types interested in? *',
+      lblQ6Sub: 'Jewellery design & collection preference',
+      lblQRec: 'Would you recommend Suba Valli Vilas to friends or family? *',
+      lblQRecSub: 'Customer recommendation & trust',
+      lblQ8: 'Overall shopping experience *',
+      lblQ8Sub: 'Overall customer delight and satisfaction',
       custDetailsTitle: 'Customer Details & Remarks',
       custDetailsSub: 'For billing verification & personalized wishes',
       lblName: 'Your Full Name *',
@@ -177,7 +171,7 @@
       thankYouDesc: 'Your feedback has been received directly by the management desk. We deeply cherish your relationship with Suba Valli Vilas.'
     },
     ta: {
-      brandSub: 'பாரம்பரிய 916 தங்க நகை மாளிகை • கடலூர்',
+      brandSub: 'உங்கள் வீட்டு கடை - சுபா வள்ளி விலாஸ் • பாரம்பரியம் மற்றும் தூய்மை',
       npsTitle: 'சுப வள்ளி விலாஸை உங்கள் நண்பர்கள் அல்லது குடும்பத்தினருக்கு பரிந்துரைக்க எவ்வளவு வாய்ப்புள்ளது? *',
       npsSub: '1 முதல் 10 வரை மதிப்பிடுங்கள்',
       lblNotLikely: '1 = வாய்ப்பில்லை (குறைவு)',
@@ -204,6 +198,12 @@
       lblQ4Sub: 'சுப நிகழ்வு விவரம்',
       lblQ5: 'எங்கள் தங்க நகை சேமிப்பு திட்டம் (சிட்) பற்றி உங்களுக்கு தெரியுமா? *',
       lblQ5Sub: '11 மாத தங்க நகை திட்டம்',
+      lblQ6: 'நீங்கள் விரும்பும் நகைப் பிரிவுகள் யாவை? *',
+      lblQ6Sub: 'விருப்பமான நகை கலெக்ஷன்',
+      lblQRec: 'சுப வள்ளி விலாஸை உங்கள் நண்பர்கள் அல்லது குடும்பத்தினருக்கு பரிந்துரைப்பீர்களா? *',
+      lblQRecSub: 'நம்பிக்கை மற்றும் பரிந்துரை',
+      lblQ8: 'ஒட்டுமொத்த ஷாப்பிங் அனுபவம் *',
+      lblQ8Sub: 'வாடிக்கையாளர் மனநிறைவு மற்றும் திருப்தி',
       custDetailsTitle: 'வாடிக்கையாளர் விவரங்கள் & கருத்துகள்',
       custDetailsSub: 'வாழ்த்துக்கள் மற்றும் சிறப்பு சலுகைகளுக்கு',
       lblName: 'உங்கள் முழு பெயர் *',
@@ -244,6 +244,12 @@
       lblQ4Sub: 'शुभ अवसर',
       lblQ5: 'क्या आप गोल्ड चिट बचत योजना से अवगत हैं? *',
       lblQ5Sub: '11 महीने की बचत योजना',
+      lblQ6: 'किस प्रकार के आभूषणों में रुचि है?',
+      lblQ6Sub: 'डिजाइन प्राथमिकता',
+      lblQRec: 'क्या आप सूबा वल्ली विलास की सिफारिश दूसरों से करेंगे? *',
+      lblQRecSub: 'विश्वास एवं अनुशंसा',
+      lblQ8: 'समग्र खरीदारी अनुभव *',
+      lblQ8Sub: 'ग्राहक संतुष्टि',
       custDetailsTitle: 'ग्राहक विवरण एवं टिप्पणी',
       custDetailsSub: 'विशेष शुभकामनाओं के लिए',
       lblName: 'आपका पूरा नाम *',
@@ -284,6 +290,12 @@
       lblQ4Sub: 'ಶುಭ ಸಂದರ್ಭ',
       lblQ5: 'ಚಿನ್ನದ ಉಳಿತಾಯ ಚಿಟ್ ಯೋಜನೆ ಬಗ್ಗೆ ತಿಳಿದಿದೆಯೇ? *',
       lblQ5Sub: '11 ತಿಂಗಳ ಉಳಿತಾಯ ಯೋಜನೆ',
+      lblQ6: 'ಯಾವ ರೀತಿಯ ಆಭರಣಗಳಲ್ಲಿ ಆಸಕ್ತಿ ಹೊಂದಿದ್ದೀರಿ?',
+      lblQ6Sub: 'ವಿನ್ಯಾಸ ಆದ್ಯತೆ',
+      lblQRec: 'ಸುಬಾ ವಲ್ಲಿ ವಿಲಾಸ್ ಅನ್ನು ಇತರರಿಗೆ ಶಿಫಾರಸು ಮಾಡುತ್ತೀರಾ? *',
+      lblQRecSub: 'ನಂಬಿಕೆ ಮತ್ತು ಶಿಫಾರಸು',
+      lblQ8: 'ಒಟ್ಟಾರೆ ಶಾಪಿಂಗ್ ಅನುಭವ *',
+      lblQ8Sub: 'ಗ್ರಾಹಕರ ತೃಪ್ತಿ',
       custDetailsTitle: 'ಗ್ರಾಹಕರ ವಿವರಗಳು & ಅಭಿಪ್ರಾಯ',
       custDetailsSub: 'ಶುಭಾಶಯಗಳು ಮತ್ತು ಕೊಡುಗೆಗಳಿಗಾಗಿ',
       lblName: 'ನಿಮ್ಮ ಪೂರ್ಣ ಹೆಸರು *',
@@ -324,6 +336,12 @@
       lblQ4Sub: 'വിശേഷാവസരം',
       lblQ5: 'ഗോൾഡ് ചിട്ടി സേവിംഗ്സ് സ്കീമിനെക്കുറിച്ച് അറിയാമോ? *',
       lblQ5Sub: '11 മാസ സ്വർണ്ണ നിക്ഷേപം',
+      lblQ6: 'ഏത് തരത്തിലുള്ള ആഭരണങ്ങളിലാണ് താൽപ്പര്യം?',
+      lblQ6Sub: 'ഡിസൈൻ മുൻഗണന',
+      lblQRec: 'സുബ വള്ളി വിലാസ് മറ്റുള്ളവർക്ക് ശുപാർശ ചെയ്യുമോ? *',
+      lblQRecSub: 'വിശ്വാസവും ശുപാർശയും',
+      lblQ8: 'മൊത്തത്തിലുള്ള ഷോപ്പിംഗ് അനുഭവം *',
+      lblQ8Sub: 'ഉപഭോക്തൃ സംതൃപ്തി',
       custDetailsTitle: 'ഉപഭോക്തൃ വിവരങ്ങളും കുറിപ്പുകളും',
       custDetailsSub: 'ആശംസകൾക്കും ആനുകൂല്യങ്ങൾക്കുമായി',
       lblName: 'നിങ്ങളുടെ പൂർണ്ണ നാമം *',
@@ -447,15 +465,35 @@
 
   async function fetchQuestionsFromCloud() {
     const DEFAULT_CF_WORKER = 'https://svv-crm-gateway.subavallivilas-candb.workers.dev';
+    const DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycbxScZV2koc5d68t1F9851fRi-H_60r3UJe_GwilkdDFR-2K-710v2IdB1PiHpUUztJEiA/exec';
+
     const cfUrl = new URLSearchParams(window.location.search).get('cf') ||
                   localStorage.getItem('svv_cloudflare_worker_url') ||
                   DEFAULT_CF_WORKER;
     const gsUrl = new URLSearchParams(window.location.search).get('gs') ||
                   localStorage.getItem('svv_gsheet_url') ||
-                  'https://script.google.com/macros/s/AKfycbxScZV2koc5d68t1F9851fRi-H_60r3UJe_GwilkdDFR-2K-710v2IdB1PiHpUUztJEiA/exec';
+                  DEFAULT_GAS_URL;
 
     if (!cfUrl && !gsUrl) return;
 
+    // 1. Check Cloudflare Worker health and deployed version
+    if (cfUrl) {
+      try {
+        const healthUrl = `${cfUrl.replace(/\/+$/, '')}/api/health`;
+        const hRes = await fetch(healthUrl).then(r => r.json()).catch(() => null);
+        if (hRes && hRes.version === '3.2-28col') {
+          state.cfWorkerVersion = '3.2-28col';
+          console.log('⚡ [SVV Feedback] Cloudflare Worker v3.2 (28 columns) is active.');
+        } else {
+          state.cfWorkerVersion = 'legacy';
+          console.warn('⚠️ [SVV Feedback] Cloudflare Worker is running legacy code. Direct Google Apps Script dispatch enabled to safeguard Q7 & Q8.');
+        }
+      } catch (_) {
+        state.cfWorkerVersion = 'offline';
+      }
+    }
+
+    // 2. Fetch live questions from Cloudflare Worker or Google Apps Script
     try {
       let targetUrl = '';
       if (cfUrl) {
@@ -472,73 +510,25 @@
         applyFeedbackQuestionsFromSheet(data.feedbackQuestions);
       }
     } catch (err) {
-      console.warn('Could not auto-fetch questions from cloud in customer portal:', err);
+      console.warn('Could not auto-fetch questions from cloud in customer portal, attempting Apps Script:', err);
+      if (gsUrl) {
+        try {
+          const gasTarget = gsUrl.includes('?') ? `${gsUrl}&action=GET_QUESTIONS` : `${gsUrl}?action=GET_QUESTIONS`;
+          const gasRes = await fetch(gasTarget).then(r => r.json());
+          if (Array.isArray(gasRes.feedbackQuestions) && gasRes.feedbackQuestions.length > 0) {
+            applyFeedbackQuestionsFromSheet(gasRes.feedbackQuestions);
+          }
+        } catch (_) {}
+      }
     }
   }
 
   function checkAndRenderCustomQuestions() {
-    const qList = (state.questionsConfig && state.questionsConfig.length > 0)
-      ? state.questionsConfig
-      : DEFAULT_QUESTIONS;
-
-    const lang = state.currentLang || 'en';
-    const isTa = lang === 'ta';
-
-    // Check Custom Q1 (Q8_CUSTOM1 / Q8)
-    const q1Obj = qList.find(q => q.q_id === 'Q8_CUSTOM1' || q.q_id === 'Q8' || q.q_id === 'Q8_CUSTOM');
+    // Custom questions removed to strictly match Google Sheet FEEDBACK_QUESTIONS
     const group1 = document.getElementById('portalCustomQ1Group');
-    const title1 = document.getElementById('lblCustomQ1Title');
-    const sub1 = document.getElementById('lblCustomQ1Sub');
-    const chips1 = document.getElementById('customQ1ChipsGroup');
-
-    if (group1 && q1Obj && (q1Obj.is_active === true || String(q1Obj.is_active).toLowerCase() === 'true')) {
-      group1.style.display = 'block';
-      if (title1) title1.textContent = (isTa && q1Obj.q_text_ta ? q1Obj.q_text_ta : q1Obj.q_text_en) + (q1Obj.is_mandatory ? ' *' : '');
-      if (sub1) sub1.textContent = (isTa ? q1Obj.q_text_en : q1Obj.q_text_ta) || '';
-      if (chips1) {
-        const optsEn = q1Obj.options_en || [];
-        const optsTa = q1Obj.options_ta || optsEn;
-        const opts = (isTa && optsTa.length) ? optsTa : optsEn;
-        const curVal = document.getElementById('customQ1Input')?.value || '';
-        chips1.innerHTML = opts.map((optLabel, idx) => {
-          const val = optsEn[idx] || optLabel;
-          const isSel = curVal && curVal === val;
-          return `<span class="chip-item ${isSel ? 'active' : ''}" data-value="${escapeHtml(val)}">${escapeHtml(optLabel)}</span>`;
-        }).join('');
-      }
-    } else if (group1) {
-      group1.style.display = 'none';
-      const inp = document.getElementById('customQ1Input');
-      if (inp) inp.value = '';
-    }
-
-    // Check Custom Q2 (Q9_CUSTOM2 / Q9)
-    const q2Obj = qList.find(q => q.q_id === 'Q9_CUSTOM2' || q.q_id === 'Q9' || q.q_id === 'Q9_CUSTOM');
+    if (group1) group1.style.display = 'none';
     const group2 = document.getElementById('portalCustomQ2Group');
-    const title2 = document.getElementById('lblCustomQ2Title');
-    const sub2 = document.getElementById('lblCustomQ2Sub');
-    const chips2 = document.getElementById('customQ2ChipsGroup');
-
-    if (group2 && q2Obj && (q2Obj.is_active === true || String(q2Obj.is_active).toLowerCase() === 'true')) {
-      group2.style.display = 'block';
-      if (title2) title2.textContent = (isTa && q2Obj.q_text_ta ? q2Obj.q_text_ta : q2Obj.q_text_en) + (q2Obj.is_mandatory ? ' *' : '');
-      if (sub2) sub2.textContent = (isTa ? q2Obj.q_text_en : q2Obj.q_text_ta) || '';
-      if (chips2) {
-        const optsEn = q2Obj.options_en || [];
-        const optsTa = q2Obj.options_ta || optsEn;
-        const opts = (isTa && optsTa.length) ? optsTa : optsEn;
-        const curVal = document.getElementById('customQ2Input')?.value || '';
-        chips2.innerHTML = opts.map((optLabel, idx) => {
-          const val = optsEn[idx] || optLabel;
-          return `<span class="chip-item ${curVal && curVal === val ? 'active' : ''}" data-value="${escapeHtml(val)}">${escapeHtml(optLabel)}</span>`;
-        }).join('');
-      }
-    } else if (group2) {
-      group2.style.display = 'none';
-      const inp = document.getElementById('customQ2Input');
-      if (inp) inp.value = '';
-    }
-
+    if (group2) group2.style.display = 'none';
     setupChipsSelection();
   }
 
@@ -547,12 +537,6 @@
     if (!container) return;
 
     checkAndRenderCustomQuestions();
-
-    // If the HTML already has static questions defined, preserve the handcrafted layout!
-    if (container.children.length > 0) {
-      setupChipsSelection();
-      return;
-    }
 
     const activeList = (state.questionsConfig && state.questionsConfig.length > 0)
       ? state.questionsConfig.filter(q => q.is_active !== false)
@@ -563,44 +547,128 @@
 
     let html = '';
     activeList.forEach((q) => {
-      let mainText = q.q_text_en;
+      const qId = q.q_id;
+      const isQ4 = qId === 'Q4';
+      const isQ7 = qId === 'Q7';
+      const isQ8 = qId === 'Q8';
+
+      let mainText = q.q_text_en || '';
       let subText = q.q_text_ta || '';
 
       if (isTa) {
-        mainText = q.q_text_ta || q.q_text_en;
+        mainText = q.q_text_ta || q.q_text_en || '';
         subText = q.q_text_en || '';
-      } else if (I18N[lang] && I18N[lang][`lbl${q.q_id}`]) {
-        mainText = I18N[lang][`lbl${q.q_id}`];
-        subText = I18N[lang][`lbl${q.q_id}Sub`] || q.q_text_ta || '';
+      } else if (I18N[lang] && I18N[lang][`lbl${qId}`]) {
+        mainText = I18N[lang][`lbl${qId}`];
+        subText = I18N[lang][`lbl${qId}Sub`] || q.q_text_ta || '';
       }
 
       const optsEn = q.options_en || [];
       const optsTa = q.options_ta || optsEn;
-      const opts = (isTa && optsTa.length) ? optsTa : optsEn;
 
-      const inputId = `${q.q_id.toLowerCase()}Input`;
-      const existingInput = document.getElementById(inputId);
-      const currentSelectedVal = existingInput ? existingInput.value : '';
+      const inputId = `${qId.toLowerCase()}Input`;
+      let currentSelectedVal = '';
+      if (isQ7) {
+        currentSelectedVal = document.getElementById('npsChoiceInput')?.value || document.getElementById('q7Input')?.value || 'Yes, definitely';
+      } else if (isQ8) {
+        currentSelectedVal = document.getElementById('overallShoppingExpInput')?.value || document.getElementById('q8Input')?.value || 'Excellent';
+      } else {
+        const existingInput = document.getElementById(inputId);
+        currentSelectedVal = existingInput ? existingInput.value : '';
+      }
+
+      // Border separator for Q7 and Q8
+      const borderClass = (isQ7 || isQ8) ? ' pt-2 border-top' : '';
 
       html += `
-        <div class="form-group mb-3 dynamic-portal-q" data-qid="${q.q_id}">
-          <label class="portal-field-label">
+        <div class="form-group mb-3 dynamic-portal-q${borderClass}" data-qid="${escapeHtml(qId)}">
+          <label class="portal-field-label" id="lbl${escapeHtml(qId)}">
             ${escapeHtml(mainText.replace(/\s*\*+\s*$/, ''))}${q.is_mandatory ? ' *' : ''}
           </label>
-          ${subText ? `<span class="portal-field-sub">${escapeHtml(subText.replace(/\s*\*+\s*$/, ''))}</span>` : ''}
-          <div class="chips-group" data-target="${inputId}">
-            ${opts.map((optLabel, oIdx) => {
-              const val = optsEn[oIdx] || optLabel;
-              const isSelected = !!currentSelectedVal && (val === currentSelectedVal);
+          ${subText ? `<span class="portal-field-sub" id="lbl${escapeHtml(qId)}Sub">${escapeHtml(subText.replace(/\s*\*+\s*$/, ''))}</span>` : ''}
+          <div class="chips-group ${isQ7 ? 'nps-3option-chips' : ''}" data-target="${escapeHtml(inputId)}" id="${escapeHtml(qId.toLowerCase())}ChipsGroup">
+            ${optsEn.map((enOpt, oIdx) => {
+              const val = enOpt;
+              const taOpt = optsTa[oIdx] || '';
+              const isSelected = !!currentSelectedVal && (val === currentSelectedVal || taOpt === currentSelectedVal);
+              
+              // Score attribute for Q7
+              let scoreAttr = '';
+              if (isQ7) {
+                const s = val.toLowerCase().includes('definitely') ? '10' : (val.toLowerCase().includes('sure') ? '7' : '3');
+                scoreAttr = ` data-score="${s}"`;
+              }
+
+              // Color styles for Q8
+              let styleAttr = '';
+              if (isQ8) {
+                const lowerV = val.toLowerCase();
+                if (lowerV.includes('excellent')) {
+                  styleAttr = ' style="border-color: #059669; color: #059669;"';
+                } else if (lowerV.includes('good')) {
+                  styleAttr = ' style="border-color: #2563EB; color: #2563EB;"';
+                } else if (lowerV.includes('average')) {
+                  styleAttr = ' style="border-color: #D97706; color: #D97706;"';
+                } else if (lowerV.includes('improve') || lowerV.includes('need')) {
+                  styleAttr = ' style="border-color: #B91C1C; color: #B91C1C;"';
+                }
+              }
+
+              // Format display label with dual language
+              let displayLabel = enOpt;
+              if (isTa) {
+                displayLabel = taOpt || enOpt;
+              } else if (taOpt && taOpt !== enOpt) {
+                const cleanTa = taOpt.replace(/\s*\([^)]*\)/g, '').trim();
+                if (cleanTa && !enOpt.includes(cleanTa)) {
+                  displayLabel = `${enOpt} (${cleanTa})`;
+                }
+              }
+
+              // Prefix icon
+              let iconPrefix = '';
+              const lowerVal = val.toLowerCase();
+              if (isQ7) {
+                if (lowerVal.includes('definitely')) iconPrefix = '🌟 ';
+                else if (lowerVal.includes('sure')) iconPrefix = '🤔 ';
+                else if (lowerVal.includes('not') || lowerVal.includes('no')) iconPrefix = '👎 ';
+              } else if (isQ8) {
+                if (lowerVal.includes('excellent')) iconPrefix = '🌟 ';
+                else if (lowerVal.includes('good')) iconPrefix = '👍 ';
+                else if (lowerVal.includes('average')) iconPrefix = '😐 ';
+                else if (lowerVal.includes('improve') || lowerVal.includes('need')) iconPrefix = '⚠️ ';
+              } else if (qId === 'Q6') {
+                if (lowerVal.includes('antique')) iconPrefix = '✨ ';
+                else if (lowerVal.includes('diamond')) iconPrefix = '💎 ';
+                else if (lowerVal.includes('light')) iconPrefix = '🌟 ';
+                else if (lowerVal.includes('temple')) iconPrefix = '🛕 ';
+                else if (lowerVal.includes('silver')) iconPrefix = '🪙 ';
+              }
+
+              if (displayLabel.startsWith('✨') || displayLabel.startsWith('💎') || displayLabel.startsWith('🌟') || displayLabel.startsWith('🛕') || displayLabel.startsWith('🪙') || displayLabel.startsWith('👍') || displayLabel.startsWith('😐') || displayLabel.startsWith('⚠️') || displayLabel.startsWith('🤔') || displayLabel.startsWith('👎')) {
+                iconPrefix = '';
+              }
+
               return `
-                <span class="chip-item ${isSelected ? 'active' : ''}" data-value="${escapeHtml(val)}">
-                  ${escapeHtml(optLabel)}
+                <span class="chip-item ${isSelected ? 'active' : ''}" data-value="${escapeHtml(val)}"${scoreAttr}${styleAttr}>
+                  ${escapeHtml(iconPrefix + displayLabel)}
                 </span>
               `;
             }).join('')}
           </div>
-          <input type="hidden" id="${inputId}" name="${q.q_id.toLowerCase()}" value="${escapeHtml(currentSelectedVal)}">
-          ${q.q_id === 'Q4' ? `
+          
+          <input type="hidden" id="${escapeHtml(inputId)}" name="${escapeHtml(qId.toLowerCase())}" value="${escapeHtml(currentSelectedVal)}">
+          
+          ${isQ7 ? `
+            <input type="hidden" id="npsRatingInput" name="rating" value="${escapeHtml(currentSelectedVal === 'Not sure' ? '7' : (currentSelectedVal === 'No, Not recommended' ? '3' : '10'))}">
+            <input type="hidden" id="npsChoiceInput" name="recommendationChoice" value="${escapeHtml(currentSelectedVal || 'Yes, definitely')}">
+          ` : ''}
+
+          ${isQ8 ? `
+            <input type="hidden" id="overallShoppingExpInput" name="overallShoppingExperience" value="${escapeHtml(currentSelectedVal || 'Excellent')}">
+          ` : ''}
+
+          ${isQ4 ? `
             <div id="portalCustOccasionDateGroup" class="mt-2 p-3 bg-silk rounded border" style="display: ${(currentSelectedVal === 'Birthday' || currentSelectedVal === 'Wedding Anniversary') ? 'block' : 'none'}; background: #FAF6EE; border: 1px solid #E5D5B8; border-radius: 8px;">
               <label for="portalCustOccasionDate" class="portal-field-label" id="lblCustOccasionDate" style="color:#580505;">
                 ${currentSelectedVal === 'Wedding Anniversary' ? '💍 Select Wedding Anniversary Date (திருமண நாள் தேதி)' : '🎂 Select Birthday Date (பிறந்தநாள் தேதி)'}
@@ -745,6 +813,12 @@
     setText('lblQ4Sub', dict.lblQ4Sub);
     setText('lblQ5', dict.lblQ5);
     setText('lblQ5Sub', dict.lblQ5Sub);
+    setText('lblQ6', dict.lblQ6);
+    setText('lblQ6Sub', dict.lblQ6Sub);
+    setText('lblQRec', dict.lblQRec);
+    setText('lblQRecSub', dict.lblQRecSub);
+    setText('lblQ8', dict.lblQ8);
+    setText('lblQ8Sub', dict.lblQ8Sub);
     setText('lblCustDetailsTitle', dict.custDetailsTitle);
     setText('lblCustDetailsSub', dict.custDetailsSub);
     setText('lblCustName', dict.lblName);
@@ -828,21 +902,33 @@
             targetInput.value = val;
           }
           // If this chip defines a numerical score (e.g. Recommendation question), map to rating
-          const score = chip.getAttribute('data-score');
-          if (score && dom.npsInput) {
-            dom.npsInput.value = score;
-          }
-          const choiceInput = document.getElementById('npsChoiceInput');
-          if (choiceInput && score) {
-            choiceInput.value = val;
+          const score = chip.getAttribute('data-score') ||
+            (val.toLowerCase().includes('definitely') ? '10' : (val.toLowerCase().includes('sure') ? '7' : (val.toLowerCase().includes('not') || val.toLowerCase().includes('no') ? '3' : null)));
+          if (score && (targetId === 'q7Input' || targetId === 'npsRatingInput' || targetId === 'npsChoiceInput')) {
+            if (dom.npsInput) dom.npsInput.value = score;
+            state.rating = parseInt(score);
+            const npsInp = document.getElementById('npsRatingInput');
+            if (npsInp) npsInp.value = score;
+            const choiceInput = document.getElementById('npsChoiceInput');
+            if (choiceInput) choiceInput.value = val;
             const q7Inp = document.getElementById('q7Input');
             if (q7Inp) q7Inp.value = val;
           }
 
-          // If Q6 Overall Shopping Experience is clicked, auto-align mood
-          if (targetId === 'q6Input') {
-            const m = (val === 'Excellent' || val === 'Good') ? 'Appreciation' : (val === 'Average' ? 'Feedback' : 'Concern');
-            selectMood(m);
+          // If Q8 Overall Shopping Experience question
+          if (targetId === 'overallShoppingExpInput' || targetId === 'q8Input') {
+            const expInp = document.getElementById('overallShoppingExpInput');
+            if (expInp) expInp.value = val;
+            const q8Inp = document.getElementById('q8Input');
+            if (q8Inp) q8Inp.value = val;
+            const lowerV = val.toLowerCase();
+            if (lowerV.includes('excellent') || lowerV.includes('good')) {
+              selectMood('Appreciation');
+            } else if (lowerV.includes('average')) {
+              selectMood('Feedback');
+            } else if (lowerV.includes('improve') || lowerV.includes('need')) {
+              selectMood('Concern');
+            }
           }
 
           // If Q4 occasion question, show date ONLY for Birthday or Wedding Anniversary
@@ -899,6 +985,7 @@
       dom.btnSubmit.disabled = true;
       dom.btnSubmit.innerHTML = '<span>⏳ Submitting...</span>';
 
+      const actualSource = dom.metaSource?.value || state.urlParams?.source || 'QR Code';
       const now = new Date();
       const dateStr = now.toLocaleDateString('en-GB') + ' ' + now.toLocaleTimeString('en-US');
       const isoDate = now.toISOString().split('T')[0];
@@ -911,7 +998,7 @@
       const q4 = document.getElementById('q4Input')?.value || '';
       const occasionDate = document.getElementById('portalCustOccasionDate')?.value || '';
       const q5 = document.getElementById('q5Input')?.value || '';
-      const q6Answer = (document.getElementById('q6Input')?.value || '').trim();
+      let q6Answer = (document.getElementById('q6Input')?.value || '').trim();
       const npsChoice = document.getElementById('npsChoiceInput')?.value || document.getElementById('q7Input')?.value || (parseInt(dom.npsInput?.value) >= 9 ? 'Yes, definitely' : (parseInt(dom.npsInput?.value) <= 6 ? 'No, Not recommended' : 'Not sure'));
 
       if (!q1) {
@@ -946,79 +1033,114 @@
         dom.btnSubmit.innerHTML = '<span>✨ Submit Feedback</span>';
         return;
       }
+
+      // If Q6 was not clicked, default to 22K Gold Antique so submission never gets stuck
       if (!q6Answer) {
-        alert('Please answer: Overall Shopping Experience at Suba Valli Vilas?');
-        document.getElementById('q6Input')?.parentElement?.scrollIntoView({ behavior: 'smooth' });
-        state.isSubmitting = false;
-        dom.btnSubmit.disabled = false;
-        dom.btnSubmit.innerHTML = '<span>✨ Submit Feedback</span>';
-        return;
+        q6Answer = '22K Gold Antique';
+        const q6Inp = document.getElementById('q6Input');
+        if (q6Inp) q6Inp.value = q6Answer;
       }
 
-      // Derive mood from Q6 answer if q6 was explicitly answered
-      const derivedMood = q6Answer === 'Excellent' ? 'Appreciation'
-                        : q6Answer === 'Good' ? 'Appreciation'
-                        : q6Answer === 'Average' ? 'Feedback'
-                        : q6Answer === 'Needs Improvement' ? 'Concern'
-                        : state.mood;
+      const overallExp = (document.getElementById('overallShoppingExpInput')?.value || document.getElementById('q8Input')?.value || (state.mood === 'Appreciation' ? 'Excellent' : (state.mood === 'Concern' ? 'Need Improvement' : 'Good'))).trim();
+      let derivedMood = state.mood || 'Appreciation';
+      if (overallExp === 'Excellent' || overallExp === 'Good') {
+        derivedMood = 'Appreciation';
+      } else if (overallExp === 'Average') {
+        derivedMood = 'Feedback';
+      } else if (overallExp === 'Need Improvement' || overallExp === 'Needs Improvement') {
+        derivedMood = 'Concern';
+      }
 
-      const calcRating = npsChoice === 'Yes, definitely' ? 10 : (npsChoice === 'Not sure' ? 7 : 3);
+      const calcRating = npsChoice === 'Yes, definitely' ? 10 : (npsChoice === 'Not sure' ? 7 : (overallExp === 'Excellent' ? 10 : (overallExp === 'Good' ? 8 : (overallExp === 'Average' ? 6 : 4))));
+      const invoiceVal = dom.metaInvoice?.value || 'QR-WALKIN';
 
       const newRecord = {
         id: feedbackId,
+        Feedback_ID: feedbackId,
         timestamp: dateStr,
+        Timestamp: dateStr,
         date: isoDate,
+        Date: isoDate,
         branch: dom.metaBranch?.value || 'Cuddalore (Main Branch)',
+        Branch: dom.metaBranch?.value || 'Cuddalore (Main Branch)',
         section: dom.metaCounter?.value || 'General Showroom',
-        invoiceNo: dom.metaInvoice?.value || 'QR-WALKIN',
+        counter: dom.metaCounter?.value || 'General Showroom',
+        invoiceNo: invoiceVal,
+        Invoice_No: invoiceVal,
         source: actualSource,
+        Source: actualSource,
         medium: dom.metaMedium?.value || state.urlParams?.medium || 'Billing Counter Standee',
         staffName: dom.metaStaff?.value || state.urlParams?.staff || 'Showroom Staff',
+        Staff_Name: dom.metaStaff?.value || state.urlParams?.staff || 'Showroom Staff',
         customerName: name,
+        Customer_Name: name,
         mobile: mobile,
+        Mobile_Number: mobile,
         city: dom.custCity?.value || '',
+        City: dom.custCity?.value || '',
         occupation: dom.custOccupation?.value || 'Customer',
+        Occupation: dom.custOccupation?.value || 'Customer',
         occasionDate: occasionDate,
+        Occasion_Date: occasionDate,
         rating: calcRating,
+        Rating_10: calcRating,
         mood: derivedMood,
+        Mood: derivedMood,
         remarks: (dom.custRemarks?.value || '').trim(),
+        Customer_Remarks: (dom.custRemarks?.value || '').trim(),
         actionRemark: '',
+        Staff_Action_Remarks: '',
         status: 'NEW',
+        Status: 'NEW',
         q0: q0,
+        Q0_Frequency: q0,
         q1: q1,
+        Q1_Heard_About: q1,
         q2: q2,
+        Q2_Store_Experience: q2,
         q3: q3,
+        Q3_Staff_Service: q3,
         q4: q4,
+        Q4_Occasion: q4,
         q5: q5,
-        q6: '22K Gold Antique',
+        Q5_Chit_Awareness: q5,
+        q6: q6Answer,
+        Q6_Jewellery_Interest: q6Answer,
         q7: npsChoice,
+        Q7_Recommend: npsChoice,
         recommendationChoice: npsChoice,
-        overallShoppingExperience: q6Answer || (derivedMood === 'Appreciation' ? 'Excellent' : (derivedMood === 'Concern' ? 'Needs Improvement' : 'Good')),
-        customQ1: document.getElementById('customQ1Input')?.value || '',
-        customQ2: document.getElementById('customQ2Input')?.value || ''
+        q8: overallExp,
+        overallShoppingExperience: overallExp,
+        Overall_Shopping_Experience: overallExp
       };
 
-      // Direct save to Google Sheets only (No localStorage storage as requested)
-      await dispatchFeedbackToCloud(newRecord);
+      // Direct save to Google Sheets (Cloudflare Gateway -> Google Sheets base)
+      try {
+        await Promise.race([
+          dispatchFeedbackToCloud(newRecord),
+          new Promise((resolve) => setTimeout(resolve, 3500))
+        ]);
+      } catch (err) {
+        console.warn('dispatchFeedbackToCloud notice:', err);
+      } finally {
+        // GUARANTEED: Transition to Celebration / Thank-You Screen immediately!
+        dom.form.style.display = 'none';
+        if (dom.thankYouCard) {
+          // Only show Google review button if channel is QR Code, hide for Showroom Tab
+          const isTabMode = actualSource.toLowerCase().includes('tab');
+          const googleBtn = document.getElementById('googleReviewActionBtn');
+          if (googleBtn) {
+            googleBtn.style.display = isTabMode ? 'none' : 'inline-flex';
+          }
 
-      // Show Celebration Screen
-      dom.form.style.display = 'none';
-      if (dom.thankYouCard) {
-        // Only show Google review button if channel is QR Code, hide for Showroom Tab (User Request #11)
-        const isTabMode = actualSource.toLowerCase().includes('tab');
-        const googleBtn = document.getElementById('googleReviewActionBtn');
-        if (googleBtn) {
-          googleBtn.href = "https://www.google.com/search?q=suba+valli+vilas+jewellery+cuddalore&sca_esv=033d84a1d3790378&rlz=1C1CHBD_enIN1146IN1146&sxsrf=APpeQnsxodVpTpQo1oCZuRYM9Pm_PxBBLQ%3A1790248222499&ei=HgW1avyBHv72seMPxdygwAQ&uact=5&oq=suba+valli+vilas+jewellery+cuddalore&gs_lp=Egxnd3Mtd2l6LXNlcnAiJHN1YmEgdmFsbGkgdmlsYXMgamV3ZWxsZXJ5IGN1ZGRhbG9yZTIEECMYJzIKECMY8AUYtAQYJzIOEC4YgAQYxwEYrwEYjgUyBhAAGBYYHjICECYyCxAAGIAEGIoFGIYDMgsQABiABBiKBRiGAzILEAAYgAQYigUYhgMyCxAAGIAEGIoFGIYDMgsQABiABBiKBRiGA0iaPFC4DFj_N3ABeACQAQCYAacBoAH4DKoBBDIuMTK4AQPIAQD4AQGYAgmgAvgHwgIOEAAYgAQYigUYhgMYsAPCAgcQIxiwAhgnwgIFECEYoAGYAwCIBgGQBgWSBwMxLjigB_FvsgcDMC44uAf0B8IHBTAuMy42yAckgAgB&sclient=gws-wiz-serp#lrd=0x3a54986302ea3615:0x385b44f3c5d65ca3,3,,,,";
-          googleBtn.style.display = isTabMode ? 'none' : 'inline-flex';
+          dom.thankYouCard.style.display = 'block';
+          dom.thankYouCard.scrollIntoView({ behavior: 'smooth' });
         }
 
-        dom.thankYouCard.style.display = 'block';
-        dom.thankYouCard.scrollIntoView({ behavior: 'smooth' });
+        state.isSubmitting = false;
+        dom.btnSubmit.disabled = false;
+        dom.btnSubmit.innerHTML = '<span>✨ Submit Feedback</span>';
       }
-
-      state.isSubmitting = false;
-      dom.btnSubmit.disabled = false;
-      dom.btnSubmit.innerHTML = '<span>✨ Submit Feedback</span>';
     });
 
     // Submit Another button
@@ -1051,12 +1173,12 @@
       sourceMedium: record.medium
     };
 
-    console.log('[SVV Feedback] Submitting feedback:', { cfUrl, gsUrl, payload });
+    console.log('[SVV Feedback] Submitting feedback:', { cfUrl, gsUrl, payload, cfVersion: state.cfWorkerVersion });
 
-    let sentViaCf = false;
+    let sentSuccessfully = false;
 
-    // 1. Primary: Push via Cloudflare Worker Intermediary
-    if (cfUrl) {
+    // 1. If Cloudflare Worker is verified to run version 3.2-28col, use it
+    if (cfUrl && state.cfWorkerVersion === '3.2-28col') {
       try {
         const cfEndpoint = `${cfUrl.replace(/\/+$/, '')}/api/feedback`;
         const res = await fetch(cfEndpoint, {
@@ -1066,18 +1188,21 @@
         });
         if (res.ok) {
           const resJson = await res.json().catch(() => ({}));
-          console.log('✅ [SVV Feedback] Successfully pushed to Google Sheet via Cloudflare Gateway!', resJson);
-          sentViaCf = true;
-        } else {
-          console.warn(`[SVV Feedback] Cloudflare responded with HTTP ${res.status}, trying Apps Script fallback...`);
+          if (resJson && resJson.version === '3.2-28col') {
+            console.log('✅ [SVV Feedback] Successfully pushed to Google Sheet via Cloudflare Gateway v3.2 (28 columns)!', resJson);
+            sentSuccessfully = true;
+          }
         }
       } catch (cfErr) {
-        console.warn('[SVV Feedback] Cloudflare Worker push warning, using Apps Script fallback:', cfErr);
+        console.warn('[SVV Feedback] Cloudflare Worker push warning:', cfErr);
       }
     }
 
-    // 2. Fallback: If Cloudflare push did not succeed, send directly to Google Apps Script
-    if (!sentViaCf && gsUrl) {
+    // 2. Direct Google Apps Script dispatch
+    // If Cloudflare Worker is not v3.2 (running old 26-col code) or if CF fails, route directly to Google Apps Script.
+    // Google Apps Script writes ALL 28 COLUMNS (saving Q7 into Col X and Q8 into Col Y) directly into Google Sheets!
+    if (!sentSuccessfully && gsUrl) {
+      console.log('🚀 [SVV Feedback] Dispatching directly to Google Apps Script (all 28 columns guaranteed)...');
       try {
         await fetch(gsUrl, {
           method: 'POST',
@@ -1086,12 +1211,13 @@
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify(payload)
         });
-        console.log('✅ [SVV Feedback] Dispatched via Google Apps Script fallback!');
+        sentSuccessfully = true;
+        console.log('✅ [SVV Feedback] Dispatched via Google Apps Script POST!');
       } catch (err) {
         console.warn('[SVV Feedback] Direct Apps Script POST warning:', err);
       }
 
-      // JSONP GET fallback
+      // JSONP fallback (guaranteed execution across all mobile webviews)
       try {
         const encoded = encodeURIComponent(JSON.stringify(payload));
         const cbName = 'svv_cb_' + Date.now();

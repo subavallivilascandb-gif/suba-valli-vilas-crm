@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Suba Valli Vilas | CRM Jewellery App & DER Dashboard</title>
+  <title>Suba Valli Vilas | CRM Jewellery App & Day End Report (DER)</title>
+  <link rel="icon" type="image/png" href="svv-logo.png">
   <!-- Google Fonts for Luxury Jewellery Aesthetic -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,11 +16,11 @@
   <header class="app-header">
     <div class="header-brand">
       <div class="brand-logo-badge">
-        <img src="assets/logo.png" alt="Suba Valli Vilas Logo" class="brand-logo-img">
+        <img src="svv-logo.png" alt="Suba Valli Vilas Logo" class="brand-logo-img">
       </div>
       <div class="brand-text">
         <h1 class="brand-title">SUBA VALLI VILAS</h1>
-        <p class="brand-tagline">JEWELLERY CRM & DAILY EXECUTIVE REPORT (DER)</p>
+        <p class="brand-tagline">JEWELLERY CRM &amp; DAY END REPORT (DER)</p>
       </div>
     </div>
 
@@ -72,6 +73,9 @@
               <option value="USR-005">Karthik (Store Manager)</option>
             </select>
           </div>
+          <button type="button" id="btnSignOut" class="btn btn-xs btn-outline btn-logout" title="Sign Out / Logout">
+            <span>🚪 Logout</span>
+          </button>
         </div>
       </div>
 
@@ -88,7 +92,7 @@
     <div class="nav-container">
       <button class="nav-tab active" data-tab="der-screen" id="tab-der">
         <span class="tab-icon">📊</span>
-        <span>DER Dashboard</span>
+        <span>DER — Day End Report</span>
       </button>
       <button class="nav-tab" data-tab="footfall-screen" id="tab-footfall">
         <span class="tab-icon">👥</span>
@@ -136,7 +140,7 @@
         <div style="display:flex; align-items:center; justify-content:center; gap:16px;">
           <img src="assets/logo.png" style="width:48px; height:48px; border-radius:8px;" alt="Suba Valli Vilas Logo">
           <div style="text-align:left;">
-            <h2 id="derPrintMainHeading" style="font-family:'Cambria', Georgia, serif; color:#580505; margin:0; letter-spacing:0.5px; font-size:1.3rem;">Suba Valli Vilas Jewellery - CRM DER - 20/09/2026</h2>
+            <h2 id="derPrintMainHeading" style="font-family:'Cambria', Georgia, serif; color:#580505; margin:0; letter-spacing:0.5px; font-size:1.3rem;">Suba Valli Vilas Jewellery - CRM DER</h2>
             <p style="margin:0; font-size:11px; color:#555; font-weight:600;">DAY END REPORT (DER) — CUDDALORE SHOWROOM EXECUTIVE AUDIT</p>
           </div>
         </div>
@@ -144,11 +148,11 @@
 
       <div class="view-header">
         <div>
-          <h2 class="view-title" id="derScreenHeading">Suba Valli Vilas Jewellery - CRM DER - 20/09/2026</h2>
+          <h2 class="view-title" id="derScreenHeading">Suba Valli Vilas Jewellery - CRM DER</h2>
           <p class="view-subtitle">Day End Report (DER): Footfall, Bill Conversions, NPS, CSI, Chit Scheme & Diverts Audit</p>
         </div>
         <div class="view-actions">
-          <input type="date" id="derDateFilter" class="form-input date-input" value="2026-09-20">
+          <input type="date" id="derDateFilter" class="form-input date-input">
           <button class="btn btn-outline" id="btnRefreshDER">🔄 Refresh</button>
           <button class="btn btn-gold" id="btnPrintDER">🖨️ Print / Save PDF</button>
           <button class="btn btn-outline" id="btnExportDERSummary">📥 Export CSV</button>
@@ -191,6 +195,18 @@
           </div>
         </div>
 
+        <!-- Total Feedback Count Card (User Request #2) -->
+        <div class="kpi-card gold-border" id="derFeedbackKpiCard">
+          <div class="kpi-header">
+            <span class="kpi-label">TOTAL FEEDBACKS</span>
+            <span class="kpi-icon">💬</span>
+          </div>
+          <div class="kpi-value text-gold" id="derTotalFeedbacksCount">0</div>
+          <div class="kpi-footer text-muted" style="font-size: 0.78rem;">
+            <span id="derFeedbackChannelBreakdown" style="font-weight: 600;">Staff: 0 | QR: 0</span>
+          </div>
+        </div>
+
         <!-- Net Promoter Score (NPS > +95 Target with clear formula) -->
         <div class="kpi-card gold-border">
           <div class="kpi-header">
@@ -199,7 +215,7 @@
           </div>
           <div class="kpi-value text-gold" id="derNPSScore">+96<span class="text-sm">/100</span></div>
           <div class="kpi-footer text-success">
-            <span id="derNPSDetail">Based on: "Would you recommend Suba Valli Vilas?" • Target &gt; +95</span>
+            <span id="derNPSDetail">Metric Target &gt; +95</span>
           </div>
         </div>
 
@@ -211,7 +227,7 @@
           </div>
           <div class="kpi-value text-success" id="derCSIScore">96.4%</div>
           <div class="kpi-footer text-success">
-            <span id="derCSIDetail">Formula: 4★ &amp; 5★ Ratings / Total • Target &gt; 95%</span>
+            <span id="derCSIDetail">Metric Target &gt; 95%</span>
           </div>
         </div>
 
@@ -245,10 +261,10 @@
         <div class="card chart-card" id="derHourlyGraphCard">
           <div class="card-header d-flex justify-between align-center">
             <div>
-              <h3 class="card-title" id="derHourlyGraphTitle">Hourly Footfall — 20/09/2026</h3>
-              <p class="card-subtitle text-xs text-muted" id="derHourlySlotsSubtitle">10 of 12 slots submitted</p>
+              <h3 class="card-title" id="derHourlyGraphTitle">Hourly Footfall</h3>
+              <p class="card-subtitle text-xs text-muted" id="derHourlySlotsSubtitle">12 slots recorded</p>
             </div>
-            <span class="badge badge-gold">Live Hourly Trend</span>
+            <span class="badge badge-gold" id="derHourlyBadge">Hourly Trend</span>
           </div>
           <div class="card-body">
             <div class="der-line-chart-wrapper" id="derHourlyChartContainer">
@@ -262,7 +278,7 @@
           <div class="card-header d-flex justify-between align-center">
             <div>
               <h3 class="card-title">This Week — Daily Footfall</h3>
-              <p class="card-subtitle text-xs text-muted">Last 7 days</p>
+              <p class="card-subtitle text-xs text-muted" id="derWeeklySub">Last 7 days from selected date</p>
             </div>
             <span class="badge badge-subtle">7-Day Trend</span>
           </div>
@@ -311,7 +327,7 @@
               <div class="progress-bar-container">
                 <div class="progress-bar-fill progress-gold" id="derSchemeBar" style="width: 62%;"></div>
               </div>
-              <p class="text-xs text-muted mt-1">38% visitors are unaware of chit saving schemes. Direct them to Telecaller Desk for high-conversion outreach.</p>
+              <p class="text-xs text-muted mt-1" id="derSchemeUnawareDesc">Chit saving scheme awareness and telecaller outreach conversion status.</p>
             </div>
           </div>
         </div>
@@ -323,7 +339,7 @@
             <span class="badge badge-subtle">Lost Sales Hotspots</span>
           </div>
           <div class="card-body">
-            <div class="table-container scrollable-box" style="max-height:200px;">
+            <div class="table-container der-table-wrap">
               <table class="data-table">
                 <thead>
                   <tr>
@@ -364,15 +380,15 @@
             <span class="badge badge-gold">Staff Leaderboard</span>
           </div>
           <div class="card-body">
-            <div class="table-container">
+            <div class="table-container der-table-wrap">
               <table class="data-table" id="derStaffTable">
                 <thead>
                   <tr>
                     <th>Staff Name</th>
                     <th>Branch</th>
                     <th>Feedbacks</th>
-                    <th>Avg Rating</th>
-                    <th>Diverts Logged</th>
+                    <th>Rating</th>
+                    <th>Diverts</th>
                   </tr>
                 </thead>
                 <tbody id="derStaffTableBody">
@@ -532,15 +548,25 @@
           <div id="adminYesterdayContent">
             <!-- Yesterday's Slot Quick Edit Row -->
             <div class="yesterday-slot-editor">
-              <div class="yesterday-selector-row">
-                <label for="yesterdayDateSelector"><strong>Select Past Date:</strong></label>
-                <input type="date" id="yesterdayDateSelector" class="form-input date-input" value="2026-09-14">
-                <button class="btn btn-outline btn-sm" id="btnLoadPastDateSlots">Load Slots</button>
+              <div class="yesterday-selector-row d-flex flex-wrap items-center gap-3">
+                <div>
+                  <label for="yesterdayDateSelector"><strong>Select Past Date:</strong></label>
+                  <input type="date" id="yesterdayDateSelector" class="form-input date-input" style="display:inline-block; width:auto; margin-left:6px;">
+                </div>
+                <div>
+                  <label for="pastDateBillsInput"><strong>Day-End Bills:</strong></label>
+                  <input type="number" id="pastDateBillsInput" class="form-input" style="display:inline-block; width:95px; margin-left:6px;" min="0" placeholder="0">
+                </div>
+                <div class="d-flex items-center gap-2">
+                  <button class="btn btn-outline btn-sm" id="btnLoadPastDateSlots">📅 Load Date</button>
+                  <button class="btn btn-gold btn-sm" id="btnSavePastDaySlots">💾 Save Past Day Slots & Bills</button>
+                  <span id="pastSlotsSaveStatus" class="text-xs font-bold text-muted"></span>
+                </div>
               </div>
 
               <!-- Past Date Slots Grid -->
               <div class="past-slots-container mt-3">
-                <h4 class="past-slots-title" id="pastSlotsTitle">Missed Slot Correction for Yesterday (14 Sept 2026)</h4>
+                <h4 class="past-slots-title" id="pastSlotsTitle">Missed Slot Correction for Past Date</h4>
                 <div class="past-slots-grid" id="pastSlotsGrid">
                   <!-- Past slots rendered via JS -->
                 </div>
@@ -610,6 +636,25 @@
         <div class="fb-metric-card" data-stat-status="CLOSED" title="Click to filter Closed" style="cursor:pointer;">
           <span class="fb-metric-label">CLOSED</span>
           <span class="fb-metric-num text-success" id="fbStatClosed">2</span>
+        </div>
+      </div>
+
+      <!-- Question-Wise AI Strategic Suggestions Panel (Requested by User) -->
+      <div class="card mb-3 p-3 ai-advisor-panel" id="fbAIAdvisorPanel" style="border: 1.5px solid #C5A059; background: linear-gradient(135deg, #FFFCF7 0%, #FFFFFF 100%);">
+        <div class="d-flex justify-between align-center mb-2 pb-2 border-bottom flex-wrap gap-2">
+          <div class="d-flex align-center gap-2">
+            <span style="font-size: 1.35rem;">🤖</span>
+            <div>
+              <h3 style="margin: 0; font-size: 1.05rem; color: var(--maroon-primary); font-weight: 700;">Question-Wise Strategic AI Suggestions &amp; Voice of Customer</h3>
+              <p class="text-xs text-muted mb-0">Concise, data-accurate showroom recommendations synthesized question-by-question</p>
+            </div>
+          </div>
+          <div class="d-flex align-center gap-2">
+            <span class="badge badge-gold" id="fbAIAdvisorBadge">⚡ Real-time Feedback AI</span>
+          </div>
+        </div>
+        <div class="ai-suggestions-grid" id="fbAISuggestionsGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; margin-top: 10px;">
+          <!-- Dynamically populated via renderFeedbackAIAdvisor() -->
         </div>
       </div>
 
@@ -788,107 +833,72 @@
         </div>
       </div>
 
-      <!-- MULTI-MEDIUM QR STUDIO & STANDEE GENERATOR (Requested by user) -->
-      <div class="qr-link-banner" style="background: linear-gradient(135deg, #2B0303 0%, #580505 50%, #3D0404 100%);">
-        <div class="qr-banner-left">
-          <div class="qr-banner-title d-flex justify-between align-center flex-wrap gap-2">
+      <!-- TWO CLEAN FEEDBACK CHANNELS (User Request #8: Clean QR and Staff links without scanner box) -->
+      <div class="qr-link-banner" style="background: linear-gradient(135deg, #2B0303 0%, #580505 50%, #3D0404 100%); padding: 24px; border-radius: 16px; border: 2px solid #C5A059;">
+        <div style="width: 100%;">
+          <div class="d-flex justify-between align-center flex-wrap gap-2 mb-2">
             <div class="d-flex align-center gap-2">
-              <span style="font-size: 1.4rem;">🏷️</span>
-              <span>Multi-Medium QR Studio &amp; Standee Generator</span>
+              <span style="font-size: 1.5rem;">🏷️</span>
+              <h3 style="color: #FFFFFF; font-size: 1.2rem; margin: 0; font-family: 'Cinzel', serif;">Customer Feedback Collection Links</h3>
             </div>
-            <span class="badge badge-gold" id="currentMediumBadge">Billing Counter Standee</span>
+            <span class="badge badge-gold">2 Dedicated Channels</span>
           </div>
-          <p class="qr-banner-desc">
-            Generate customized, trackable QR codes and luxury printable standee placards for any showroom placement. Each medium automatically tags the incoming customer feedback!
+          <p class="text-sm" style="color: #E2E8F0; margin-bottom: 16px;">
+            Collect genuine customer feedback through two simple links: Share or print the <strong>Showroom QR Link</strong> for customer mobile scanning, or use the <strong>Showroom Tab Link</strong> on store tablets for in-person collection.
           </p>
 
-          <!-- Medium Selector Buttons -->
-          <div class="qr-medium-selector" id="qrMediumSelector">
-            <button type="button" class="qr-medium-btn active" data-medium="Billing Counter Standee" data-source="billing_counter">
-              <span>🏷️ Billing Counter</span>
-            </button>
-            <button type="button" class="qr-medium-btn" data-medium="Lounge Table Tent" data-source="table_tent">
-              <span>🍽️ Dining Lounge Table Tent</span>
-            </button>
-            <button type="button" class="qr-medium-btn" data-medium="Showcase Standee" data-source="showcase_standee">
-              <span>💎 Showcase Standee</span>
-            </button>
-            <button type="button" class="qr-medium-btn" data-medium="Invoice Receipt QR" data-source="invoice_receipt">
-              <span>🧾 Invoice Receipt</span>
-            </button>
-            <button type="button" class="qr-medium-btn" data-medium="WhatsApp Customer Link" data-source="whatsapp_share">
-              <span>📱 WhatsApp Share</span>
-            </button>
-            <button type="button" class="qr-medium-btn" data-medium="Social Media &amp; Hoardings" data-source="social_media">
-              <span>📢 Outdoor &amp; Social</span>
-            </button>
-          </div>
-
-          <!-- Context Attribution Controls -->
-          <div class="qr-context-row">
-            <div style="flex: 1; min-width: 130px;">
-              <label class="text-xs text-muted d-block mb-1" style="color: #F7F1DF !important;">Counter Attribution:</label>
-              <select id="qrStudioCounter" class="qr-context-select" style="width: 100%;">
-                <option value="">-- All Counters --</option>
-                <option value="Counter 1 - Antique">Counter 1 - Antique</option>
-                <option value="Counter 2 - Chains">Counter 2 - Chains</option>
-                <option value="Counter 3 - Bangles" selected>Counter 3 - Bangles</option>
-                <option value="Counter 4 - Rings">Counter 4 - Rings</option>
-                <option value="Counter 5 - Bridal Lounge">Counter 5 - Bridal Lounge</option>
-                <option value="Counter 6 - Silver">Counter 6 - Silver</option>
-                <option value="Counter 7 - Diamonds">Counter 7 - Diamonds</option>
-                <option value="Counter 8 - Bullion &amp; Coins">Counter 8 - Bullion &amp; Coins</option>
-              </select>
+          <!-- 2 Dedicated Channel Cards -->
+          <div class="two-channel-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px;">
+            <!-- Channel 1: Showroom QR Code Link -->
+            <div class="channel-card p-3 rounded" style="background: rgba(255,255,255,0.08); border: 1.5px solid #C5A059;">
+              <div class="d-flex justify-between align-center mb-2">
+                <strong style="color: #FFD700; font-size: 1rem;">📱 1. Customer QR Feedback Link</strong>
+                <span class="badge badge-channel-qr">Customer QR</span>
+              </div>
+              <p class="text-xs mb-2" style="color: #F7F1DF !important;">For customers scanning with their mobile phones at counters or tables.</p>
+              <div class="qr-link-copy-box" style="display: flex; gap: 8px; width: 100%; align-items: center;">
+                <input type="text" id="qrChannelLinkInput" class="qr-link-input" readonly autocomplete="off" value="https://subavallivilascandb-gif.github.io/suba-valli-vilas-crm/feedback.html?src=qr" onclick="this.select();" title="Click to select full URL" style="flex: 1; min-width: 0; width: 100%;">
+                <button type="button" class="btn btn-xs btn-gold" id="btnCopyQrLink" onclick="navigator.clipboard.writeText(document.getElementById('qrChannelLinkInput').value); app.showToast('📱 QR Code Link copied to clipboard!');" style="white-space: nowrap;">📋 Copy</button>
+              </div>
+              <div class="mt-2 d-flex gap-2">
+                <a href="https://subavallivilascandb-gif.github.io/suba-valli-vilas-crm/feedback.html?src=qr" target="_blank" id="btnOpenCustomerQrLink" style="display:inline-flex; align-items:center; gap:6px; background: rgba(197,160,89,0.2); color: #FFD700; text-decoration: none; border: 1px solid rgba(197,160,89,0.6); padding: 7px 14px; border-radius: 6px; font-size: 0.82rem; font-weight: 600; transition: all 0.2s;">
+                  <span>↗ Open Customer QR Link</span>
+                </a>
+              </div>
             </div>
 
-            <div style="flex: 1; min-width: 130px;">
-              <label class="text-xs text-muted d-block mb-1" style="color: #F7F1DF !important;">Staff Attribution:</label>
-              <select id="qrStudioStaff" class="qr-context-select" style="width: 100%;">
-                <option value="">-- Any Staff --</option>
-                <option value="Vijay" selected>Vijay (Counter 3)</option>
-                <option value="Balagoud">Balagoud</option>
-                <option value="Nilesh">Nilesh</option>
-                <option value="Valent">Valent</option>
-                <option value="Arun hasbe">Arun hasbe</option>
-                <option value="Swati">Swati</option>
-                <option value="Priya Sharma">Priya Sharma</option>
-              </select>
-            </div>
-
-            <div style="flex: 1; min-width: 130px;">
-              <label class="text-xs text-muted d-block mb-1" style="color: #F7F1DF !important;">Branch:</label>
-              <select id="qrStudioBranch" class="qr-context-select" style="width: 100%;">
-                <option value="Cuddalore (Main Branch)" selected>Cuddalore (Main Branch)</option>
-              </select>
+            <!-- Channel 2: Showroom Tablet Mode Link -->
+            <div class="channel-card p-3 rounded" style="background: rgba(255,255,255,0.08); border: 1.5px solid #38BDF8;">
+              <div class="d-flex justify-between align-center mb-2">
+                <strong style="color: #38BDF8; font-size: 1rem;">📟 2. Staff / Showroom Tab Link</strong>
+                <span class="badge badge-channel-tab">Store Tablet</span>
+              </div>
+              <p class="text-xs mb-2" style="color: #F7F1DF !important;">Open this link on showroom tablets handed to customers by sales staff.</p>
+              <div class="qr-link-copy-box" style="display: flex; gap: 8px; width: 100%; align-items: center;">
+                <input type="text" id="tabChannelLinkInput" class="qr-link-input" readonly autocomplete="off" value="https://subavallivilascandb-gif.github.io/suba-valli-vilas-crm/feedback.html?src=tab" onclick="this.select();" title="Click to select full URL" style="flex: 1; min-width: 0; width: 100%;">
+                <button type="button" class="btn btn-xs btn-gold" id="btnCopyTabLink" onclick="navigator.clipboard.writeText(document.getElementById('tabChannelLinkInput').value); app.showToast('📟 Showroom Tab Link copied to clipboard!');" style="white-space: nowrap;">📋 Copy</button>
+              </div>
+              <div class="mt-2 d-flex gap-2">
+                <a href="https://subavallivilascandb-gif.github.io/suba-valli-vilas-crm/feedback.html?src=tab" target="_blank" id="btnOpenStaffTabLink" style="display:inline-flex; align-items:center; gap:6px; background: rgba(56,189,248,0.18); color: #38BDF8; text-decoration: none; border: 1px solid rgba(56,189,248,0.5); padding: 7px 14px; border-radius: 6px; font-size: 0.82rem; font-weight: 600; transition: all 0.2s;">
+                  <span>🚀 Open Staff Tab Link</span>
+                </a>
+              </div>
             </div>
           </div>
 
-          <!-- Shareable Feedback Portal Link -->
-          <div class="qr-link-copy-box mt-3">
-            <input type="text" id="onPageShareLink" class="qr-link-input" readonly value="feedback.html?medium=Billing+Counter+Standee&amp;source=billing_counter&amp;counter=Counter+3+-+Bangles&amp;staff=Vijay">
-            <button type="button" class="btn btn-xs btn-gold" id="btnCopyOnPageLink">📋 Copy Link</button>
+          <!-- Hidden compatibility inputs for existing scripts -->
+          <div style="display:none;">
+            <input type="text" id="onPageShareLink" value="https://subavallivilascandb-gif.github.io/suba-valli-vilas-crm/feedback.html?src=qr">
+            <button id="btnCopyOnPageLink"></button>
+            <div id="onPageQRSVG"></div>
+            <div id="qrStudioPreviewCaption"></div>
+            <button id="btnDownloadQRImage"></button>
+            <button id="btnTestCustomerMode"></button>
+            <select id="qrStudioCounter"><option value="">All</option></select>
+            <select id="qrStudioStaff"><option value="">All</option></select>
+            <select id="qrStudioBranch"><option value="Cuddalore">Cuddalore</option></select>
+            <div id="qrMediumSelector"></div>
           </div>
-
-          <!-- Multi-Medium Action Buttons -->
-          <div class="qr-actions-row">
-            <button type="button" class="btn btn-xs btn-gold" id="btnPrintStandeePlacard">
-              <span>🖨️ Print Luxury Standee Placard (4x6 / A5)</span>
-            </button>
-            <button type="button" class="btn btn-xs btn-outline" id="btnDownloadQRImage" style="background: rgba(255,255,255,0.1); color: #FFF; border-color: rgba(255,255,255,0.4);">
-              <span>📥 Download QR (.svg)</span>
-            </button>
-            <button type="button" class="btn btn-xs btn-gold" id="btnTestCustomerMode">
-              <span>🌐 Open Separate Feedback Link</span>
-            </button>
-          </div>
-        </div>
-
-        <div class="qr-banner-right" style="background: #FFFFFF; border: 2px solid #C5A059; padding: 14px; border-radius: 14px;">
-          <div id="onPageQRSVG" style="cursor: pointer;" title="Click to test Customer Feedback Portal">
-            <!-- Inline SVG QR Code Generated Here -->
-          </div>
-          <div class="qr-caption" id="qrStudioPreviewCaption">Billing Counter • Counter 3</div>
-          <div class="text-xs text-muted mt-1" style="font-size: 0.68rem;">Scan with any phone camera</div>
         </div>
       </div>
 
@@ -954,8 +964,8 @@
           <div class="sentiment-selector-card card mb-4">
             <h4 class="selector-title" id="lblExperienceTitle">Tell us about your Experience *</h4>
             <div class="sentiment-options-grid">
-              <label class="sentiment-choice-card appreciation active">
-                <input type="radio" name="onPageMood" value="Appreciation" checked>
+              <label class="sentiment-choice-card appreciation">
+                <input type="radio" name="onPageMood" value="Appreciation">
                 <div class="card-inner">
                   <span class="choice-icon">⭐</span>
                   <span class="choice-label" id="lblMoodApprec">Appreciation</span>
@@ -1044,7 +1054,7 @@
             <span class="success-emoji">😊</span>
             <div>
               <h3 class="success-title">Thank you for your valuable feedback and Visit again 😊</h3>
-              <p class="success-sub">சுபா வள்ளி விலாஸ் வருகைக்கு நன்றி! மீண்டும் வருக!</p>
+              <p class="success-sub">சுப வள்ளி விலாஸ் வருகைக்கு நன்றி! மீண்டும் வருக!</p>
             </div>
           </div>
 
@@ -1310,6 +1320,50 @@
         </div>
       </div>
 
+      <!-- Executive KPI Overview Strip (Real Live Aggregated Metrics) -->
+      <div class="kpi-grid mb-3" id="repExecutiveKpiStrip">
+        <div class="kpi-card">
+          <div class="kpi-icon-bubble bg-gold-light">👥</div>
+          <div class="kpi-meta">
+            <span class="kpi-label">TOTAL FOOTFALL</span>
+            <span class="kpi-val" id="repKpiTotalFootfall">0</span>
+            <span class="kpi-footer text-muted" id="repKpiFootfallSub">Selected range visitors</span>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon-bubble bg-emerald-light">💬</div>
+          <div class="kpi-meta">
+            <span class="kpi-label">FEEDBACKS COLLECTED</span>
+            <span class="kpi-val" id="repKpiTotalFeedbacks">0</span>
+            <span class="kpi-footer text-muted" id="repKpiFeedbacksSub">0 Tab | 0 QR</span>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon-bubble bg-rose-light">⚠️</div>
+          <div class="kpi-meta">
+            <span class="kpi-label">DIVERT REQUESTS</span>
+            <span class="kpi-val" id="repKpiTotalDiverts">0</span>
+            <span class="kpi-footer text-muted" id="repKpiDivertsSub">0 Pending recovery</span>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon-bubble bg-sky-light">⭐</div>
+          <div class="kpi-meta">
+            <span class="kpi-label">STORE CSAT / RATING</span>
+            <span class="kpi-val" id="repKpiAvgRating">0.0</span>
+            <span class="kpi-footer text-muted" id="repKpiCsatSub">Overall customer delight</span>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon-bubble bg-amber-light">🏆</div>
+          <div class="kpi-meta">
+            <span class="kpi-label">CHIT / SCHEME PIPELINE</span>
+            <span class="kpi-val" id="repKpiChitEnrolled">0</span>
+            <span class="kpi-footer text-muted">Members registered</span>
+          </div>
+        </div>
+      </div>
+
       <!-- Reports Sub-navigation -->
       <div class="reports-nav-pills">
         <button class="report-pill active" data-report="footfall">👥 Footfall Reports</button>
@@ -1321,14 +1375,25 @@
 
       <!-- Common Date & Filter Toolbar -->
       <div class="card filter-bar-card mt-3">
+        <div class="d-flex flex-wrap items-center justify-between gap-2 mb-2 pb-2" style="border-bottom: 1px solid var(--border-color);">
+          <div class="d-flex items-center gap-2">
+            <span class="text-xs font-bold text-muted">QUICK RANGE:</span>
+            <button class="btn btn-xs btn-outline rep-quick-btn" data-range="today">Today</button>
+            <button class="btn btn-xs btn-outline rep-quick-btn" data-range="yesterday">Yesterday</button>
+            <button class="btn btn-xs btn-outline rep-quick-btn active" data-range="week">Last 7 Days</button>
+            <button class="btn btn-xs btn-outline rep-quick-btn" data-range="month">This Month</button>
+            <button class="btn btn-xs btn-outline rep-quick-btn" data-range="all">All Time</button>
+          </div>
+          <span class="text-xs text-muted" id="repFilterSummaryLabel">Showing: Last 7 Days (Live Data)</span>
+        </div>
         <div class="filter-controls">
           <div class="filter-group">
             <label>From Date:</label>
-            <input type="date" id="repFromDate" class="form-input date-input" value="2026-09-10">
+            <input type="date" id="repFromDate" class="form-input date-input">
           </div>
           <div class="filter-group">
             <label>To Date:</label>
-            <input type="date" id="repToDate" class="form-input date-input" value="2026-09-20">
+            <input type="date" id="repToDate" class="form-input date-input">
           </div>
           <div class="filter-group">
             <label>Staff Filter:</label>
@@ -1346,11 +1411,8 @@
             <label>Branch:</label>
             <select id="repBranchFilter" class="form-input">
               <option value="ALL">All Branches</option>
-              <option value="Main Branch">Main Branch</option>
-              <option value="Bailhongal">Bailhongal</option>
-              <option value="Belgaum">Belgaum</option>
-              <option value="Ankalagi">Ankalagi</option>
-              <option value="Goa">Goa</option>
+              <option value="Main Branch">Main Branch (Cuddalore)</option>
+              <option value="Branch 2 (OT)">Branch 2 (Old Town)</option>
             </select>
           </div>
           <div class="filter-group-actions">
@@ -1416,6 +1478,49 @@
                   <!-- Rendered via JS -->
                 </tbody>
               </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cuddalore Zone-Wise Customer Feedback Distribution & Area Drilldown (User Request #3) -->
+        <div class="card mb-4" id="repZoneWiseReportContainer">
+          <div class="card-header d-flex justify-between align-center flex-wrap gap-2">
+            <div>
+              <h3 class="card-title">📍 Cuddalore Zone-Wise &amp; Area Customer Distribution</h3>
+              <p class="text-xs text-muted mb-0">Interactive 4-Zone hierarchy (North, South, West, East/Core). Click any zone card to expand area and town-level counts (e.g. West ➔ Panruti - 22 count).</p>
+            </div>
+            <span class="badge badge-gold">Regional Sentiment Analysis</span>
+          </div>
+          <div class="card-body p-3">
+            <!-- 4-Zone Accordion Summary Cards -->
+            <div class="zone-accordion-grid" id="repZoneAccordionGrid" style="display: flex; flex-direction: column; gap: 12px;">
+              <!-- Rendered via JS -->
+            </div>
+
+            <!-- Detailed Town-by-Town Breakdown Table -->
+            <div class="mt-4 pt-3 border-top">
+              <div class="d-flex justify-between align-center mb-2">
+                <h4 style="font-size: 0.95rem; font-weight: 700; color: #334155; margin: 0;">Comprehensive Town-Wise Data Table</h4>
+                <span class="text-xs text-muted">All active feedback locations</span>
+              </div>
+              <div class="table-container">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Zone</th>
+                      <th>City / Area</th>
+                      <th>Feedbacks Count</th>
+                      <th>Channel (QR / Tab)</th>
+                      <th>Appreciations ⭐</th>
+                      <th>Concerns ⚠️</th>
+                      <th>Average Rating</th>
+                    </tr>
+                  </thead>
+                  <tbody id="repCityFeedbackBody">
+                    <!-- Rendered via JS -->
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
@@ -2061,8 +2166,8 @@
         <div class="sentiment-selector-card card mt-3">
           <h4 class="selector-title">Tell us about your Experience *</h4>
           <div class="sentiment-options-grid">
-            <label class="sentiment-choice-card appreciation active">
-              <input type="radio" name="feedbackMood" value="Appreciation" checked>
+            <label class="sentiment-choice-card appreciation">
+              <input type="radio" name="feedbackMood" value="Appreciation">
               <div class="card-inner">
                 <span class="choice-icon">⭐</span>
                 <span class="choice-label">Appreciation</span>
@@ -2663,8 +2768,8 @@
           <div class="sentiment-selector-card card mb-4">
             <h4 class="selector-title" id="custPortalMoodTitle">How was your visit to Suba Valli Vilas today? *</h4>
             <div class="sentiment-options-grid">
-              <label class="sentiment-choice-card appreciation active">
-                <input type="radio" name="custPortalMood" value="Appreciation" checked>
+              <label class="sentiment-choice-card appreciation">
+                <input type="radio" name="custPortalMood" value="Appreciation">
                 <div class="card-inner">
                   <span class="choice-icon">⭐</span>
                   <span class="choice-label" id="custPortalMoodApprec">Appreciation</span>
@@ -2740,7 +2845,7 @@
             <span class="success-emoji">😊</span>
             <div>
               <h3 class="success-title">Thank you for your valuable feedback and Visit again 😊</h3>
-              <p class="success-sub">சுபா வள்ளி விலாஸ் வருகைக்கு நன்றி! மீண்டும் வருக!</p>
+              <p class="success-sub">சுப வள்ளி விலாஸ் வருகைக்கு நன்றி! மீண்டும் வருக!</p>
             </div>
           </div>
 
@@ -2753,6 +2858,57 @@
           </div>
         </form>
       </div>
+    </div>
+  </div>
+
+  <!-- LOGIN MODAL OVERLAY -->
+  <div id="loginModalOverlay" class="login-modal-overlay" style="display: flex;">
+    <div class="login-card">
+      <div class="login-header">
+        <div class="login-logo-wrap">
+          <img src="svv-logo.png" alt="Suba Valli Vilas" class="login-logo-img">
+        </div>
+        <h2 class="login-brand-title">SUBA VALLI VILAS</h2>
+        <p class="login-brand-tamil">சுப வள்ளி விலாஸ்</p>
+        <p class="login-subtitle">JEWELLERY CRM &amp; DAY END REPORT (DER)</p>
+        <span class="badge badge-gold mt-1">Authorized Staff Sign In</span>
+      </div>
+
+      <form id="crmLoginForm" class="login-form">
+        <div class="form-group mb-3 text-left">
+          <label for="loginUsername" class="login-label">Username / User ID</label>
+          <div class="login-input-wrap">
+            <span class="login-input-icon">👤</span>
+            <input type="text" id="loginUsername" class="form-input login-input" placeholder="e.g. priya_admin or vijay_sales" required autocomplete="username">
+          </div>
+        </div>
+
+        <div class="form-group mb-3 text-left">
+          <label for="loginPassword" class="login-label">Password</label>
+          <div class="login-input-wrap">
+            <span class="login-input-icon">🔒</span>
+            <input type="password" id="loginPassword" class="form-input login-input" placeholder="Enter your password" required autocomplete="current-password">
+            <button type="button" id="btnToggleLoginPwd" class="login-pwd-toggle" title="Show / Hide Password">👁️</button>
+          </div>
+        </div>
+
+        <div id="loginErrorMsg" class="login-error-alert" style="display: none;"></div>
+
+        <button type="submit" id="btnLoginSubmit" class="btn btn-gold btn-block btn-login-submit">
+          <span>Sign In to CRM Portal</span>
+          <span>➔</span>
+        </button>
+
+        <div class="login-hint-box mt-3">
+          <p class="text-xs text-muted mb-1"><strong>Quick Demo Logins:</strong></p>
+          <div class="demo-login-chips">
+            <button type="button" class="btn-demo-chip" onclick="app.fillDemoLogin('priya_admin', 'svv@admin2026')">Admin (Priya)</button>
+            <button type="button" class="btn-demo-chip" onclick="app.fillDemoLogin('vijay_sales', 'svv@staff2026')">Staff (Vijay)</button>
+            <button type="button" class="btn-demo-chip" onclick="app.fillDemoLogin('lakshmi_crm', 'svv@tele2026')">Telecaller (Lakshmi)</button>
+            <button type="button" class="btn-demo-chip" onclick="app.fillDemoLogin('karthik_mgr', 'svv@mgr2026')">Manager (Karthik)</button>
+          </div>
+        </div>
+      </form>
     </div>
   </div>
 

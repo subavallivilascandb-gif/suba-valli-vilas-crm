@@ -93,7 +93,7 @@
       q_text_ta: 'நீங்கள் விரும்பும் நகைப் பிரிவுகள் யாவை?',
       q_type: 'single_choice',
       options_en: ['22K Gold Antique', 'Diamond Solitaire & Sets', 'Daily Wear Light Weight', 'Traditional Temple Jewellery', 'Silver Utensils'],
-      options_ta: ['✨ 22K Gold Antique (22K ஆண்டிக் நகைகள்)', '💎 Diamond Solitaire & Sets (வைர நகைகள்)', '🌟 Daily Wear Light Weight (குறைந்த எடை நகைகள்)', '🛕 Traditional Temple Jewellery (கோவில் நகைகள்)', '🪙 Silver Utensils (வெள்ளி பொருட்கள்)'],
+      options_ta: ['22K Gold Antique (22K ஆண்டிக் நகைகள்)', 'Diamond Solitaire & Sets (வைர நகைகள்)', 'Daily Wear Light Weight (குறைந்த எடை நகைகள்)', 'Traditional Temple Jewellery (கோவில் நகைகள்)', 'Silver Utensils (வெள்ளி பொருட்கள்)'],
       is_mandatory: false,
       is_active: true
     },
@@ -104,7 +104,7 @@
       q_text_ta: 'சுப வள்ளி விலாஸை உங்கள் நண்பர்கள் அல்லது குடும்பத்தினருக்கு பரிந்துரைப்பீர்களா?',
       q_type: 'single_choice',
       options_en: ['Yes, definitely', 'Not sure', 'No, Not recommended'],
-      options_ta: ['🌟 Yes, definitely (ஆம், நிச்சயமாக)', '🤔 Not sure (உறுதியாக தெரியவில்லை)', '👎 No, Not recommended (பரிந்துரைக்க மாட்டேன்)'],
+      options_ta: ['Yes, definitely (ஆம், நிச்சயமாக)', 'Not sure (உறுதியாக தெரியவில்லை)', 'No, Not recommended (பரிந்துரைக்க மாட்டேன்)'],
       is_mandatory: true,
       is_active: true
     },
@@ -116,7 +116,7 @@
       q_text_ta: 'ஒட்டுமொத்த ஷாப்பிங் அனுபவம்',
       q_type: 'single_choice',
       options_en: ['Excellent', 'Good', 'Average', 'Need Improvement'],
-      options_ta: ['🌟 Excellent (சிறப்பானது)', '👍 Good (நல்லது)', '😐 Average (சராசரி)', '⚠️ Need Improvement (மேம்பாடு தேவை)'],
+      options_ta: ['Excellent (சிறப்பானது)', 'Good (நல்லது)', 'Average (சராசரி)', 'Need Improvement (மேம்பாடு தேவை)'],
       is_mandatory: true,
       is_active: true
     }
@@ -625,33 +625,9 @@
                 }
               }
 
-              // Prefix icon
-              let iconPrefix = '';
-              const lowerVal = val.toLowerCase();
-              if (isQ7) {
-                if (lowerVal.includes('definitely')) iconPrefix = '🌟 ';
-                else if (lowerVal.includes('sure')) iconPrefix = '🤔 ';
-                else if (lowerVal.includes('not') || lowerVal.includes('no')) iconPrefix = '👎 ';
-              } else if (isQ8) {
-                if (lowerVal.includes('excellent')) iconPrefix = '🌟 ';
-                else if (lowerVal.includes('good')) iconPrefix = '👍 ';
-                else if (lowerVal.includes('average')) iconPrefix = '😐 ';
-                else if (lowerVal.includes('improve') || lowerVal.includes('need')) iconPrefix = '⚠️ ';
-              } else if (qId === 'Q6') {
-                if (lowerVal.includes('antique')) iconPrefix = '✨ ';
-                else if (lowerVal.includes('diamond')) iconPrefix = '💎 ';
-                else if (lowerVal.includes('light')) iconPrefix = '🌟 ';
-                else if (lowerVal.includes('temple')) iconPrefix = '🛕 ';
-                else if (lowerVal.includes('silver')) iconPrefix = '🪙 ';
-              }
-
-              if (displayLabel.startsWith('✨') || displayLabel.startsWith('💎') || displayLabel.startsWith('🌟') || displayLabel.startsWith('🛕') || displayLabel.startsWith('🪙') || displayLabel.startsWith('👍') || displayLabel.startsWith('😐') || displayLabel.startsWith('⚠️') || displayLabel.startsWith('🤔') || displayLabel.startsWith('👎')) {
-                iconPrefix = '';
-              }
-
               return `
                 <span class="chip-item ${isSelected ? 'active' : ''}" data-value="${escapeHtml(val)}"${scoreAttr}${styleAttr}>
-                  ${escapeHtml(iconPrefix + displayLabel)}
+                  ${escapeHtml(displayLabel)}
                 </span>
               `;
             }).join('')}
@@ -1001,38 +977,10 @@
       let q6Answer = (document.getElementById('q6Input')?.value || '').trim();
       const npsChoice = document.getElementById('npsChoiceInput')?.value || document.getElementById('q7Input')?.value || (parseInt(dom.npsInput?.value) >= 9 ? 'Yes, definitely' : (parseInt(dom.npsInput?.value) <= 6 ? 'No, Not recommended' : 'Not sure'));
 
-      if (!q1) {
-        alert('Please answer: How did you hear about Suba Valli Vilas?');
-        document.getElementById('q1Input')?.parentElement?.scrollIntoView({ behavior: 'smooth' });
-        state.isSubmitting = false;
-        dom.btnSubmit.disabled = false;
-        dom.btnSubmit.innerHTML = '<span>✨ Submit Feedback</span>';
-        return;
-      }
-      if (!q2) {
-        alert('Please answer: What did you like the most about Suba Valli Vilas?');
-        document.getElementById('q2Input')?.parentElement?.scrollIntoView({ behavior: 'smooth' });
-        state.isSubmitting = false;
-        dom.btnSubmit.disabled = false;
-        dom.btnSubmit.innerHTML = '<span>✨ Submit Feedback</span>';
-        return;
-      }
-      if (!q4) {
-        alert('Please answer: What occasion do you purchase for?');
-        document.getElementById('q4Input')?.parentElement?.scrollIntoView({ behavior: 'smooth' });
-        state.isSubmitting = false;
-        dom.btnSubmit.disabled = false;
-        dom.btnSubmit.innerHTML = '<span>✨ Submit Feedback</span>';
-        return;
-      }
-      if (!q5) {
-        alert('Please answer: Are you aware of our Suba Valli Vilas Gold Chit Schemes?');
-        document.getElementById('q5Input')?.parentElement?.scrollIntoView({ behavior: 'smooth' });
-        state.isSubmitting = false;
-        dom.btnSubmit.disabled = false;
-        dom.btnSubmit.innerHTML = '<span>✨ Submit Feedback</span>';
-        return;
-      }
+      const finalQ1 = q1 || 'Friends & Relatives';
+      const finalQ2 = q2 || 'Design Collections & Variety';
+      const finalQ4 = q4 || 'General Walk-in';
+      const finalQ5 = q5 || 'Yes - Already Enrolled';
 
       // If Q6 was not clicked, default to 22K Gold Antique so submission never gets stuck
       if (!q6Answer) {
@@ -1094,16 +1042,16 @@
         Status: 'NEW',
         q0: q0,
         Q0_Frequency: q0,
-        q1: q1,
-        Q1_Heard_About: q1,
-        q2: q2,
-        Q2_Store_Experience: q2,
+        q1: finalQ1,
+        Q1_Heard_About: finalQ1,
+        q2: finalQ2,
+        Q2_Store_Experience: finalQ2,
         q3: q3,
         Q3_Staff_Service: q3,
-        q4: q4,
-        Q4_Occasion: q4,
-        q5: q5,
-        Q5_Chit_Awareness: q5,
+        q4: finalQ4,
+        Q4_Occasion: finalQ4,
+        q5: finalQ5,
+        Q5_Chit_Awareness: finalQ5,
         q6: q6Answer,
         Q6_Jewellery_Interest: q6Answer,
         q7: npsChoice,

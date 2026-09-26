@@ -324,11 +324,20 @@ export default {
             // Read existing rows to update in place (guarantees only final updated rows in sheet)
             const existingRows = await readSheet(token, sheetId, "FOOTFALL_LOG!A:B");
             const existingMap = {};
+            const duplicateRowsToClear = [];
             if (Array.isArray(existingRows)) {
               for (let i = 1; i < existingRows.length; i++) {
                 if (existingRows[i] && existingRows[i][0] && existingRows[i][1]) {
-                  const dKey = `${String(existingRows[i][0]).trim()}_${String(existingRows[i][1]).trim()}`;
-                  existingMap[dKey] = i + 1;
+                  const rDate = String(existingRows[i][0]).trim();
+                  const rSlot = String(existingRows[i][1]).trim().toUpperCase();
+                  if (matchDates(rDate, date)) {
+                    const dKey = `${date}_${rSlot}`;
+                    if (!existingMap[dKey]) {
+                      existingMap[dKey] = i + 1;
+                    } else {
+                      duplicateRowsToClear.push(i + 1);
+                    }
+                  }
                 }
               }
             }
@@ -382,6 +391,11 @@ export default {
               await appendRow(token, sheetId, "FOOTFALL_LOG!A:K", dayEndRow);
             }
 
+            // Clear any duplicate rows detected for this date
+            for (const dupRowIdx of duplicateRowsToClear) {
+              await clearRange(token, sheetId, `FOOTFALL_LOG!A${dupRowIdx}:K${dupRowIdx}`);
+            }
+
             // Update DER_SUMMARY row in place
             await updateDerSummaryRow(totalFootfall, billsVal, conversionPct, peakHour, "Verified (Past Day Audited)");
 
@@ -409,21 +423,27 @@ export default {
           // Check if slot already exists in sheet to update in place
           try {
             const existingRows = await readSheet(token, sheetId, "FOOTFALL_LOG!A:B");
-            let updateIndex = -1;
+            const matchIndices = [];
             if (Array.isArray(existingRows)) {
               for (let i = 1; i < existingRows.length; i++) {
-                if (existingRows[i] && String(existingRows[i][0]).trim() === date && String(existingRows[i][1]).trim() === slotId) {
-                  updateIndex = i + 1;
-                  break;
+                if (existingRows[i] && matchDates(existingRows[i][0], date) && String(existingRows[i][1] || '').trim().toUpperCase() === String(slotId).trim().toUpperCase()) {
+                  matchIndices.push(i + 1);
                 }
               }
             }
-            if (updateIndex !== -1) {
-              await updateRange(token, sheetId, `FOOTFALL_LOG!A${updateIndex}:K${updateIndex}`, [row]);
+            if (matchIndices.length > 0) {
+              const primaryRow = matchIndices[0];
+              await updateRange(token, sheetId, `FOOTFALL_LOG!A${primaryRow}:K${primaryRow}`, [row]);
+
+              // If any duplicates exist for this slot, clear them
+              for (let d = 1; d < matchIndices.length; d++) {
+                await clearRange(token, sheetId, `FOOTFALL_LOG!A${matchIndices[d]}:K${matchIndices[d]}`);
+              }
+
               if (action === "SAVE_DAY_END_BILLS") {
                 await updateDerSummaryRow(footfallVal, billsVal, data.conversionPct || "0%", data.peakHourToday || data.peakHour || "", "Verified (Day End Closed)");
               }
-              return sendJson({ status: "SUCCESS", action: action || "UPDATE_FOOTFALL", mode: "UPDATED", row: updateIndex });
+              return sendJson({ status: "SUCCESS", action: action || "UPDATE_FOOTFALL", mode: "UPDATED", row: primaryRow });
             }
           } catch (e) {
             console.warn("In-place update check failed, appending row instead:", e);
@@ -685,6 +705,34 @@ async function updateRange(token, sheetId, range, rows) {
   });
   if (!res.ok) throw new Error(`Sheets Update Error (${res.status}): ${await res.text()}`);
   return res.json();
+}
+
+async function clearRange(token, sheetId, range) {
+  try {
+    const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(range)}:clear`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" }
+    });
+    return res.json().catch(() => ({}));
+  } catch (e) {
+    console.warn("clearRange warning:", e);
+    return {};
+  }
+}
+
+function matchDates(d1, d2) {
+  if (!d1 || !d2) return false;
+  const s1 = String(d1).trim().toLowerCase();
+  const s2 = String(d2).trim().toLowerCase();
+  if (s1 === s2) return true;
+  const toIso = (str) => {
+    const m1 = str.match(/^(\d{4})[/-](\d{1,2})[/-](\d{1,2})/);
+    if (m1) return `${m1[1]}-${m1[2].padStart(2, '0')}-${m1[3].padStart(2, '0')}`;
+    const m2 = str.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})/);
+    if (m2) return `${m2[3]}-${m2[2].padStart(2, '0')}-${m2[1].padStart(2, '0')}`;
+    return str;
+  };
+  return toIso(s1) === toIso(s2);
 }
 
 function toObjects(rows) {

@@ -861,16 +861,6 @@
       const pastDay = state.pastDays.find(d => normalizeDateToIso(d.date) === targetIso);
       if (pastDay && Array.isArray(pastDay.slots) && pastDay.slots.length === 12) {
         counts = pastDay.slots.map(c => Number(c) || 0);
-      } else {
-        try {
-          const raw = localStorage.getItem(`svv_today_slots_${targetIso}`) || localStorage.getItem(`svv_past_slots_${targetIso}`);
-          if (raw) {
-            const arr = JSON.parse(raw);
-            if (Array.isArray(arr) && arr.length === 12) {
-              counts = arr.map(c => Number(c) || 0);
-            }
-          }
-        } catch (e) {}
       }
       submittedCount = counts.filter(c => c > 0).length;
     }
@@ -984,16 +974,6 @@
         const found = state.pastDays.find(p => normalizeDateToIso(p.date) === iso);
         if (found) {
           footfall = Number(found.footfall) || (found.slots ? found.slots.reduce((a, b) => a + Number(b), 0) : 0);
-        } else {
-          try {
-            const raw = localStorage.getItem(`svv_today_slots_${iso}`) || localStorage.getItem(`svv_past_slots_${iso}`);
-            if (raw) {
-              const arr = JSON.parse(raw);
-              if (Array.isArray(arr)) {
-                footfall = arr.reduce((a, b) => a + (Number(b) || 0), 0);
-              }
-            }
-          } catch (e) {}
         }
       }
 
@@ -1056,20 +1036,6 @@
       if (pastDay) {
         selectedFootfall = Number(pastDay.footfall) || 0;
         selectedBills = Number(pastDay.bills) || 0;
-      } else {
-        // Check localStorage for saved date slots/bills
-        try {
-          const savedSlots = JSON.parse(localStorage.getItem(`svv_today_slots_${targetIso}`) || localStorage.getItem(`svv_past_slots_${targetIso}`) || 'null');
-          if (Array.isArray(savedSlots)) {
-            selectedFootfall = savedSlots.reduce((sum, s) => sum + (Number(s.count) || 0), 0);
-          }
-          const savedBills = JSON.parse(localStorage.getItem(`svv_today_bills_${targetIso}`) || 'null');
-          if (savedBills && savedBills.todayBills !== undefined) {
-            selectedBills = Number(savedBills.todayBills) || 0;
-          }
-        } catch (e) {
-          console.warn('Could not read historical footfall from storage:', e);
-        }
       }
     }
 
@@ -1501,150 +1467,78 @@
     `;
   }
 
-  // Storage persistence functions for today's slots and bills
+  // Storage persistence functions (DECOMMISSIONED: Google Sheet is the sole authoritative database)
   function saveTodaySlotsToStorage() {
-    try {
-      const todayDate = new Date().toISOString().split('T')[0];
-      localStorage.setItem(`svv_today_slots_${todayDate}`, JSON.stringify(state.slots));
-      localStorage.setItem(`svv_today_bills_${todayDate}`, JSON.stringify({
-        todayBills: state.todayBills,
-        todayBillsSubmitted: state.todayBillsSubmitted
-      }));
-    } catch (e) {
-      console.warn('Storage save failed:', e);
-    }
+    // Single Source of Truth: Google Sheets via Cloudflare Worker.
   }
 
   function saveSlotsToStorage() {
-    saveTodaySlotsToStorage();
+    // Single Source of Truth: Google Sheets via Cloudflare Worker.
   }
 
   function loadTodaySlotsFromStorage() {
-    try {
-      const todayDate = new Date().toISOString().split('T')[0];
-      const savedSlots = localStorage.getItem(`svv_today_slots_${todayDate}`);
-      if (savedSlots) {
-        const parsed = JSON.parse(savedSlots);
-        if (Array.isArray(parsed) && parsed.length === state.slots.length) {
-          parsed.forEach((ps, idx) => {
-            if (state.slots[idx]) {
-              state.slots[idx].count = ps.count;
-              state.slots[idx].status = ps.status;
-            }
-          });
-        }
-      }
-      const savedBills = localStorage.getItem(`svv_today_bills_${todayDate}`);
-      if (savedBills) {
-        const parsedB = JSON.parse(savedBills);
-        if (parsedB.todayBills !== undefined) state.todayBills = parsedB.todayBills;
-        if (parsedB.todayBillsSubmitted !== undefined) state.todayBillsSubmitted = !!parsedB.todayBillsSubmitted;
-      }
-    } catch (e) {
-      console.warn('Storage load failed:', e);
-    }
+    // Single Source of Truth: Google Sheets via pullDataFromGSheet()
   }
 
   function loadSlotsFromStorage() {
-    loadTodaySlotsFromStorage();
+    // Single Source of Truth: Google Sheets via pullDataFromGSheet()
   }
 
   function saveFeedbacksToStorage() {
-    // Sheet is the single source of truth — no localStorage caching for feedbacks
-    // Data is always pulled fresh from Google Sheet via pullDataFromGSheet()
+    // Single Source of Truth: Google Sheets via Cloudflare Worker.
   }
 
   function initCleanBaseState() {
     try {
+      // Purge all legacy local database keys so Google Sheet remains the sole authoritative source
       localStorage.removeItem('svv_feedbacks');
       localStorage.removeItem('svv_offline_feedbacks');
+      localStorage.removeItem('svv_diverts');
+      localStorage.removeItem('svv_offline_diverts');
+      localStorage.removeItem('svv_past_days');
+      localStorage.removeItem('svv_telecaller_registry');
+      localStorage.removeItem('svv_telecaller_calls');
+      localStorage.removeItem('svv_users_sheet');
 
-      if (!localStorage.getItem('svv_clean_base_v3')) {
-        localStorage.removeItem('svv_diverts');
-        localStorage.removeItem('svv_offline_diverts');
-        localStorage.removeItem('svv_past_days');
-        localStorage.setItem('svv_clean_base_v3', 'true');
-        state.diverts = [];
-        state.pastDays = [];
+      const keysToRemove = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && (k.startsWith('svv_today_') || k.startsWith('svv_past_'))) {
+          keysToRemove.push(k);
+        }
       }
+      keysToRemove.forEach(k => localStorage.removeItem(k));
+
       state.feedbacks = [];
+      state.diverts = [];
+      state.pastDays = [];
+      state.telecallerCalls = [];
+      state.customerCallRegistry = {};
     } catch (e) {
       console.warn('initCleanBaseState failed:', e);
     }
   }
 
   function loadFeedbacksFromStorage() {
-    // Sheet is the single source of truth — feedbacks are loaded via pullDataFromGSheet()
-    // LocalStorage is not used for feedback data
+    // Single Source of Truth: Google Sheets via pullDataFromGSheet()
   }
 
   function saveDivertsToStorage() {
-    try {
-      localStorage.setItem('svv_diverts', JSON.stringify(state.diverts));
-      localStorage.setItem('svv_offline_diverts', JSON.stringify(state.diverts));
-    } catch (e) {
-      console.warn('Failed to save diverts to localStorage:', e);
-    }
+    // Single Source of Truth: Google Sheets via Cloudflare Worker.
   }
 
   function loadDivertsFromStorage() {
-    try {
-      const saved = localStorage.getItem('svv_diverts') || localStorage.getItem('svv_offline_diverts');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          state.diverts = parsed.map(d => ({
-            ...d,
-            id: d.Divert_ID || d.id,
-            timestamp: d.Timestamp || d.timestamp || '',
-            date: d.Date || d.date || '',
-            branch: d.Branch || d.branch || '',
-            customerName: d.Customer_Name || d.customerName || '',
-            mobile: d.Mobile_Number || d.mobile || '',
-            section: d.Section || d.section || '',
-            counter: d.Counter || d.counter || '',
-            reason: (d.Reason || d.Reason_For_Divert || d.reason || '').trim(),
-            product: d.Product_Name || d.Product_Description || d.product || '',
-            design: d.Design_Style || d.design || '',
-            size: d.Size || d.Size_Fit || d.size || '',
-            gramRange: d.Gram_Range || d.Weight_Range || d.gramRange || '',
-            purpose: d.Purpose || d.Purpose_For_Visit || d.purpose || '',
-            employee: d.Staff_Employee_Name || d.Attended_Staff || d.employee || '',
-            attendedStaff: d.Staff_Employee_Name || d.Attended_Staff || d.attendedStaff || d.employee || '',
-            priority: d.Priority || d.Followup_Priority || d.priority || 'MEDIUM',
-            otherReason: d.Other_Reason_Remarks || d.Other_Reason || d.otherReason || '',
-            status: d.Status || d.status || 'PENDING'
-          }));
-        }
-      }
-    } catch (e) {
-      console.warn('Failed to load diverts from localStorage:', e);
-    }
+    // Single Source of Truth: Google Sheets via pullDataFromGSheet()
   }
 
   function saveTelecallerToStorage() {
-    try {
-      localStorage.setItem('svv_telecaller_registry', JSON.stringify(state.customerCallRegistry));
-      localStorage.setItem('svv_telecaller_calls', JSON.stringify(state.telecallerCalls || []));
-    } catch (e) {
-      console.warn('Failed to save telecaller to localStorage:', e);
-    }
+    // Single Source of Truth: Google Sheets via Cloudflare Worker.
   }
 
   function loadTelecallerFromStorage() {
-    try {
-      const savedReg = localStorage.getItem('svv_telecaller_registry');
-      if (savedReg) {
-        state.customerCallRegistry = { ...state.customerCallRegistry, ...JSON.parse(savedReg) };
-      }
-      const savedCalls = localStorage.getItem('svv_telecaller_calls');
-      if (savedCalls && Array.isArray(JSON.parse(savedCalls))) {
-        state.telecallerCalls = JSON.parse(savedCalls);
-      }
-    } catch (e) {
-      console.warn('Failed to load telecaller from localStorage:', e);
-    }
+    // Single Source of Truth: Google Sheets via pullDataFromGSheet()
   }
+
 
   // ================= 2. FOOTFALL MODULE & CURRENT DAY SLOT FILLING ENGINE =================
   function updateSlotStatusesWithGrace() {
@@ -1702,24 +1596,14 @@
       const iso = d.toISOString().split('T')[0];
       let past = state.pastDays.find(p => normalizeDateToIso(p.date) === iso);
       if (!past) {
-        let savedSlots = null;
-        let savedBills = 0;
-        try {
-          const rawS = localStorage.getItem('svv_past_slots_' + iso);
-          if (rawS) savedSlots = JSON.parse(rawS);
-          const rawB = localStorage.getItem('svv_past_bills_' + iso);
-          if (rawB) savedBills = parseInt(rawB) || 0;
-        } catch (e) {}
-
-        const ff = savedSlots ? savedSlots.reduce((a, b) => a + Number(b), 0) : 0;
         past = {
           date: iso,
-          footfall: ff,
-          bills: savedBills,
-          conversion: ff > 0 ? ((savedBills / ff) * 100).toFixed(1) : '0.0',
-          ratio: ff > 0 && savedBills > 0 ? (ff / savedBills).toFixed(1) : '0',
-          status: ff > 0 ? 'Verified' : 'Pending',
-          slots: savedSlots || [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          footfall: 0,
+          bills: 0,
+          conversion: '0.0',
+          ratio: '0',
+          status: 'Pending',
+          slots: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         };
         state.pastDays.push(past);
       }
@@ -1895,45 +1779,17 @@
         foundDay.ratio = liveFf > 0 && liveBills > 0 ? (liveFf / liveBills).toFixed(1) : '0';
       }
     } else {
-      if (!foundDay || !foundDay.slots || foundDay.slots.every(s => s === 0)) {
-        let savedSlots = null;
-        let savedBills = 0;
-        try {
-          const rawS = localStorage.getItem('svv_past_slots_' + iso) || localStorage.getItem('svv_today_slots_' + iso);
-          if (rawS) {
-            const parsed = JSON.parse(rawS);
-            if (Array.isArray(parsed) && parsed.length === 12) savedSlots = parsed;
-          }
-          const rawB = localStorage.getItem('svv_past_bills_' + iso) || localStorage.getItem('svv_today_bills_' + iso);
-          if (rawB) {
-            try {
-              const parsedB = JSON.parse(rawB);
-              savedBills = Number(parsedB.todayBills !== undefined ? parsedB.todayBills : rawB) || 0;
-            } catch(e) {
-              savedBills = parseInt(rawB) || 0;
-            }
-          }
-        } catch (e) {}
-
-        const ff = savedSlots ? savedSlots.reduce((a, b) => a + Number(b), 0) : (foundDay ? foundDay.footfall : 0);
-        if (!foundDay) {
-          foundDay = {
-            date: iso,
-            footfall: ff,
-            bills: savedBills,
-            conversion: ff > 0 ? ((savedBills / ff) * 100).toFixed(1) : '0.0',
-            ratio: ff > 0 && savedBills > 0 ? (ff / savedBills).toFixed(1) : '0',
-            status: ff > 0 ? 'Verified' : 'Pending',
-            slots: savedSlots || [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-          };
-          state.pastDays.push(foundDay);
-        } else {
-          if (savedSlots) foundDay.slots = savedSlots;
-          if (savedBills > 0 || !foundDay.bills) foundDay.bills = savedBills;
-          foundDay.footfall = ff;
-          foundDay.conversion = ff > 0 ? ((foundDay.bills / ff) * 100).toFixed(1) : '0.0';
-          foundDay.ratio = ff > 0 && foundDay.bills > 0 ? (ff / foundDay.bills).toFixed(1) : '0';
-        }
+      if (!foundDay) {
+        foundDay = {
+          date: iso,
+          footfall: 0,
+          bills: 0,
+          conversion: '0.0',
+          ratio: '0',
+          status: 'Pending',
+          slots: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        };
+        state.pastDays.push(foundDay);
       }
     }
 
@@ -2030,21 +1886,12 @@
     found.ratio = totalFootfall > 0 && found.bills > 0 ? (totalFootfall / found.bills).toFixed(1) : '0';
     found.status = 'Audited';
 
-    // Persist to localStorage
-    try {
-      localStorage.setItem('svv_past_days', JSON.stringify(state.pastDays));
-      localStorage.setItem('svv_past_slots_' + iso, JSON.stringify(found.slots));
-      localStorage.setItem('svv_past_bills_' + iso, String(found.bills));
-      if (iso === new Date().toISOString().split('T')[0]) {
-        state.slots.forEach((s, idx) => {
-          s.count = found.slots[idx] || 0;
-          if (s.count > 0) s.status = 'SUBMITTED';
-        });
-        state.todayBills = found.bills;
-        saveTodaySlotsToStorage();
-      }
-    } catch (e) {
-      console.warn('localStorage error:', e);
+    if (iso === new Date().toISOString().split('T')[0]) {
+      state.slots.forEach((s, idx) => {
+        s.count = found.slots[idx] || 0;
+        if (s.count > 0) s.status = 'SUBMITTED';
+      });
+      state.todayBills = found.bills;
     }
 
     // Sync to Google Sheets
@@ -2052,10 +1899,18 @@
       sendToGSheet('SAVE_PAST_DAY_AUDIT', {
         date: found.date,
         footfall: found.footfall,
+        totalFootfall: found.footfall,
+        count: found.footfall,
         bills: found.bills,
+        dayBills: found.bills,
+        dayEndBills: found.bills,
+        todayBills: found.bills,
         slots: found.slots,
         conversion: found.conversion,
-        ratio: found.ratio
+        conversionPct: `${found.conversion}%`,
+        ratio: found.ratio,
+        branch: state.activeBranch,
+        loggedBy: state.currentUser?.fullName || 'Admin'
       });
     }
 
@@ -2066,10 +1921,10 @@
       dom.pastSlotsTitle.textContent = `Missed Slot Correction for Past Date: ${found.date} (Footfall: ${found.footfall}, Bills: ${found.bills})`;
     }
     if (dom.pastSlotsSaveStatus) {
-      dom.pastSlotsSaveStatus.textContent = `Saved (${new Date().toLocaleTimeString()})`;
+      dom.pastSlotsSaveStatus.textContent = `Saved to Google Sheets (${new Date().toLocaleTimeString()})`;
       dom.pastSlotsSaveStatus.style.color = '#059669';
     }
-    showToast(`Saved slots (${found.footfall} visitors) & ${found.bills} bills for ${found.date}! 💾`);
+    showToast(`Saved slots (${found.footfall} visitors) & ${found.bills} bills for ${found.date} to Google Sheets! 💾`);
   }
 
   function renderPastDaysTable() {
@@ -2135,51 +1990,7 @@
         found.ratio = liveFf > 0 && liveBills > 0 ? (liveFf / liveBills).toFixed(1) : '0';
       }
     } else {
-      // 2. If not today, check if found has slots; if not, check localStorage
-      if (!found || !found.slots || found.slots.every(s => s === 0)) {
-        let savedSlots = null;
-        let savedBills = 0;
-        try {
-          const rawS = localStorage.getItem('svv_past_slots_' + iso) || localStorage.getItem('svv_today_slots_' + iso);
-          if (rawS) {
-            const parsed = JSON.parse(rawS);
-            if (Array.isArray(parsed) && parsed.length === 12) savedSlots = parsed;
-          }
-          const rawB = localStorage.getItem('svv_past_bills_' + iso) || localStorage.getItem('svv_today_bills_' + iso);
-          if (rawB) {
-            try {
-              const pb = JSON.parse(rawB);
-              savedBills = Number(pb.todayBills !== undefined ? pb.todayBills : rawB) || 0;
-            } catch(e) {
-              savedBills = parseInt(rawB) || 0;
-            }
-          }
-        } catch (e) {}
-
-        if (savedSlots && Array.isArray(savedSlots) && savedSlots.length === 12) {
-          const ff = savedSlots.reduce((a, b) => a + Number(b), 0);
-          if (!found) {
-            found = {
-              date: iso,
-              footfall: ff,
-              bills: savedBills,
-              conversion: ff > 0 ? ((savedBills / ff) * 100).toFixed(1) : '0.0',
-              ratio: ff > 0 && savedBills > 0 ? (ff / savedBills).toFixed(1) : '0',
-              status: ff > 0 ? 'Verified' : 'Pending',
-              slots: savedSlots
-            };
-            state.pastDays.push(found);
-          } else {
-            found.slots = savedSlots;
-            if (savedBills > 0 || !found.bills) found.bills = savedBills;
-            found.footfall = ff;
-            found.conversion = ff > 0 ? ((found.bills / ff) * 100).toFixed(1) : '0.0';
-            found.ratio = ff > 0 && found.bills > 0 ? (ff / found.bills).toFixed(1) : '0';
-          }
-        }
-      }
-
-      // 3. If still no valid slots or all 0, attempt to fetch from Google Sheet or Cloudflare Worker
+      // 2. If not today, attempt to fetch from Google Sheet or Cloudflare Worker if not already present
       if (!found || !found.slots || found.slots.every(s => s === 0)) {
         if (state.gsheetUrl || state.cfWorkerUrl) {
           try {
@@ -2232,8 +2043,6 @@
                   found.ratio = totalFf > 0 && fetchedBills > 0 ? (totalFf / fetchedBills).toFixed(1) : '0';
                   found.status = 'Verified';
                 }
-                localStorage.setItem('svv_past_slots_' + iso, JSON.stringify(fetchedSlots));
-                localStorage.setItem('svv_past_bills_' + iso, String(fetchedBills));
               }
             }
           } catch(e) {
@@ -4572,20 +4381,10 @@
   // ================= 8a. DYNAMIC USER MANAGEMENT ENGINE (GOOGLE SHEETS SYNC) =================
 
   function loadStoredUsers() {
-    try {
-      const stored = localStorage.getItem('svv_users_sheet');
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          applyUsersFromSheet(parsed, false);
-        }
-      }
-    } catch (e) {
-      console.warn('loadStoredUsers error:', e);
-    }
+    // Single Source of Truth: Google Sheets via pullDataFromGSheet()
   }
 
-  function applyUsersFromSheet(sheetUsers, cache = true) {
+  function applyUsersFromSheet(sheetUsers, cache = false) {
     if (!Array.isArray(sheetUsers) || sheetUsers.length === 0) return;
 
     // Map sheet columns to internal user shape
@@ -4610,9 +4409,6 @@
     if (mapped.length === 0) return;
 
     state.users = mapped;
-    if (cache) {
-      localStorage.setItem('svv_users_sheet', JSON.stringify(sheetUsers));
-    }
 
     // Update state.staffMembers so staff analytics, leaderboards, and attribution reflect sheet employees
     state.staffMembers = mapped.map(u => ({
@@ -5249,26 +5045,32 @@
       branch: payload.branch || state.activeBranch
     };
 
-    // Route via Cloudflare Worker proxy if available (handles CORS & redirects)
+    // Route via Cloudflare Worker (Direct Google Sheets API v4 using Service Account)
     if (state.cfWorkerUrl) {
-      const endpoint = `${state.cfWorkerUrl.replace(/\/+$/, '')}/api/proxy`;
+      let endpoint = `${state.cfWorkerUrl.replace(/\/+$/, '')}/api/sync`;
+      if (action === 'ADD_FEEDBACK') endpoint = `${state.cfWorkerUrl.replace(/\/+$/, '')}/api/feedback`;
+      else if (action === 'ADD_DIVERT') endpoint = `${state.cfWorkerUrl.replace(/\/+$/, '')}/api/divert`;
+      else if (action === 'UPDATE_FOOTFALL' || action === 'SAVE_DAY_END_BILLS' || action === 'SAVE_PAST_DAY_AUDIT') endpoint = `${state.cfWorkerUrl.replace(/\/+$/, '')}/api/footfall`;
+      else if (action === 'LOG_CALL') endpoint = `${state.cfWorkerUrl.replace(/\/+$/, '')}/api/call`;
+      else if (action === 'ADD_USER' || action === 'UPDATE_USER') endpoint = `${state.cfWorkerUrl.replace(/\/+$/, '')}/api/users`;
+
       fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(fullPayload)
-      }).then(() => {
-        updateGSheetSyncTimestamp();
-        console.log(`[Cloudflare Gateway Sync] Dispatched action: ${action}`);
-      }).catch(cfErr => {
-        console.warn(`[Cloudflare Gateway Sync Fallback] Error:`, cfErr);
-        // Fallback to direct GSheet if available
-        if (effectiveGsUrl) {
-          dispatchDirectGSheet(fullPayload, action, effectiveGsUrl);
-        }
-      });
+      }).then(r => r.json().catch(() => ({})))
+        .then(res => {
+          updateGSheetSyncTimestamp();
+          console.log(`[Cloudflare Gateway Sync] Dispatched action: ${action}`, res);
+        }).catch(cfErr => {
+          console.warn(`[Cloudflare Gateway Sync Fallback] Error:`, cfErr);
+          if (effectiveGsUrl) {
+            dispatchDirectGSheet(fullPayload, action, effectiveGsUrl);
+          }
+        });
 
-      // For ADD_FEEDBACK, also dispatch to Google Apps Script directly to ensure complete 28-column integrity
-      if (action === 'ADD_FEEDBACK' && effectiveGsUrl) {
+      // Dual-write to Apps Script as reliable secondary fallback
+      if (effectiveGsUrl) {
         dispatchDirectGSheet(fullPayload, action, effectiveGsUrl);
       }
     } else if (effectiveGsUrl) {
@@ -5518,17 +5320,39 @@
               existingDay.status = 'Verified';
             }
 
-            localStorage.setItem('svv_past_slots_' + grp.date, JSON.stringify(grp.slots));
-            localStorage.setItem('svv_past_bills_' + grp.date, String(bills));
-
-            // If it matches today and state.slots is empty or unsubmitted, sync today's slots too
-            if (grp.date === todayIso && state.slots.every(s => !s.count || Number(s.count) === 0)) {
+            // If it matches today, sync today's slots & bills directly from Google Sheets
+            if (grp.date === todayIso) {
               state.slots.forEach((s, idx) => {
-                s.count = grp.slots[idx] || 0;
-                if (s.count > 0) s.status = 'SUBMITTED';
+                const c = grp.slots[idx] || 0;
+                s.count = c;
+                if (c > 0) s.status = 'SUBMITTED';
               });
               if (bills > 0) state.todayBills = bills;
-              saveTodaySlotsToStorage();
+            }
+          });
+        }
+
+        // 4. Synchronize Telecaller Calls from Google Sheets
+        const callList = data.calls || data.data?.calls || [];
+        if (Array.isArray(callList)) {
+          state.telecallerCalls = callList.map(c => ({
+            callId: c.Call_ID || c.callId || '',
+            timestamp: c.Timestamp || c.timestamp || '',
+            customerName: c.Customer_Name || c.customerName || '',
+            mobile: String(c.Mobile_Number || c.mobile || '').replace(/\D/g, ''),
+            queueCategory: c.Queue_Category || c.queueCategory || 'General',
+            disposition: c.Call_Disposition || c.disposition || 'Connected',
+            callbackDate: c.Callback_Date || c.callbackDate || '',
+            notes: c.Caller_Remarks || c.notes || '',
+            caller: c.Telecaller_Name || c.caller || 'Lakshmi',
+            callStatus: (c.Call_Disposition || '').includes('Converted') || (c.Call_Disposition || '').includes('Resolved') ? 'CLOSED' : 'FOLLOWUP'
+          }));
+
+          // Rebuild customerCallRegistry from Google Sheets call logs
+          state.customerCallRegistry = {};
+          state.telecallerCalls.forEach(call => {
+            if (call.mobile) {
+              state.customerCallRegistry[call.mobile] = call;
             }
           });
         }
@@ -5931,12 +5755,12 @@
       }
     }, 120000);
 
-    // First pull — 3 seconds after login/load to populate feedbacks, diverts, footfall
+    // First pull — immediately on load to populate all records directly from Google Sheets
     setTimeout(() => {
       if (state.gsheetUrl || state.cfWorkerUrl) {
         pullDataFromGSheet();
       }
-    }, 3000);
+    }, 500);
 
     // Dedicated button listeners to sync questions
     document.getElementById('btnRefreshQuestionsCloud')?.addEventListener('click', () => {
@@ -7008,6 +6832,21 @@
       dom.modalCreateUser.classList.remove('active');
       dom.createUserForm.reset();
 
+      // Dispatch directly to Google Sheets via Cloudflare Worker
+      sendToGSheet('ADD_USER', {
+        userId: newUser.id,
+        fullName: newUser.fullName,
+        username: newUser.username,
+        password: 'svv@' + new Date().getFullYear(),
+        branch: newUser.branch,
+        role: newUser.role,
+        dept: 'Showroom Floor',
+        mobile: '',
+        email: '',
+        permissions: newUser.permissions.join(', '),
+        status: newUser.status
+      });
+
       // Add to quick switcher
       const opt = document.createElement('option');
       opt.value = newUser.id;
@@ -7546,14 +7385,28 @@
         found.bills = parseInt(bills) || 0;
         found.conversion = found.footfall > 0 ? ((found.bills / found.footfall) * 100).toFixed(1) : '0.0';
         found.ratio = found.footfall > 0 && found.bills > 0 ? (found.footfall / found.bills).toFixed(1) : '0';
-        try {
-          localStorage.setItem('svv_past_days', JSON.stringify(state.pastDays));
-          localStorage.setItem('svv_past_bills_' + iso, String(found.bills));
-        } catch (e) {}
         renderFootfall();
         renderDER();
         renderDERWeeklyDailyChart();
-        showToast(`Updated bills for ${date} to ${bills}!`);
+
+        if (typeof sendToGSheet === 'function') {
+          sendToGSheet('SAVE_PAST_DAY_AUDIT', {
+            date: found.date,
+            footfall: found.footfall,
+            totalFootfall: found.footfall,
+            bills: found.bills,
+            dayBills: found.bills,
+            dayEndBills: found.bills,
+            todayBills: found.bills,
+            slots: found.slots || [0,0,0,0,0,0,0,0,0,0,0,0],
+            conversion: found.conversion,
+            conversionPct: `${found.conversion}%`,
+            ratio: found.ratio,
+            branch: state.activeBranch,
+            loggedBy: state.currentUser?.fullName || 'Admin'
+          });
+        }
+        showToast(`Updated bills for ${date} to ${bills} in Google Sheets!`);
       }
     },
     savePastDayAudit: function (date) {
@@ -7561,23 +7414,26 @@
       const found = state.pastDays.find(p => normalizeDateToIso(p.date) === iso);
       if (found) {
         found.status = 'Audited';
-        try {
-          localStorage.setItem('svv_past_days', JSON.stringify(state.pastDays));
-          localStorage.setItem('svv_past_bills_' + iso, String(found.bills));
-        } catch (e) {}
         if (typeof sendToGSheet === 'function') {
           sendToGSheet('SAVE_PAST_DAY_AUDIT', {
             date: found.date,
             footfall: found.footfall,
+            totalFootfall: found.footfall,
             bills: found.bills,
-            slots: found.slots,
+            dayBills: found.bills,
+            dayEndBills: found.bills,
+            todayBills: found.bills,
+            slots: found.slots || [0,0,0,0,0,0,0,0,0,0,0,0],
             conversion: found.conversion,
-            ratio: found.ratio
+            conversionPct: `${found.conversion}%`,
+            ratio: found.ratio,
+            branch: state.activeBranch,
+            loggedBy: state.currentUser?.fullName || 'Admin'
           });
         }
         renderPastDaysTable();
         renderDER();
-        showToast(`Audit verified & saved for ${found.date}! 💾`);
+        showToast(`Audit verified & saved for ${found.date} to Google Sheets! 💾`);
       } else {
         showToast(`Audit verified for ${date}!`);
       }

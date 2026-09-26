@@ -102,13 +102,14 @@ export default {
 
       // GET: Pull All
       if (method === "GET" && (path === "/api/pull" || path === "/api/data")) {
-        const [fb, div, u, resp, diverts, ff] = await Promise.all([
+        const [fb, div, u, resp, diverts, ff, calls] = await Promise.all([
           readSheet(token, sheetId, "FEEDBACK_QUESTIONS!A1:M100"),
           readSheet(token, sheetId, "DIVERT_QUESTIONS!A1:H100"),
           readSheet(token, sheetId, "USER_CREATION!A1:L100"),
           readSheet(token, sheetId, "FEEDBACK_RESPONSES!A1:AB500"),
           readSheet(token, sheetId, "CUSTOMER_DIVERTS!A1:S500"),
-          readSheet(token, sheetId, "FOOTFALL_LOG!A1:K100")
+          readSheet(token, sheetId, "FOOTFALL_LOG!A1:K100"),
+          readSheet(token, sheetId, "TELECALLER_LOGS!A1:I500")
         ]);
         return sendJson({
           status: "SUCCESS",
@@ -117,7 +118,8 @@ export default {
           users: toObjects(u),
           feedbacks: toObjects(resp),
           diverts: toObjects(diverts),
-          footfall: toObjects(ff)
+          footfall: toObjects(ff),
+          calls: toObjects(calls)
         });
       }
 
@@ -243,9 +245,150 @@ export default {
           return sendJson({ status: "SUCCESS", action: "ADD_DIVERT", id: id });
         }
 
-        // Footfall & Day End Bills
-        if (path === "/api/footfall" || action === "UPDATE_FOOTFALL" || action === "SAVE_DAY_END_BILLS") {
+        // Footfall & Day End Bills & Previous Days Hourly Slots Update
+        if (path === "/api/footfall" || action === "UPDATE_FOOTFALL" || action === "SAVE_DAY_END_BILLS" || action === "SAVE_PAST_DAY_AUDIT") {
+          const slotRanges = [
+            "10:00 AM – 11:00 AM",
+            "11:00 AM – 12:00 PM",
+            "12:00 PM – 01:00 PM",
+            "01:00 PM – 02:00 PM",
+            "02:00 PM – 03:00 PM",
+            "03:00 PM – 04:00 PM",
+            "04:00 PM – 05:00 PM",
+            "05:00 PM – 06:00 PM",
+            "06:00 PM – 07:00 PM",
+            "07:00 PM – 08:00 PM",
+            "08:00 PM – 09:00 PM",
+            "09:00 PM – 10:00 PM"
+          ];
           const date = data.date || new Date().toISOString().split("T")[0];
+          const nowStr = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
+          const branch = data.branch || "Cuddalore (Main Branch)";
+          const loggedBy = data.loggedBy || "Admin";
+
+          // Helper to update or append DER_SUMMARY row so only the final updated values exist
+          const updateDerSummaryRow = async (totalFf, totalB, convPct, peakH, auditStatus) => {
+            try {
+              const derRows = await readSheet(token, sheetId, "DER_SUMMARY!A:A");
+              let derRowIdx = -1;
+              if (Array.isArray(derRows)) {
+                for (let i = 1; i < derRows.length; i++) {
+                  if (derRows[i] && String(derRows[i][0]).trim() === date) {
+                    derRowIdx = i + 1;
+                    break;
+                  }
+                }
+              }
+              const derRow = [
+                date,
+                branch,
+                String(totalFf),
+                String(totalB),
+                convPct,
+                data.npsScore || "+96",
+                data.csiScore || "97%",
+                String(data.divertCount || 0),
+                data.divertPct || "0%",
+                peakH || "05:00 PM - 06:00 PM",
+                "Wedding / Bridal",
+                auditStatus || "Verified"
+              ];
+              if (derRowIdx !== -1) {
+                await updateRange(token, sheetId, `DER_SUMMARY!A${derRowIdx}:L${derRowIdx}`, [derRow]);
+              } else {
+                await appendRow(token, sheetId, "DER_SUMMARY!A:L", derRow);
+              }
+            } catch (derErr) {
+              console.warn("DER_SUMMARY update error:", derErr);
+            }
+          };
+
+          // 1. Batch Update for Previous Days (All 12 Hourly Slots + Day-End Bills)
+          if (action === "SAVE_PAST_DAY_AUDIT" || Array.isArray(data.slots)) {
+            const slots = Array.isArray(data.slots) ? data.slots : [0,0,0,0,0,0,0,0,0,0,0,0];
+            const billsVal = Number(data.dayEndBills !== undefined ? data.dayEndBills : (data.dayBills !== undefined ? data.dayBills : (data.bills !== undefined ? data.bills : data.todayBills))) || 0;
+            const totalFootfall = Number(data.totalFootfall !== undefined ? data.totalFootfall : (data.footfall !== undefined ? data.footfall : slots.reduce((a, b) => a + (Number(b) || 0), 0))) || 0;
+            const conversionPct = data.conversionPct || (totalFootfall > 0 ? ((billsVal / totalFootfall) * 100).toFixed(1) + "%" : "0.0%");
+            const ratio = data.ratio || (billsVal > 0 ? (totalFootfall / billsVal).toFixed(1) : "0");
+
+            let maxCount = -1;
+            let peakHour = data.peakHour || "";
+            slots.forEach((cnt, idx) => {
+              const c = Number(cnt) || 0;
+              if (c > maxCount) {
+                maxCount = c;
+                peakHour = slotRanges[idx];
+              }
+            });
+
+            // Read existing rows to update in place (guarantees only final updated rows in sheet)
+            const existingRows = await readSheet(token, sheetId, "FOOTFALL_LOG!A:B");
+            const existingMap = {};
+            if (Array.isArray(existingRows)) {
+              for (let i = 1; i < existingRows.length; i++) {
+                if (existingRows[i] && existingRows[i][0] && existingRows[i][1]) {
+                  const dKey = `${String(existingRows[i][0]).trim()}_${String(existingRows[i][1]).trim()}`;
+                  existingMap[dKey] = i + 1;
+                }
+              }
+            }
+
+            // Update or append each of the 12 hourly slots
+            for (let idx = 0; idx < 12; idx++) {
+              const slotId = `SLOT_${String(idx + 1).padStart(2, "0")}`;
+              const slotRange = slotRanges[idx];
+              const slotCount = Number(slots[idx]) || 0;
+              const slotRow = [
+                date,
+                slotId,
+                slotRange,
+                slotCount,
+                billsVal,
+                conversionPct,
+                ratio,
+                peakHour,
+                branch,
+                loggedBy,
+                nowStr
+              ];
+              const key = `${date}_${slotId}`;
+              if (existingMap[key]) {
+                await updateRange(token, sheetId, `FOOTFALL_LOG!A${existingMap[key]}:K${existingMap[key]}`, [slotRow]);
+              } else {
+                await appendRow(token, sheetId, "FOOTFALL_LOG!A:K", slotRow);
+              }
+            }
+
+            // Update or append Day End row in FOOTFALL_LOG
+            const dayEndKey = `${date}_DAY_END`;
+            const dayEndTotalKey = `${date}_DAY_END_TOTAL`;
+            const dayEndRowIdx = existingMap[dayEndKey] || existingMap[dayEndTotalKey];
+            const dayEndRow = [
+              date,
+              "DAY_END",
+              "Day End Total",
+              totalFootfall,
+              billsVal,
+              conversionPct,
+              ratio,
+              peakHour,
+              branch,
+              loggedBy,
+              nowStr
+            ];
+            if (dayEndRowIdx) {
+              await updateRange(token, sheetId, `FOOTFALL_LOG!A${dayEndRowIdx}:K${dayEndRowIdx}`, [dayEndRow]);
+            } else {
+              await appendRow(token, sheetId, "FOOTFALL_LOG!A:K", dayEndRow);
+            }
+
+            // Update DER_SUMMARY row in place
+            await updateDerSummaryRow(totalFootfall, billsVal, conversionPct, peakHour, "Verified (Past Day Audited)");
+
+            return sendJson({ status: "SUCCESS", action: "SAVE_PAST_DAY_AUDIT", date: date, totalFootfall: totalFootfall, bills: billsVal, mode: "UPDATED" });
+          }
+
+          // 2. Single Slot Update or Today's Day-End Bills
           const slotId = data.slotId || (action === "SAVE_DAY_END_BILLS" ? "DAY_END" : "SLOT_01");
           const footfallVal = Number(data.footfallCount !== undefined ? data.footfallCount : (data.count !== undefined ? data.count : data.totalFootfall)) || 0;
           const billsVal = Number(data.dayEndBills !== undefined ? data.dayEndBills : (data.dayBills !== undefined ? data.dayBills : data.todayBills)) || 0;
@@ -258,10 +401,11 @@ export default {
             data.conversionPct || "0%",
             data.ratio || "",
             data.peakHourToday || data.peakHour || "",
-            data.branch || "Cuddalore (Main Branch)",
-            data.loggedBy || "",
-            new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })
+            branch,
+            loggedBy,
+            nowStr
           ];
+
           // Check if slot already exists in sheet to update in place
           try {
             const existingRows = await readSheet(token, sheetId, "FOOTFALL_LOG!A:B");
@@ -276,6 +420,9 @@ export default {
             }
             if (updateIndex !== -1) {
               await updateRange(token, sheetId, `FOOTFALL_LOG!A${updateIndex}:K${updateIndex}`, [row]);
+              if (action === "SAVE_DAY_END_BILLS") {
+                await updateDerSummaryRow(footfallVal, billsVal, data.conversionPct || "0%", data.peakHourToday || data.peakHour || "", "Verified (Day End Closed)");
+              }
               return sendJson({ status: "SUCCESS", action: action || "UPDATE_FOOTFALL", mode: "UPDATED", row: updateIndex });
             }
           } catch (e) {
@@ -284,25 +431,7 @@ export default {
           await appendRow(token, sheetId, "FOOTFALL_LOG!A:K", row);
 
           if (action === "SAVE_DAY_END_BILLS") {
-            try {
-              const derRow = [
-                date,
-                data.branch || "Cuddalore (Main Branch)",
-                String(footfallVal),
-                String(billsVal),
-                data.conversionPct || "0%",
-                data.npsScore || "+96",
-                data.csiScore || "97%",
-                String(data.divertCount || 0),
-                data.divertPct || "0%",
-                data.peakHourToday || data.peakHour || "05:00 PM - 06:00 PM",
-                "Wedding / Bridal",
-                "Verified (Day End Closed)"
-              ];
-              await appendRow(token, sheetId, "DER_SUMMARY!A:L", derRow);
-            } catch (derErr) {
-              console.warn("DER_SUMMARY append error:", derErr);
-            }
+            await updateDerSummaryRow(footfallVal, billsVal, data.conversionPct || "0%", data.peakHourToday || data.peakHour || "", "Verified (Day End Closed)");
           }
 
           return sendJson({ status: "SUCCESS", action: action || "UPDATE_FOOTFALL", mode: "APPENDED" });
@@ -324,6 +453,54 @@ export default {
           ];
           await appendRow(token, sheetId, "TELECALLER_LOGS!A:I", callRow);
           return sendJson({ status: "SUCCESS", action: "LOG_CALL", id: callId });
+        }
+
+        // User Management: Add User
+        if (path === "/api/users" || action === "ADD_USER") {
+          const userId = data.userId || data.id || ("USR-" + String(Date.now()).slice(-6));
+          const userRow = [
+            userId,
+            data.fullName || data.Full_Name || "",
+            data.username || data.Username || "",
+            data.password || data.Default_Password || "svv@2026",
+            data.branch || data.Branch || "Cuddalore (Main Branch)",
+            data.role || data.Role || "Staff",
+            data.dept || data.Assigned_Counter_Dept || "",
+            data.mobile || data.Mobile_Number || "",
+            data.email || data.Email || "",
+            data.permissions || data.Granted_Permissions || "",
+            data.status || data.Status || "Active",
+            new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })
+          ];
+          await appendRow(token, sheetId, "USER_CREATION!A:L", userRow);
+          return sendJson({ status: "SUCCESS", action: "ADD_USER", id: userId });
+        }
+
+        // User Management: Update User
+        if (path === "/api/users/update" || action === "UPDATE_USER") {
+          const targetId = String(data.id || data.userId || "").trim();
+          try {
+            const rows = await readSheet(token, sheetId, "USER_CREATION!A:A");
+            let updateRow = -1;
+            if (Array.isArray(rows)) {
+              for (let i = 1; i < rows.length; i++) {
+                if (rows[i] && String(rows[i][0]).trim() === targetId) {
+                  updateRow = i + 1;
+                  break;
+                }
+              }
+            }
+            if (updateRow !== -1) {
+              if (data.role) await updateRange(token, sheetId, `USER_CREATION!F${updateRow}`, [[data.role]]);
+              if (data.branch) await updateRange(token, sheetId, `USER_CREATION!E${updateRow}`, [[data.branch]]);
+              if (data.status) await updateRange(token, sheetId, `USER_CREATION!K${updateRow}`, [[data.status]]);
+              if (data.permissions) await updateRange(token, sheetId, `USER_CREATION!J${updateRow}`, [[data.permissions]]);
+              return sendJson({ status: "SUCCESS", action: "UPDATE_USER", id: targetId });
+            }
+          } catch (e) {
+            console.warn("User update error:", e);
+          }
+          return sendJson({ status: "ERROR", message: "User not found" }, 404);
         }
 
         // Bulk Sync

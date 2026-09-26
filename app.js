@@ -3016,48 +3016,9 @@
     const onPageQR = document.getElementById('onPageQRSVG');
     if (onPageQR) {
       onPageQR.onclick = () => openCustomerPortal();
-      onPageQR.innerHTML = `
-        <svg width="140" height="140" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect width="180" height="180" fill="#FFFFFF"/>
-          <rect x="15" y="15" width="45" height="45" rx="6" fill="#580505"/>
-          <rect x="23" y="23" width="29" height="29" rx="4" fill="#FFFFFF"/>
-          <rect x="29" y="29" width="17" height="17" rx="3" fill="#C5A059"/>
-
-          <rect x="120" y="15" width="45" height="45" rx="6" fill="#580505"/>
-          <rect x="128" y="23" width="29" height="29" rx="4" fill="#FFFFFF"/>
-          <rect x="134" y="29" width="17" height="17" rx="3" fill="#C5A059"/>
-
-          <rect x="15" y="120" width="45" height="45" rx="6" fill="#580505"/>
-          <rect x="23" y="128" width="29" height="29" rx="4" fill="#FFFFFF"/>
-          <rect x="29" y="134" width="17" height="17" rx="3" fill="#C5A059"/>
-
-          <circle cx="75" cy="30" r="5" fill="#580505"/>
-          <circle cx="95" cy="30" r="5" fill="#580505"/>
-          <circle cx="75" cy="50" r="5" fill="#C5A059"/>
-          <circle cx="95" cy="50" r="5" fill="#580505"/>
-          <circle cx="30" cy="75" r="5" fill="#580505"/>
-          <circle cx="50" cy="75" r="5" fill="#580505"/>
-          <circle cx="75" cy="75" r="7" fill="#C5A059"/>
-          <circle cx="95" cy="75" r="5" fill="#580505"/>
-          <circle cx="115" cy="75" r="5" fill="#C5A059"/>
-          <circle cx="135" cy="75" r="5" fill="#580505"/>
-          <circle cx="75" cy="95" r="5" fill="#580505"/>
-          <circle cx="95" cy="95" r="6" fill="#580505"/>
-          <circle cx="115" cy="95" r="5" fill="#C5A059"/>
-          <circle cx="75" cy="115" r="5" fill="#C5A059"/>
-          <circle cx="95" cy="115" r="5" fill="#580505"/>
-          <circle cx="115" cy="115" r="5" fill="#580505"/>
-          <circle cx="75" cy="135" r="5" fill="#580505"/>
-          <circle cx="95" cy="135" r="5" fill="#C5A059"/>
-          <circle cx="115" cy="135" r="5" fill="#580505"/>
-          <circle cx="135" cy="135" r="5" fill="#580505"/>
-          <circle cx="155" cy="135" r="5" fill="#C5A059"/>
-          <circle cx="75" cy="155" r="5" fill="#580505"/>
-          <circle cx="95" cy="155" r="5" fill="#580505"/>
-          <circle cx="115" cy="155" r="5" fill="#C5A059"/>
-        </svg>
-      `;
+      onPageQR.innerHTML = buildLuxuryQRSvg(220);
     }
+  }
   }
 
   function openCustomerPortal() {
@@ -4452,13 +4413,22 @@
       });
     }
 
-    // 3. #divAttendedStaff (Divert Modal)
-    const divStaff = document.getElementById('divAttendedStaff');
-    if (divStaff) {
-      const currentVal = divStaff.value;
-      divStaff.innerHTML = `<option value="">-- Select Staff Attended --</option>` +
-        staffList.map(u => `<option value="${u.fullName}">${u.fullName} (${u.dept || u.role})</option>`).join('');
-      if (currentVal && staffList.some(u => u.fullName === currentVal)) divStaff.value = currentVal;
+    // 3. #divCollectedBy (Divert Modal - App User Name Dropdown)
+    const divCollected = document.getElementById('divCollectedBy');
+    if (divCollected) {
+      const currentVal = divCollected.value;
+      let cHtml = `<option value="" disabled ${!currentVal ? 'selected' : ''}>e.g. Select App User collecting this Divert...</option>`;
+      allUsers.forEach(u => {
+        const uName = u.fullName || u.username || u.name;
+        const uRole = u.role || 'Staff';
+        const uUser = u.username ? ` (@${u.username})` : '';
+        const isSel = (currentVal === uName || (!currentVal && state.currentUser?.fullName === uName));
+        cHtml += `<option value="${uName}" ${isSel ? 'selected' : ''}>${uName}${uUser} • ${uRole}</option>`;
+      });
+      divCollected.innerHTML = cHtml;
+      if (state.currentUser?.fullName && (!currentVal || !allUsers.some(u => u.fullName === currentVal))) {
+        divCollected.value = state.currentUser.fullName;
+      }
     }
 
     // 4. #fbFormStaffName (Feedback Modal)
@@ -4668,8 +4638,29 @@
 
     renderDivertQuestionsConfig();
     renderDivertModalOptions();
+    populateDivertCollectedBy();
     renderDiverts();
     console.log(`[Schema Sync] Applied ${mapped.length} Divert Fields from Google Sheets.`);
+  }
+
+  function populateDivertCollectedBy() {
+    const divCollected = document.getElementById('divCollectedBy');
+    if (!divCollected) return;
+    const currentVal = divCollected.value;
+    const userList = (state.users && state.users.length > 0) ? state.users : [];
+
+    let html = `<option value="" disabled ${!currentVal ? 'selected' : ''}>e.g. Select App User collecting this Divert...</option>`;
+    userList.forEach(u => {
+      const uName = u.fullName || u.username || u.name;
+      const uRole = u.role || 'Staff';
+      const uUser = u.username ? ` (@${u.username})` : '';
+      const isSel = (currentVal === uName || (!currentVal && state.currentUser?.fullName === uName));
+      html += `<option value="${uName}" ${isSel ? 'selected' : ''}>${uName}${uUser} • ${uRole}</option>`;
+    });
+    divCollected.innerHTML = html;
+    if (state.currentUser?.fullName && (!currentVal || !userList.some(u => u.fullName === currentVal))) {
+      divCollected.value = state.currentUser.fullName;
+    }
   }
 
   function renderDivertModalOptions() {
@@ -5687,6 +5678,7 @@
     loadStoredQuestions();
     loadStoredUsers();
     renderDivertModalOptions();
+    populateDivertCollectedBy();
 
     // Google Sheets Cloud Database UI & Listeners
     initGSheetConfig();
@@ -6604,6 +6596,7 @@
 
     // Diverts Modal
     dom.btnOpenNewDivert.addEventListener('click', () => {
+      populateDivertCollectedBy();
       dom.modalDivert.classList.add('active');
     });
     dom.btnCloseDivertModal.addEventListener('click', () => dom.modalDivert.classList.remove('active'));
@@ -6627,7 +6620,7 @@
         return;
       }
 
-      const attendedStaff = document.getElementById('divAttendedStaff')?.value || '';
+      const attendedStaff = document.getElementById('divAttendedStaff')?.value.trim() || '';
       const counter = document.getElementById('divCounter')?.value || 'Counter 1 - Antique';
       const section = document.getElementById('divSection')?.value || 'Gold';
       const reason = document.getElementById('divReason')?.value || 'Design not available';
@@ -6663,6 +6656,7 @@
       sendToGSheet('ADD_DIVERT', newDivert);
       dom.modalDivert.classList.remove('active');
       dom.divertForm.reset();
+      populateDivertCollectedBy();
       renderAll();
       showToast(`Customer Divert logged (${newDivert.id}) collected by: ${collectedBy}! 📦`);
     });
@@ -6936,131 +6930,120 @@
   }
 
   // ================= MULTI-MEDIUM QR STUDIO & LUXURY STANDEE GENERATOR =================
-  function buildLuxuryQRSvg(size = 200) {
-    return `<svg width="${size}" height="${size}" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="200" height="200" rx="12" fill="#FFFFFF"/>
-      <rect x="4" y="4" width="192" height="192" rx="10" stroke="#C5A059" stroke-width="2" stroke-dasharray="4 2"/>
-      
-      <!-- Top-Left Finder Pattern -->
-      <rect x="18" y="18" width="46" height="46" rx="8" fill="#580505"/>
-      <rect x="25" y="25" width="32" height="32" rx="4" fill="#FFFFFF"/>
-      <rect x="31" y="31" width="20" height="20" rx="3" fill="#C5A059"/>
+  // REAL, scannable QR encoder (qrcode-generator). The previous markup was a decorative
+  // hand-drawn pattern that encoded no data, so no customer camera could ever scan it.
+  const QR_DARK = '#3D0303';
+  const QR_LIGHT = '#FFFFFF';
+  const QR_FRAME = '#C5A059';
+  const QR_MIN_SIZE = 200;
 
-      <!-- Top-Right Finder Pattern -->
-      <rect x="136" y="18" width="46" height="46" rx="8" fill="#580505"/>
-      <rect x="143" y="25" width="32" height="32" rx="4" fill="#FFFFFF"/>
-      <rect x="149" y="31" width="20" height="20" rx="3" fill="#C5A059"/>
-
-      <!-- Bottom-Left Finder Pattern -->
-      <rect x="18" y="136" width="46" height="46" rx="8" fill="#580505"/>
-      <rect x="25" y="143" width="32" height="32" rx="4" fill="#FFFFFF"/>
-      <rect x="31" y="149" width="20" height="20" rx="3" fill="#C5A059"/>
-
-      <!-- Timing Strips -->
-      <line x1="72" y1="28" x2="128" y2="28" stroke="#580505" stroke-width="4" stroke-dasharray="6 6"/>
-      <line x1="28" y1="72" x2="28" y2="128" stroke="#580505" stroke-width="4" stroke-dasharray="6 6"/>
-
-      <!-- High-Density Luxury Data Matrix -->
-      <!-- Row 1 -->
-      <rect x="74" y="38" width="6" height="6" rx="1" fill="#580505"/>
-      <rect x="84" y="38" width="6" height="6" rx="1" fill="#C5A059"/>
-      <rect x="98" y="38" width="6" height="6" rx="1" fill="#580505"/>
-      <rect x="108" y="38" width="6" height="6" rx="1" fill="#580505"/>
-      <rect x="118" y="38" width="6" height="6" rx="1" fill="#C5A059"/>
-
-      <!-- Row 2 -->
-      <rect x="74" y="48" width="6" height="6" rx="1" fill="#C5A059"/>
-      <rect x="88" y="48" width="6" height="6" rx="1" fill="#580505"/>
-      <rect x="102" y="48" width="6" height="6" rx="1" fill="#580505"/>
-      <rect x="114" y="48" width="6" height="6" rx="1" fill="#C5A059"/>
-      <rect x="124" y="48" width="6" height="6" rx="1" fill="#580505"/>
-
-      <!-- Row 3 -->
-      <rect x="38" y="74" width="6" height="6" rx="1" fill="#580505"/>
-      <rect x="48" y="74" width="6" height="6" rx="1" fill="#C5A059"/>
-      <rect x="58" y="74" width="6" height="6" rx="1" fill="#580505"/>
-      <rect x="136" y="74" width="6" height="6" rx="1" fill="#580505"/>
-      <rect x="146" y="74" width="6" height="6" rx="1" fill="#C5A059"/>
-      <rect x="156" y="74" width="6" height="6" rx="1" fill="#580505"/>
-      <rect x="166" y="74" width="6" height="6" rx="1" fill="#580505"/>
-
-      <!-- Row 4 -->
-      <rect x="38" y="84" width="6" height="6" rx="1" fill="#C5A059"/>
-      <rect x="48" y="84" width="6" height="6" rx="1" fill="#580505"/>
-      <rect x="58" y="84" width="6" height="6" rx="1" fill="#580505"/>
-      <rect x="136" y="84" width="6" height="6" rx="1" fill="#C5A059"/>
-      <rect x="148" y="84" width="6" height="6" rx="1" fill="#580505"/>
-      <rect x="160" y="84" width="6" height="6" rx="1" fill="#580505"/>
-
-      <!-- Row 5 -->
-      <rect x="38" y="96" width="6" height="6" rx="1" fill="#580505"/>
-      <rect x="50" y="96" width="6" height="6" rx="1" fill="#C5A059"/>
-      <rect x="140" y="96" width="6" height="6" rx="1" fill="#580505"/>
-      <rect x="152" y="96" width="6" height="6" rx="1" fill="#C5A059"/>
-      <rect x="164" y="96" width="6" height="6" rx="1" fill="#580505"/>
-
-      <!-- Row 6 -->
-      <rect x="38" y="108" width="6" height="6" rx="1" fill="#580505"/>
-      <rect x="48" y="108" width="6" height="6" rx="1" fill="#580505"/>
-      <rect x="58" y="108" width="6" height="6" rx="1" fill="#C5A059"/>
-      <rect x="136" y="108" width="6" height="6" rx="1" fill="#580505"/>
-      <rect x="146" y="108" width="6" height="6" rx="1" fill="#580505"/>
-      <rect x="158" y="108" width="6" height="6" rx="1" fill="#C5A059"/>
-      <rect x="168" y="108" width="6" height="6" rx="1" fill="#580505"/>
-
-      <!-- Row 7 -->
-      <rect x="38" y="120" width="6" height="6" rx="1" fill="#C5A059"/>
-      <rect x="52" y="120" width="6" height="6" rx="1" fill="#580505"/>
-      <rect x="136" y="120" width="6" height="6" rx="1" fill="#C5A059"/>
-      <rect x="150" y="120" width="6" height="6" rx="1" fill="#580505"/>
-      <rect x="162" y="120" width="6" height="6" rx="1" fill="#580505"/>
-
-      <!-- Bottom Right Data Matrix -->
-      <rect x="74" y="136" width="6" height="6" rx="1" fill="#580505"/>
-      <rect x="84" y="136" width="6" height="6" rx="1" fill="#C5A059"/>
-      <rect x="96" y="136" width="6" height="6" rx="1" fill="#580505"/>
-      <rect x="108" y="136" width="6" height="6" rx="1" fill="#580505"/>
-      <rect x="120" y="136" width="6" height="6" rx="1" fill="#C5A059"/>
-      <rect x="136" y="136" width="6" height="6" rx="1" fill="#580505"/>
-      <rect x="150" y="136" width="6" height="6" rx="1" fill="#580505"/>
-      <rect x="162" y="136" width="6" height="6" rx="1" fill="#C5A059"/>
-      <rect x="172" y="136" width="6" height="6" rx="1" fill="#580505"/>
-
-      <rect x="74" y="148" width="6" height="6" rx="1" fill="#C5A059"/>
-      <rect x="86" y="148" width="6" height="6" rx="1" fill="#580505"/>
-      <rect x="100" y="148" width="6" height="6" rx="1" fill="#580505"/>
-      <rect x="112" y="148" width="6" height="6" rx="1" fill="#C5A059"/>
-      <rect x="126" y="148" width="6" height="6" rx="1" fill="#580505"/>
-      <rect x="140" y="148" width="6" height="6" rx="1" fill="#C5A059"/>
-      <rect x="154" y="148" width="6" height="6" rx="1" fill="#580505"/>
-      <rect x="166" y="148" width="6" height="6" rx="1" fill="#580505"/>
-
-      <rect x="74" y="160" width="6" height="6" rx="1" fill="#580505"/>
-      <rect x="88" y="160" width="6" height="6" rx="1" fill="#C5A059"/>
-      <rect x="98" y="160" width="6" height="6" rx="1" fill="#580505"/>
-      <rect x="110" y="160" width="6" height="6" rx="1" fill="#580505"/>
-      <rect x="122" y="160" width="6" height="6" rx="1" fill="#C5A059"/>
-      <rect x="136" y="160" width="6" height="6" rx="1" fill="#580505"/>
-      <rect x="148" y="160" width="6" height="6" rx="1" fill="#580505"/>
-      <rect x="160" y="160" width="6" height="6" rx="1" fill="#C5A059"/>
-      <rect x="172" y="160" width="6" height="6" rx="1" fill="#580505"/>
-
-      <rect x="74" y="172" width="6" height="6" rx="1" fill="#580505"/>
-      <rect x="84" y="172" width="6" height="6" rx="1" fill="#580505"/>
-      <rect x="96" y="172" width="6" height="6" rx="1" fill="#C5A059"/>
-      <rect x="108" y="172" width="6" height="6" rx="1" fill="#580505"/>
-      <rect x="120" y="172" width="6" height="6" rx="1" fill="#580505"/>
-      <rect x="132" y="172" width="6" height="6" rx="1" fill="#C5A059"/>
-      <rect x="144" y="172" width="6" height="6" rx="1" fill="#580505"/>
-      <rect x="156" y="172" width="6" height="6" rx="1" fill="#580505"/>
-      <rect x="168" y="172" width="6" height="6" rx="1" fill="#C5A059"/>
-
-      <!-- Center Brand Crest Badge -->
-      <rect x="72" y="72" width="56" height="56" rx="10" fill="#580505" stroke="#C5A059" stroke-width="2.5"/>
-      <circle cx="100" cy="100" r="22" fill="#3D0303" stroke="#C5A059" stroke-width="1.5"/>
-      <text x="100" y="105" fill="#FFFFFF" font-family="'Cinzel', Georgia, serif" font-weight="bold" font-size="14" text-anchor="middle" letter-spacing="1">SVV</text>
-    </svg>`;
+  function buildCustomerFeedbackUrl() {
+    const link = dom.onPageShareLink?.value;
+    return (link && String(link).trim()) || 'feedback.html';
   }
+
+  // Attribution params are optional for the customer form, so they are the first
+  // thing dropped when the payload is too long to keep the QR modules large.
+  function shortenFeedbackUrl(url) {
+    try {
+      const [path, query] = String(url).split('?');
+      if (!query) return String(url);
+      const kept = new URLSearchParams(query);
+      ['cf', 'gs', 'branch', 'staff', 'counter'].forEach(k => kept.delete(k));
+      const rest = kept.toString();
+      return rest ? `${path}?${rest}` : path;
+    } catch (e) {
+      return String(url);
+    }
+  }
+
+  function createQrMatrix(text) {
+    const payload = String(text || 'feedback.html');
+    const utf8 = (window.qrcode && qrcode.stringToBytesFuncs && qrcode.stringToBytesFuncs['UTF-8']) || 'default';
+    const candidates = [payload, shortenFeedbackUrl(payload), String(payload).split('?')[0]];
+    const levels = ['H', 'Q', 'M', 'L'];
+    for (const data of candidates) {
+      for (const level of levels) {
+        try {
+          const qr = qrcode(0, level);
+          qr.addData(data, utf8);
+          qr.make();
+          return qr;
+        } catch (e) { /* payload too large for this level - try the next option */ }
+      }
+    }
+    return null;
+  }
+
+  // Merge horizontal dark modules into runs so the SVG stays tiny and prints razor sharp.
+  function qrMatrixToPath(qr) {
+    const count = qr.getModuleCount();
+    let d = '';
+    for (let r = 0; r < count; r++) {
+      let c = 0;
+      while (c < count) {
+        if (qr.isDark(r, c)) {
+          let run = 1;
+          while (c + run < count && qr.isDark(r, c + run)) run++;
+          d += `M${c} ${r}h${run}v1h-${run}z`;
+          c += run;
+        } else {
+          c++;
+        }
+      }
+    }
+    return d;
+  }
+
+  function buildLuxuryQRSvg(size = QR_MIN_SIZE, urlOverride = null) {
+    const px = Math.max(QR_MIN_SIZE, Math.round(size || QR_MIN_SIZE));
+    const url = urlOverride || buildCustomerFeedbackUrl();
+    const qr = createQrMatrix(url);
+    if (!qr) {
+      return `<svg xmlns="http://www.w3.org/2000/svg" width="${px}" height="${px}" viewBox="0 0 40 40" fill="none">
+        <rect width="40" height="40" fill="${QR_LIGHT}"/>
+        <rect x="2" y="2" width="36" height="36" rx="4" stroke="#B91C1C" stroke-width="2" stroke-dasharray="4 3"/>
+        <text x="20" y="18" text-anchor="middle" font-size="5" font-weight="700" fill="#B91C1C">QR</text>
+        <text x="20" y="26" text-anchor="middle" font-size="4" fill="#7F1D1D">unavailable</text>
+      </svg>`;
+    }
+
+    const count = qr.getModuleCount();
+    const quiet = 4;   // spec minimum white margin on every side
+    const frame = 7;   // luxury border, drawn fully OUTSIDE the quiet zone
+    const total = count + quiet * 2 + frame * 2;
+    const d = qrMatrixToPath(qr);
+
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="${px}" height="${px}" viewBox="0 0 ${total} ${total}" shape-rendering="crispEdges" role="img" aria-label="Scan with your phone camera to open the Suba Valli Vilas customer feedback form">
+  <rect width="${total}" height="${total}" fill="${QR_LIGHT}"/>
+  <g transform="translate(${frame + quiet} ${frame + quiet})">
+    <path d="${d}" fill="${QR_DARK}"/>
+  </g>
+  <rect x="1" y="1" width="${total - 2}" height="${total - 2}" rx="5" fill="none" stroke="${QR_FRAME}" stroke-width="2"/>
+</svg>`;
+  }
+
+  function qrSvgToPngBlob(svgMarkup, targetPx) {
+    return new Promise((resolve, reject) => {
+      const blob = new Blob([svgMarkup], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = targetPx;
+        canvas.height = targetPx;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, targetPx, targetPx);
+        ctx.drawImage(img, 0, 0, targetPx, targetPx);
+        URL.revokeObjectURL(url);
+        canvas.toBlob(b => (b ? resolve(b) : reject(new Error('PNG export failed'))), 'image/png');
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('QR render failed')); };
+      img.src = url;
+    });
+  }
+
 
   function updateQRStudioLinkAndPreview() {
     let baseUrl = 'feedback.html';
@@ -7110,7 +7093,7 @@
     }
 
     if (dom.onPageQRSVG) {
-      dom.onPageQRSVG.innerHTML = buildLuxuryQRSvg(180);
+      dom.onPageQRSVG.innerHTML = buildLuxuryQRSvg(220, fullUrl);
     }
   }
 
@@ -7134,7 +7117,8 @@
     dom.qrStudioBranch?.addEventListener('change', updateQRStudioLinkAndPreview);
 
     dom.btnPrintStandeePlacard?.addEventListener('click', printStandeePlacard);
-    dom.btnDownloadQRImage?.addEventListener('click', downloadQRCodeSvg);
+    dom.btnDownloadQRImage?.addEventListener('click', downloadQRCodePng);
+    document.getElementById('btnDownloadQRVector')?.addEventListener('click', downloadQRCodeSvg);
 
     dom.btnCopyOnPageLink?.addEventListener('click', () => {
       const link = dom.onPageShareLink?.value || 'feedback.html';
@@ -7162,7 +7146,7 @@
     const counter = dom.qrStudioCounter?.value || 'Billing Counter 1';
     const staff = dom.qrStudioStaff?.value || 'Showroom Staff';
     const branch = dom.qrStudioBranch?.value || state.activeBranch || 'Cuddalore (Main Branch)';
-    const qrSvg = buildLuxuryQRSvg(260);
+    const qrSvg = buildLuxuryQRSvg(720, buildCustomerFeedbackUrl());
 
     const printWin = window.open('', '_blank', 'width=650,height=850');
     if (!printWin) {
@@ -7252,13 +7236,43 @@
     }
     .qr-wrapper {
       background: #FFFDF9;
-      padding: 16px;
+      padding: 14px;
       border-radius: 16px;
       border: 1.5px solid #F0DFB8;
       display: inline-block;
       margin-bottom: 16px;
       box-shadow: 0 4px 14px rgba(197, 160, 89, 0.2);
     }
+    .qr-wrapper svg {
+      display: block;
+      width: 52mm;
+      height: 52mm;
+    }
+    .scan-note {
+      font-size: 11px;
+      color: #78350F;
+      font-weight: 600;
+      margin: 8px 0 14px;
+    }
+    .tool-row {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+    .tool-btn {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #580505;
+      background: #FFFFFF;
+      border: 1.5px solid #C5A059;
+      border-radius: 20px;
+      padding: 7px 14px;
+      cursor: pointer;
+    }
+    .tool-btn:hover { background: #FDF3DC; }
     .instruction-pill {
       display: inline-flex;
       align-items: center;
@@ -7298,6 +7312,7 @@
     @media print {
       body { background: #FFFFFF; padding: 0; }
       .standee-card { box-shadow: none; max-width: 100%; border-width: 3px; }
+      .tool-row, .no-print { display: none !important; }
       @page { margin: 10mm; size: auto; }
     }
   </style>
@@ -7319,6 +7334,14 @@
     <div>
       <span class="instruction-pill">📷 Scan with any Smartphone Camera</span>
     </div>
+    <div class="scan-note">Hold the phone 15–20 cm away and fill the QR box until it scans.</div>
+
+    <div class="tool-row no-print">
+      <button class="tool-btn" type="button" onclick="window.print()">🖨️ Print / Save as PDF</button>
+      <button class="tool-btn" type="button" onclick="downloadQrPng(1600)">📥 Download QR PNG (print)</button>
+      <button class="tool-btn" type="button" onclick="downloadQrPng(3200)">📥 Download QR PNG (ultra)</button>
+      <button class="tool-btn" type="button" onclick="copyQrLink()">🔗 Copy QR link</button>
+    </div>
 
     <div class="reward-box">
       ✨ Rate your experience, enroll in our 11-Month Gold Chit Scheme & win festive gold coin bonuses!
@@ -7330,6 +7353,37 @@
     </div>
   </div>
   <script>
+    var QR_SVG = ${JSON.stringify(qrSvg)};
+    var QR_LINK = ${JSON.stringify(buildCustomerFeedbackUrl())};
+
+    function downloadQrPng(px) {
+      var blob = new Blob([QR_SVG], { type: 'image/svg+xml;charset=utf-8' });
+      var url = URL.createObjectURL(blob);
+      var img = new Image();
+      img.onload = function() {
+        var canvas = document.createElement('canvas');
+        canvas.width = px; canvas.height = px;
+        var ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, px, px);
+        ctx.drawImage(img, 0, 0, px, px);
+        URL.revokeObjectURL(url);
+        canvas.toBlob(function(b) {
+          var a = document.createElement('a');
+          a.href = URL.createObjectURL(b);
+          a.download = ${JSON.stringify(qrExportBaseName('png'))};
+          document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        }, 'image/png');
+      };
+      img.onerror = function() { URL.revokeObjectURL(url); };
+      img.src = url;
+    }
+
+    function copyQrLink() {
+      if (navigator.clipboard) navigator.clipboard.writeText(QR_LINK);
+    }
+  </script>
+  <script>
     window.onload = function() {
       setTimeout(function() { window.print(); }, 500);
     };
@@ -7339,24 +7393,43 @@
     printWin.document.close();
   }
 
+  function qrExportBaseName(ext) {
+    const safeMedium = (state.activeQRSource || 'standee').replace(/[^a-z0-9_-]/gi, '_');
+    return `Suba_Valli_Vilas_QR_${safeMedium}_${new Date().toISOString().split('T')[0]}.${ext}`;
+  }
+
   function downloadQRCodeSvg() {
-    const svgMarkup = buildLuxuryQRSvg(400);
+    const svgMarkup = buildLuxuryQRSvg(1024, buildCustomerFeedbackUrl());
     const blob = new Blob([svgMarkup], { type: 'image/svg+xml;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    const safeMedium = (state.activeQRSource || 'standee').replace(/[^a-z0-9_-]/gi, '_');
-    link.download = `Suba_Valli_Vilas_QR_${safeMedium}_${new Date().toISOString().split('T')[0]}.svg`;
+    link.download = qrExportBaseName('svg');
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-    showToast(`Downloaded Suba Valli Vilas Luxury QR SVG (${state.activeQRMedium})! 📥`);
+    showToast(`Downloaded scannable QR SVG (${state.activeQRMedium})! 📥`);
+  }
+
+  function downloadQRCodePng(pixels = 1600) {
+    const svgMarkup = buildLuxuryQRSvg(1024, buildCustomerFeedbackUrl());
+    qrSvgToPngBlob(svgMarkup, pixels).then(blob => {
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = qrExportBaseName('png');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      showToast(`Downloaded ${pixels}px scannable QR PNG for print! 📥`);
+    }).catch(() => showToast('⚠️ Could not export QR PNG. Please try again.'));
   }
 
   function generateInlineQRCode() {
     if (dom.qrCanvasContainer) {
-      dom.qrCanvasContainer.innerHTML = buildLuxuryQRSvg(180);
+      dom.qrCanvasContainer.innerHTML = buildLuxuryQRSvg(280, buildCustomerFeedbackUrl());
     }
   }
 

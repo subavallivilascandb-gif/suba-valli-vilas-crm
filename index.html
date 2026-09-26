@@ -696,13 +696,13 @@
             <label for="fbFilterStaff">Collected By Staff:</label>
             <select id="fbFilterStaff" class="form-input">
               <option value="ALL">All Staff Members</option>
-              <option value="Selvi"></option>
-              <option value="Ramya"></option>
-              <option value="Kaviya"></option>
-              <option value="Madhumitha"></option>
-              <option value="Ramu"></option>
-              <option value="Ramesh"></option>
-              <option value="Praveen"></option>
+              <option value="Vijay">Vijay (Counter 3)</option>
+              <option value="Balagoud">Balagoud</option>
+              <option value="Nilesh">Nilesh</option>
+              <option value="Valent">Valent</option>
+              <option value="Arun hasbe">Arun hasbe</option>
+              <option value="Swati">Swati</option>
+              <option value="Priya Sharma">Priya Sharma</option>
               <option value="Customer Self-Fill (QR)">Customer Self-Fill (QR)</option>
             </select>
           </div>
@@ -929,13 +929,13 @@
             <!-- Quick One-Tap Staff Chips -->
             <p class="text-xs text-muted mb-1" id="lblStaffChipsSub">Click a staff member below for instant selection:</p>
             <div class="staff-chips-row" id="staffChipsContainer">
-              <button type="button" class="staff-chip active" data-staff="Selvi"></button>
-              <button type="button" class="staff-chip" data-staff="Ramya"></button>
-              <button type="button" class="staff-chip" data-staff="Kaviya"></button>
-              <button type="button" class="staff-chip" data-staff="Madhumitha"></button>
-              <button type="button" class="staff-chip" data-staff="Ramu"></button>
-              <button type="button" class="staff-chip" data-staff="Ramesh"></button>
-              <button type="button" class="staff-chip" data-staff="Praveen"></button>
+              <button type="button" class="staff-chip active" data-staff="Vijay">Vijay (Counter 3)</button>
+              <button type="button" class="staff-chip" data-staff="Balagoud">Balagoud</button>
+              <button type="button" class="staff-chip" data-staff="Nilesh">Nilesh</button>
+              <button type="button" class="staff-chip" data-staff="Valent">Valent</button>
+              <button type="button" class="staff-chip" data-staff="Arun hasbe">Arun hasbe</button>
+              <button type="button" class="staff-chip" data-staff="Swati">Swati</button>
+              <button type="button" class="staff-chip" data-staff="Priya Sharma">Priya Sharma</button>
             </div>
 
             <!-- Staff Select or Custom Name Entry (Area & Invoice removed as requested) -->
@@ -2271,18 +2271,17 @@
       </div>
 
       <form id="divertForm" class="modal-body">
-        <!-- 1. Mandatory Divert Collector at Top -->
+        <!-- 1. Mandatory Divert Collector at Top (App User Name Dropdown) -->
         <div class="form-group mb-3">
           <label for="divCollectedBy" class="form-label font-bold" style="color:var(--maroon-primary);">Divert Collected By (Staff Name) <span class="text-rose">*</span></label>
           <select id="divCollectedBy" class="form-input font-bold" required>
-            <option value="" disabled selected>e.g. Select Staff Member collecting this Divert...</option>
-            <option value="Vijay">Vijay (EMP-101 • Counter 3)</option>
-            <option value="Balagoud">Balagoud (EMP-103 • Counter 1)</option>
-            <option value="Nilesh">Nilesh (EMP-102 • Counter 4)</option>
-            <option value="Valent">Valent (EMP-104 • Counter 6)</option>
-            <option value="Arun hasbe">Arun hasbe (EMP-106 • Counter 5)</option>
-            <option value="Swati">Swati (EMP-105 • Counter 2)</option>
-            <option value="Priya Sharma">Priya Sharma (EMP-100 • Admin)</option>
+            <option value="" disabled selected>e.g. Select App User collecting this Divert...</option>
+            <option value="Priya Sharma">Priya Sharma (@priya_admin • Admin)</option>
+            <option value="Vijay">Vijay (@vijay_sales • Staff)</option>
+            <option value="Lakshmi">Lakshmi (@lakshmi_crm • Telecaller)</option>
+            <option value="Balagoud">Balagoud (@balagoud_staff • Staff)</option>
+            <option value="Nilesh">Nilesh (@nilesh_staff • Staff)</option>
+            <option value="Karthik">Karthik (@karthik_mgr • Manager)</option>
           </select>
         </div>
 
@@ -2302,15 +2301,7 @@
         <div class="form-row">
           <div class="form-group flex-1">
             <label for="divAttendedStaff" class="form-label">Attended Staff <span class="text-xs text-muted">(Optional)</span></label>
-            <select id="divAttendedStaff" class="form-input">
-              <option value="" selected>e.g. Select Attended Staff (Optional)...</option>
-              <option value="Vijay">Vijay (Counter 3)</option>
-              <option value="Balagoud">Balagoud (Counter 1)</option>
-              <option value="Nilesh">Nilesh (Counter 4)</option>
-              <option value="Valent">Valent (Counter 6)</option>
-              <option value="Arun hasbe">Arun hasbe (Counter 5)</option>
-              <option value="Swati">Swati (Counter 2)</option>
-            </select>
+            <input type="text" id="divAttendedStaff" class="form-input" placeholder="e.g. Staff name who attended customer">
           </div>
           <div class="form-group flex-1">
             <label for="divCounter" class="form-label">Counter <span class="text-xs text-muted">(Optional)</span></label>
@@ -2929,6 +2920,7 @@
   <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
   <!-- Scripts -->
+  <script src="qrcode-generator.min.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

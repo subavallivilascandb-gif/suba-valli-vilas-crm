@@ -5068,11 +5068,6 @@
             dispatchDirectGSheet(fullPayload, action, effectiveGsUrl);
           }
         });
-
-      // Dual-write to Apps Script as reliable secondary fallback
-      if (effectiveGsUrl) {
-        dispatchDirectGSheet(fullPayload, action, effectiveGsUrl);
-      }
     } else if (effectiveGsUrl) {
       dispatchDirectGSheet(fullPayload, action, effectiveGsUrl);
     }

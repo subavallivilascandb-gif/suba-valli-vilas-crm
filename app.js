@@ -5532,136 +5532,163 @@
     }
   }
 
+  function handleLogin(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const userField = document.getElementById('loginUsername');
+    const passField = document.getElementById('loginPassword');
+    const errorEl = document.getElementById('loginErrorMsg');
+    const modalEl = document.getElementById('loginModalOverlay');
+
+    const usernameInput = (userField?.value || '').trim().toLowerCase();
+    const passwordInput = (passField?.value || '').trim();
+
+    if (!usernameInput) {
+      showLoginError('Please enter your username, User ID, or Name.');
+      userField?.focus();
+      return;
+    }
+
+    // Ensure state.users is loaded
+    if (!state.users || state.users.length === 0) {
+      loadStoredUsers();
+    }
+
+    // Match user by username, User ID, Full Name, or First Name
+    const user = state.users.find(u => {
+      const uName = (u.username || '').toLowerCase();
+      const uId = (u.id || '').toLowerCase();
+      const uFull = (u.fullName || '').toLowerCase();
+      const uFirst = uFull.split(' - ')[0].trim().toLowerCase();
+      const uSpace = uFull.split(' ')[0].trim().toLowerCase();
+      const uMobile = String(u.mobile || '').trim();
+      return uName === usernameInput || 
+             uId === usernameInput || 
+             uFull === usernameInput || 
+             uFirst === usernameInput || 
+             uSpace === usernameInput ||
+             (uMobile && uMobile === usernameInput);
+    });
+
+    if (!user) {
+      showLoginError('User not found. Try: aravind, selvi, ramya, or priya_admin');
+      return;
+    }
+
+    // String coercion & trim prevents type mismatch (e.g. numeric 9999 vs string "9999")
+    const validPassword = String(user.password !== undefined ? user.password : (user.Default_Password !== undefined ? user.Default_Password : 'svv@admin2026')).trim();
+    const inputPwd = String(passwordInput).trim();
+
+    // Master admin emergency fallback
+    const isAdmin = user.role === 'Admin' || user.username === 'priya_admin' || user.username === 'aravind' || user.id === 'USR-006' || user.id === 'USR-ADMIN';
+    const isMasterPwd = inputPwd === 'svv@admin2026' || inputPwd === 'admin2026' || (isAdmin && (inputPwd === '9999' || inputPwd === '1234'));
+
+    if (inputPwd !== validPassword && !isMasterPwd && inputPwd !== 'svv@admin2026') {
+      showLoginError('Incorrect password. Please try again.');
+      return;
+    }
+
+    // Login successful - persist in localStorage so refresh never logs out
+    try {
+      localStorage.setItem('svv_auth_user', user.id);
+      sessionStorage.setItem('svv_auth_user', user.id);
+    } catch (_) {}
+
+    state.currentUser = user;
+    applyRolePermissions();
+    const userSwitch = document.getElementById('quickUserSwitch');
+    if (userSwitch) userSwitch.value = user.id;
+    if (modalEl) modalEl.style.display = 'none';
+    if (errorEl) {
+      errorEl.style.display = 'none';
+      errorEl.textContent = '';
+    }
+    showToast(`👋 Welcome, ${user.fullName} (${user.role})!`);
+  }
+
   function setupAuthListeners() {
+    const userField = document.getElementById('loginUsername');
+    const passField = document.getElementById('loginPassword');
+    const errorEl = document.getElementById('loginErrorMsg');
+    const toggleBtn = document.getElementById('btnToggleLoginPwd');
+    const loginForm = document.getElementById('crmLoginForm');
+    const submitBtn = document.getElementById('btnLoginSubmit');
+    const signOutBtn = document.getElementById('btnSignOut');
+
     // Clear login errors as soon as user types
-    if (dom.loginUsername) {
-      dom.loginUsername.addEventListener('input', () => {
-        if (dom.loginErrorMsg) {
-          dom.loginErrorMsg.style.display = 'none';
-          dom.loginErrorMsg.textContent = '';
-        }
-      });
-    }
-    if (dom.loginPassword) {
-      dom.loginPassword.addEventListener('input', () => {
-        if (dom.loginErrorMsg) {
-          dom.loginErrorMsg.style.display = 'none';
-          dom.loginErrorMsg.textContent = '';
-        }
-      });
-    }
+    userField?.addEventListener('input', () => {
+      if (errorEl) {
+        errorEl.style.display = 'none';
+        errorEl.textContent = '';
+      }
+    });
+    passField?.addEventListener('input', () => {
+      if (errorEl) {
+        errorEl.style.display = 'none';
+        errorEl.textContent = '';
+      }
+    });
 
     // Show/Hide password toggle
-    if (dom.btnToggleLoginPwd && dom.loginPassword) {
-      dom.btnToggleLoginPwd.addEventListener('click', () => {
-        const type = dom.loginPassword.getAttribute('type') === 'password' ? 'text' : 'password';
-        dom.loginPassword.setAttribute('type', type);
-        dom.btnToggleLoginPwd.textContent = type === 'password' ? '👁️' : '🙈';
-      });
-    }
+    toggleBtn?.addEventListener('click', () => {
+      if (passField) {
+        const type = passField.getAttribute('type') === 'password' ? 'text' : 'password';
+        passField.setAttribute('type', type);
+        toggleBtn.textContent = type === 'password' ? '👁️' : '🙈';
+      }
+    });
 
-    // Login Form Submit
-    if (dom.crmLoginForm) {
-      dom.crmLoginForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const usernameInput = (dom.loginUsername?.value || '').trim().toLowerCase();
-        const passwordInput = (dom.loginPassword?.value || '').trim();
-
-        if (!usernameInput) {
-          showLoginError('Please enter your username, User ID, or Name.');
-          dom.loginUsername?.focus();
-          return;
-        }
-
-        // Match user by username, User ID, Full Name, or First Name
-        const user = state.users.find(u => {
-          const uName = (u.username || '').toLowerCase();
-          const uId = (u.id || '').toLowerCase();
-          const uFull = (u.fullName || '').toLowerCase();
-          const uFirst = uFull.split(' - ')[0].trim().toLowerCase();
-          const uSpace = uFull.split(' ')[0].trim().toLowerCase();
-          const uMobile = String(u.mobile || '').trim();
-          return uName === usernameInput || 
-                 uId === usernameInput || 
-                 uFull === usernameInput || 
-                 uFirst === usernameInput || 
-                 uSpace === usernameInput ||
-                 (uMobile && uMobile === usernameInput);
-        });
-
-        if (!user) {
-          showLoginError('User not found. Check your username, User ID, or Name.');
-          return;
-        }
-
-        // Check password (supports default password or sheet Default_Password)
-        // String coercion & trim prevents type mismatch (e.g. numeric 9999 vs string "9999")
-        const validPassword = String(user.password !== undefined ? user.password : (user.Default_Password !== undefined ? user.Default_Password : 'svv@admin2026')).trim();
-        const inputPwd = String(passwordInput).trim();
-
-        // Master admin emergency fallback
-        const isAdmin = user.role === 'Admin' || user.username === 'priya_admin' || user.username === 'aravind' || user.id === 'USR-006' || user.id === 'USR-ADMIN';
-        const isMasterPwd = inputPwd === 'svv@admin2026' || inputPwd === 'admin2026' || (isAdmin && (inputPwd === '9999' || inputPwd === '1234'));
-
-        if (inputPwd !== validPassword && !isMasterPwd && inputPwd !== 'svv@admin2026') {
-          showLoginError('Incorrect password. Please try again.');
-          return;
-        }
-
-        // Login successful - persist in localStorage so refresh never logs out
-        localStorage.setItem('svv_auth_user', user.id);
-        sessionStorage.setItem('svv_auth_user', user.id);
-        state.currentUser = user;
-        applyRolePermissions();
-        if (dom.quickUserSwitch) dom.quickUserSwitch.value = user.id;
-        if (dom.loginModalOverlay) dom.loginModalOverlay.style.display = 'none';
-        if (dom.loginErrorMsg) {
-          dom.loginErrorMsg.style.display = 'none';
-          dom.loginErrorMsg.textContent = '';
-        }
-        showToast(`👋 Welcome, ${user.fullName} (${user.role})!`);
-      });
-    }
+    // Form submit & Button click
+    loginForm?.addEventListener('submit', handleLogin);
+    submitBtn?.addEventListener('click', (e) => {
+      if (loginForm && !loginForm.checkValidity()) return;
+      handleLogin(e);
+    });
 
     // Sign Out Button (Explicit user logout only)
-    if (dom.btnSignOut) {
-      dom.btnSignOut.addEventListener('click', () => {
+    signOutBtn?.addEventListener('click', () => {
+      try {
         localStorage.removeItem('svv_auth_user');
         sessionStorage.removeItem('svv_auth_user');
-        state.currentUser = null;
-        if (dom.loginUsername) dom.loginUsername.value = '';
-        if (dom.loginPassword) dom.loginPassword.value = '';
-        if (dom.loginErrorMsg) {
-          dom.loginErrorMsg.style.display = 'none';
-          dom.loginErrorMsg.textContent = '';
-        }
-        if (dom.loginModalOverlay) {
-          dom.loginModalOverlay.style.display = 'flex';
-          setTimeout(() => dom.loginUsername?.focus(), 100);
-        }
-        showToast('🚪 Signed out successfully.');
-      });
-    }
+      } catch (_) {}
+      state.currentUser = null;
+      if (userField) userField.value = '';
+      if (passField) passField.value = '';
+      if (errorEl) {
+        errorEl.style.display = 'none';
+        errorEl.textContent = '';
+      }
+      const modalEl = document.getElementById('loginModalOverlay');
+      if (modalEl) {
+        modalEl.style.display = 'flex';
+        setTimeout(() => userField?.focus(), 100);
+      }
+      showToast('🚪 Signed out successfully.');
+    });
   }
 
   function showLoginError(msg) {
-    if (dom.loginErrorMsg) {
-      dom.loginErrorMsg.textContent = msg;
-      dom.loginErrorMsg.style.display = 'block';
+    const errorEl = document.getElementById('loginErrorMsg');
+    if (errorEl) {
+      errorEl.textContent = msg;
+      errorEl.style.display = 'block';
     }
   }
 
   // Quick fill helper for demo buttons
   window.app = window.app || {};
+  window.app.login = handleLogin;
   window.app.fillDemoLogin = function(username, password, autoSubmit = false) {
-    if (dom.loginUsername) dom.loginUsername.value = username;
-    if (dom.loginPassword) dom.loginPassword.value = password;
-    if (dom.loginErrorMsg) {
-      dom.loginErrorMsg.style.display = 'none';
-      dom.loginErrorMsg.textContent = '';
+    const userField = document.getElementById('loginUsername');
+    const passField = document.getElementById('loginPassword');
+    const errorEl = document.getElementById('loginErrorMsg');
+    if (userField) userField.value = username;
+    if (passField) passField.value = password;
+    if (errorEl) {
+      errorEl.style.display = 'none';
+      errorEl.textContent = '';
     }
-    if (autoSubmit && dom.crmLoginForm) {
-      dom.crmLoginForm.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+    if (autoSubmit) {
+      handleLogin();
     }
   };
   window.app.showToast = showToast;
@@ -7870,6 +7897,10 @@
     }
   };
 
-  // Launch when DOM is ready
-  document.addEventListener('DOMContentLoaded', init);
+  // Launch when DOM is ready (or immediately if already parsed)
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 })();

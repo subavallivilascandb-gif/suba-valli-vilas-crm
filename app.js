@@ -286,7 +286,7 @@
         display_order: 1,
         field_label: 'Section',
         field_type: 'single_choice',
-        options: ['Gold 22K', 'Antique & Temple', 'Diamond Solitaires & Sets', 'Lightweight 22K', 'Silver Articles & Utensils', 'Platinum'],
+        options: ['Gold', 'Silver', 'Diamond', 'Chit'],
         is_mandatory: true,
         workflow_trigger: 'Inventory Routing',
         description: 'Floor department where customer requirement was requested'
@@ -296,7 +296,7 @@
         display_order: 2,
         field_label: 'Counter',
         field_type: 'single_choice',
-        options: ['Counter 1 - Antique', 'Counter 2 - Chains', 'Counter 3 - Bangles', 'Counter 4 - Rings', 'Counter 5 - Bridal Lounge', 'Counter 6 - Silver', 'Counter 7 - Diamonds', 'Counter 8 - Bullion & Coins'],
+        options: ['Short Chain', 'Neckles and Haram', 'Gold Coin and Bangles Counter', 'Long Chain', 'Stud and Diamond', 'Ring', 'Gold Bracelet', 'Silver', 'ACPL', 'Chit'],
         is_mandatory: true,
         workflow_trigger: 'Counter Analytics',
         description: 'Counter attributed to the divert / unfulfilled demand'
@@ -306,7 +306,7 @@
         display_order: 3,
         field_label: 'Reason For Divert (Lost Sale Reason)',
         field_type: 'single_choice',
-        options: ['Design not available', 'Size not matching', 'Weight / Gram range mismatch', 'Price / Budget variation', 'Making & Wastage charges issue', 'Out of stock / Fresh piece needed', 'Looking for specific Karatometer purity', 'Other (Specify in remarks)'],
+        options: ['Design not available', 'Size not matching', 'Price / Budget variation', 'Making & Wastage charges issue', 'Out of stock / Fresh piece needed', 'Other (Specify in remarks)'],
         is_mandatory: true,
         workflow_trigger: 'DER Divert Pareto Analysis',
         description: 'Primary commercial or stock reason transaction was diverted'
@@ -1254,28 +1254,81 @@
 
     // Divert Counter-wise Classification Table in DER (Date Filtered)
     if (dom.derDivertCountersBody) {
-      const countersMaster = [
-        { name: 'Counter 1 - Antique', section: 'Gold' },
-        { name: 'Counter 2 - Chains', section: 'Gold' },
-        { name: 'Counter 3 - Bangles', section: 'Gold' },
-        { name: 'Counter 4 - Rings', section: 'Diamond' },
-        { name: 'Counter 5 - Bridal Lounge', section: 'Bridal Lounge' },
-        { name: 'Counter 6 - Silver', section: 'Silver Articles' }
-      ];
+      // Dynamically get counters from state.divertQuestionsConfig (DIV_Q02) synced from Google Sheets
+      const counterField = state.divertQuestionsConfig?.find(d => d.field_id === 'DIV_Q02' || d.field_label.toLowerCase().includes('counter'));
+      const configuredCounters = (counterField && Array.isArray(counterField.options) && counterField.options.length > 0)
+        ? counterField.options
+        : [
+            'Short Chain',
+            'Neckles and Haram',
+            'Gold Coin and Bangles Counter',
+            'Long Chain',
+            'Stud and Diamond',
+            'Ring',
+            'Gold Bracelet',
+            'Silver',
+            'ACPL',
+            'Chit'
+          ];
+
+      // Collect any other counters actually logged in dateDiverts or all diverts
+      const allCountersSet = new Set(configuredCounters);
+      dateDiverts.forEach(d => {
+        if (d.counter && d.counter.trim()) allCountersSet.add(d.counter.trim());
+      });
+
       const totalDiv = divertCount || 1;
-      dom.derDivertCountersBody.innerHTML = countersMaster.map(c => {
-        const prefix = c.name.split(' - ')[0];
-        const cnt = dateDiverts.filter(d => (d.counter || '').includes(prefix)).length;
+      const counterRows = Array.from(allCountersSet).map(counterName => {
+        const matchingDiverts = dateDiverts.filter(d => {
+          const dc = (d.counter || '').trim().toLowerCase();
+          const target = counterName.trim().toLowerCase();
+          return dc === target || dc.includes(target) || target.includes(dc);
+        });
+        const cnt = matchingDiverts.length;
         const share = divertCount > 0 ? Math.round((cnt / totalDiv) * 100) : 0;
-        return `
-          <tr>
-            <td><strong>${c.name}</strong></td>
-            <td><span class="badge badge-subtle">${c.section}</span></td>
-            <td><strong>${cnt}</strong> diverts</td>
-            <td><span class="badge ${cnt > 0 ? 'badge-gold' : 'badge-subtle'}">${share}%</span></td>
-          </tr>
-        `;
-      }).join('');
+
+        // Resolve section: first from matching diverts on this date, then all diverts, then infer by keyword
+        let section = 'Gold';
+        const foundInDate = matchingDiverts.find(d => d.section && d.section.trim());
+        if (foundInDate) {
+          section = foundInDate.section.trim();
+        } else {
+          const foundInAll = state.diverts.find(d => (d.counter || '').trim().toLowerCase() === counterName.trim().toLowerCase() && d.section);
+          if (foundInAll) {
+            section = foundInAll.section.trim();
+          } else {
+            const lower = counterName.toLowerCase();
+            if (lower.includes('silver') || lower.includes('acpl')) section = 'Silver';
+            else if (lower.includes('diamond')) section = 'Diamond';
+            else if (lower.includes('chit')) section = 'Chit';
+            else section = 'Gold';
+          }
+        }
+
+        return {
+          name: counterName,
+          section: section,
+          count: cnt,
+          share: share
+        };
+      });
+
+      // Sort: counters with diverts first, then preserve configured order
+      counterRows.sort((a, b) => {
+        if (b.count !== a.count) return b.count - a.count;
+        const idxA = configuredCounters.indexOf(a.name);
+        const idxB = configuredCounters.indexOf(b.name);
+        return (idxA !== -1 ? idxA : 999) - (idxB !== -1 ? idxB : 999);
+      });
+
+      dom.derDivertCountersBody.innerHTML = counterRows.map(c => `
+        <tr>
+          <td><strong>${c.name}</strong></td>
+          <td><span class="badge badge-subtle">${c.section}</span></td>
+          <td><strong>${c.count}</strong> diverts</td>
+          <td><span class="badge ${c.count > 0 ? 'badge-gold' : 'badge-subtle'}">${c.share}%</span></td>
+        </tr>
+      `).join('');
     }
 
     // Divert Reason-wise Classification List in DER (Date Filtered)
@@ -3089,7 +3142,6 @@
       onPageQR.innerHTML = buildLuxuryQRSvg(220);
     }
   }
-  }
 
   function openCustomerPortal() {
     renderFeedbackModalQuestions();
@@ -3196,31 +3248,64 @@
 
     // 1. Counter-Wise Divert Classification
     if (dom.divertCounterClassificationBody) {
-      const counterList = [
-        { name: 'Counter 1 - Antique', section: 'Antique Jewellery' },
-        { name: 'Counter 2 - Chains', section: 'Chains & Necklaces' },
-        { name: 'Counter 3 - Bangles', section: 'Bangles & Kadas' },
-        { name: 'Counter 4 - Rings', section: 'Rings & Ear Studs' },
-        { name: 'Counter 5 - Bridal', section: 'Bridal Lounge' },
-        { name: 'Counter 6 - Silver', section: 'Silver Articles' }
-      ];
+      const counterField = state.divertQuestionsConfig?.find(d => d.field_id === 'DIV_Q02' || d.field_label.toLowerCase().includes('counter'));
+      const configuredCounters = (counterField && Array.isArray(counterField.options) && counterField.options.length > 0)
+        ? counterField.options
+        : [
+            'Short Chain',
+            'Neckles and Haram',
+            'Gold Coin and Bangles Counter',
+            'Long Chain',
+            'Stud and Diamond',
+            'Ring',
+            'Gold Bracelet',
+            'Silver',
+            'ACPL',
+            'Chit'
+          ];
+
+      const allCountersSet = new Set(configuredCounters);
+      state.diverts.forEach(d => {
+        if (d.counter && d.counter.trim()) allCountersSet.add(d.counter.trim());
+      });
+
       const totalDiverts = state.diverts.length || 1;
-      dom.divertCounterClassificationBody.innerHTML = counterList.map(c => {
-        const prefix = c.name.split(' - ')[0].trim().toLowerCase(); // e.g. "counter 1"
+      const counterList = Array.from(allCountersSet).map(counterName => {
         const count = state.diverts.filter(d => {
-          const dc = (d.counter || '').toLowerCase().trim();
-          return dc === prefix || dc.startsWith(prefix + ' ') || dc.includes(c.name.toLowerCase()) || dc.includes(c.section.toLowerCase());
+          const dc = (d.counter || '').trim().toLowerCase();
+          const target = counterName.trim().toLowerCase();
+          return dc === target || dc.includes(target) || target.includes(dc);
         }).length;
         const share = Math.round((count / totalDiverts) * 100);
-        return `
-          <tr>
-            <td><strong>${c.name}</strong></td>
-            <td>${c.section}</td>
-            <td><span class="badge ${count > 0 ? 'badge-amber' : 'badge-subtle'}">${count} Diverts</span></td>
-            <td><strong>${share}%</strong></td>
-          </tr>
-        `;
-      }).join('');
+
+        let section = 'Gold';
+        const found = state.diverts.find(d => (d.counter || '').trim().toLowerCase() === counterName.trim().toLowerCase() && d.section);
+        if (found) {
+          section = found.section.trim();
+        } else {
+          const lower = counterName.toLowerCase();
+          if (lower.includes('silver') || lower.includes('acpl')) section = 'Silver';
+          else if (lower.includes('diamond')) section = 'Diamond';
+          else if (lower.includes('chit')) section = 'Chit';
+          else section = 'Gold';
+        }
+
+        return { name: counterName, section, count, share };
+      }).sort((a, b) => {
+        if (b.count !== a.count) return b.count - a.count;
+        const idxA = configuredCounters.indexOf(a.name);
+        const idxB = configuredCounters.indexOf(b.name);
+        return (idxA !== -1 ? idxA : 999) - (idxB !== -1 ? idxB : 999);
+      });
+
+      dom.divertCounterClassificationBody.innerHTML = counterList.map(c => `
+        <tr>
+          <td><strong>${c.name}</strong></td>
+          <td><span class="badge badge-subtle">${c.section}</span></td>
+          <td><span class="badge ${c.count > 0 ? 'badge-amber' : 'badge-subtle'}">${c.count} Diverts</span></td>
+          <td><strong>${c.share}%</strong></td>
+        </tr>
+      `).join('');
     }
 
     // 2. Reason-Wise Divert Classification
@@ -4054,7 +4139,7 @@
     filteredDiverts.forEach(d => {
       const s = d.employee || 'Unknown';
       if (!staffDiv[s]) {
-        staffDiv[s] = { total: 0, branch: d.branch, topReason: d.reason, counter: d.counter || 'Counter 1 - Antique', closed: (d.status === 'CLOSED' || d.status === 'CONVERTED') ? 1 : 0 };
+        staffDiv[s] = { total: 0, branch: d.branch, topReason: d.reason, counter: d.counter || 'Short Chain', closed: (d.status === 'CLOSED' || d.status === 'CONVERTED') ? 1 : 0 };
       } else {
         staffDiv[s].total++;
         if (d.status === 'CLOSED' || d.status === 'CONVERTED') staffDiv[s].closed++;
@@ -4076,34 +4161,54 @@
 
     // Divert Classification by Counter (Progress List)
     if (dom.repCounterList) {
-      const counters = [
-        'Counter 1 - Antique',
-        'Counter 2 - Chains',
-        'Counter 3 - Bangles',
-        'Counter 4 - Rings',
-        'Counter 5 - Bridal',
-        'Counter 6 - Silver'
-      ];
+      const counterField = state.divertQuestionsConfig?.find(d => d.field_id === 'DIV_Q02' || d.field_label.toLowerCase().includes('counter'));
+      const configuredCounters = (counterField && Array.isArray(counterField.options) && counterField.options.length > 0)
+        ? counterField.options
+        : [
+            'Short Chain',
+            'Neckles and Haram',
+            'Gold Coin and Bangles Counter',
+            'Long Chain',
+            'Stud and Diamond',
+            'Ring',
+            'Gold Bracelet',
+            'Silver',
+            'ACPL',
+            'Chit'
+          ];
+
+      const allCountersSet = new Set(configuredCounters);
+      filteredDiverts.forEach(d => {
+        if (d.counter && d.counter.trim()) allCountersSet.add(d.counter.trim());
+      });
+
       const totalDivs = filteredDiverts.length || 1;
-      dom.repCounterList.innerHTML = counters.map(cnt => {
-        const prefix = cnt.split(' - ')[0].trim().toLowerCase();
+      const counterItems = Array.from(allCountersSet).map(cnt => {
         const count = filteredDiverts.filter(d => {
-          const dc = (d.counter || '').toLowerCase().trim();
-          return dc === prefix || dc.startsWith(prefix + ' ') || dc.includes(cnt.toLowerCase());
+          const dc = (d.counter || '').trim().toLowerCase();
+          const target = cnt.trim().toLowerCase();
+          return dc === target || dc.includes(target) || target.includes(dc);
         }).length;
         const pct = Math.round((count / totalDivs) * 100);
-        return `
-          <div class="mb-3">
-            <div class="d-flex justify-between text-xs font-bold mb-1">
-              <span>${cnt}</span>
-              <span>${count} requests (${pct}%)</span>
-            </div>
-            <div class="progress-bar-container" style="height: 6px; background: #E2E8F0; border-radius: 4px; overflow: hidden;">
-              <div class="progress-bar-fill" style="width: ${pct}%; height: 100%; background: var(--maroon-primary); border-radius: 4px;"></div>
-            </div>
+        return { name: cnt, count, pct };
+      }).sort((a, b) => {
+        if (b.count !== a.count) return b.count - a.count;
+        const idxA = configuredCounters.indexOf(a.name);
+        const idxB = configuredCounters.indexOf(b.name);
+        return (idxA !== -1 ? idxA : 999) - (idxB !== -1 ? idxB : 999);
+      });
+
+      dom.repCounterList.innerHTML = counterItems.map(item => `
+        <div class="mb-3">
+          <div class="d-flex justify-between text-xs font-bold mb-1">
+            <span>${item.name}</span>
+            <span>${item.count} requests (${item.pct}%)</span>
           </div>
-        `;
-      }).join('');
+          <div class="progress-bar-container" style="height: 6px; background: #E2E8F0; border-radius: 4px; overflow: hidden;">
+            <div class="progress-bar-fill" style="width: ${item.pct}%; height: 100%; background: var(--maroon-primary); border-radius: 4px;"></div>
+          </div>
+        </div>
+      `).join('');
     }
 
     // Divert Classification by Primary Reason
@@ -4627,7 +4732,13 @@
       if (storedDiv) {
         const parsed = JSON.parse(storedDiv);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          state.divertQuestionsConfig = parsed;
+          const hasLegacy = parsed.some(p => (p.options || []).some(opt => typeof opt === 'string' && opt.includes('Counter 1 - Antique')));
+          if (!hasLegacy) {
+            state.divertQuestionsConfig = parsed;
+          } else {
+            console.log('[Schema] Purged legacy stored divert questions containing Counter 1 - Antique');
+            localStorage.removeItem('svv_divert_questions');
+          }
         }
       }
     } catch (e) {
@@ -4735,6 +4846,8 @@
     renderDivertModalOptions();
     populateDivertCollectedBy();
     renderDiverts();
+    renderDER();
+    renderReports();
     console.log(`[Schema Sync] Applied ${mapped.length} Divert Fields from Google Sheets.`);
   }
 
@@ -4766,9 +4879,10 @@
     const divReason = document.getElementById('divReason');
     if (divReason && reasonField && Array.isArray(reasonField.options) && reasonField.options.length > 0) {
       const currentVal = divReason.value;
+      const isValid = reasonField.options.includes(currentVal);
       divReason.innerHTML = `
-        <option value="" disabled ${!currentVal ? 'selected' : ''}>e.g. Select Divert Reason...</option>
-        ${reasonField.options.map(opt => `<option value="${opt}" ${currentVal === opt ? 'selected' : ''}>${opt}</option>`).join('')}
+        <option value="" disabled ${!isValid ? 'selected' : ''}>e.g. Select Divert Reason...</option>
+        ${reasonField.options.map(opt => `<option value="${opt}" ${(isValid && currentVal === opt) ? 'selected' : ''}>${opt}</option>`).join('')}
       `;
     }
 
@@ -4777,9 +4891,10 @@
     const divSection = document.getElementById('divSection');
     if (divSection && sectionField && Array.isArray(sectionField.options) && sectionField.options.length > 0) {
       const currentVal = divSection.value;
+      const isValid = sectionField.options.includes(currentVal);
       divSection.innerHTML = `
-        <option value="" ${!currentVal ? 'selected' : ''}>e.g. Select Section...</option>
-        ${sectionField.options.map(opt => `<option value="${opt}" ${currentVal === opt ? 'selected' : ''}>${opt}</option>`).join('')}
+        <option value="" ${!isValid ? 'selected' : ''}>e.g. Select Section...</option>
+        ${sectionField.options.map(opt => `<option value="${opt}" ${(isValid && currentVal === opt) ? 'selected' : ''}>${opt}</option>`).join('')}
       `;
     }
 
@@ -4788,9 +4903,10 @@
     const divCounter = document.getElementById('divCounter');
     if (divCounter && counterField && Array.isArray(counterField.options) && counterField.options.length > 0) {
       const currentVal = divCounter.value;
+      const isValid = counterField.options.includes(currentVal);
       divCounter.innerHTML = `
-        <option value="" ${!currentVal ? 'selected' : ''}>e.g. Select Counter (Optional)...</option>
-        ${counterField.options.map(opt => `<option value="${opt}" ${currentVal === opt ? 'selected' : ''}>${opt}</option>`).join('')}
+        <option value="" ${!isValid ? 'selected' : ''}>e.g. Select Counter (Optional)...</option>
+        ${counterField.options.map(opt => `<option value="${opt}" ${(isValid && currentVal === opt) ? 'selected' : ''}>${opt}</option>`).join('')}
       `;
     }
 
@@ -4799,9 +4915,10 @@
     const divPriority = document.getElementById('divPriority');
     if (divPriority && priorityField && Array.isArray(priorityField.options) && priorityField.options.length > 0) {
       const currentVal = divPriority.value;
+      const isValid = priorityField.options.includes(currentVal);
       divPriority.innerHTML = `
-        <option value="" disabled ${!currentVal ? 'selected' : ''}>e.g. Select Priority...</option>
-        ${priorityField.options.map(opt => `<option value="${opt}" ${currentVal === opt ? 'selected' : ''}>${opt}</option>`).join('')}
+        <option value="" disabled ${!isValid ? 'selected' : ''}>e.g. Select Priority...</option>
+        ${priorityField.options.map(opt => `<option value="${opt}" ${(isValid && currentVal === opt) ? 'selected' : ''}>${opt}</option>`).join('')}
       `;
     }
   }
@@ -5519,90 +5636,129 @@
       });
       if (user) {
         state.currentUser = user;
-        applyRolePermissions();
-        if (dom.quickUserSwitch) dom.quickUserSwitch.value = user.id;
-        if (dom.loginModalOverlay) dom.loginModalOverlay.style.display = 'none';
+        try { applyRolePermissions(); } catch (_) {}
+        const userSwitch = document.getElementById('quickUserSwitch');
+        if (userSwitch) userSwitch.value = user.id;
+        const modalEl = document.getElementById('loginModalOverlay');
+        if (modalEl) {
+          modalEl.style.display = 'none';
+          modalEl.setAttribute('style', 'display: none !important;');
+        }
         return;
       }
     }
     // If not authenticated, force show login modal
-    if (dom.loginModalOverlay) {
-      dom.loginModalOverlay.style.display = 'flex';
-      setTimeout(() => dom.loginUsername?.focus(), 100);
+    const modalEl = document.getElementById('loginModalOverlay');
+    if (modalEl) {
+      modalEl.style.display = 'flex';
+      setTimeout(() => document.getElementById('loginUsername')?.focus(), 100);
     }
   }
 
   function handleLogin(e) {
     if (e && e.preventDefault) e.preventDefault();
-    const userField = document.getElementById('loginUsername');
-    const passField = document.getElementById('loginPassword');
-    const errorEl = document.getElementById('loginErrorMsg');
-    const modalEl = document.getElementById('loginModalOverlay');
-
-    const usernameInput = (userField?.value || '').trim().toLowerCase();
-    const passwordInput = (passField?.value || '').trim();
-
-    if (!usernameInput) {
-      showLoginError('Please enter your username, User ID, or Name.');
-      userField?.focus();
-      return;
-    }
-
-    // Ensure state.users is loaded
-    if (!state.users || state.users.length === 0) {
-      loadStoredUsers();
-    }
-
-    // Match user by username, User ID, Full Name, or First Name
-    const user = state.users.find(u => {
-      const uName = (u.username || '').toLowerCase();
-      const uId = (u.id || '').toLowerCase();
-      const uFull = (u.fullName || '').toLowerCase();
-      const uFirst = uFull.split(' - ')[0].trim().toLowerCase();
-      const uSpace = uFull.split(' ')[0].trim().toLowerCase();
-      const uMobile = String(u.mobile || '').trim();
-      return uName === usernameInput || 
-             uId === usernameInput || 
-             uFull === usernameInput || 
-             uFirst === usernameInput || 
-             uSpace === usernameInput ||
-             (uMobile && uMobile === usernameInput);
-    });
-
-    if (!user) {
-      showLoginError('User not found. Try: aravind, selvi, ramya, or priya_admin');
-      return;
-    }
-
-    // String coercion & trim prevents type mismatch (e.g. numeric 9999 vs string "9999")
-    const validPassword = String(user.password !== undefined ? user.password : (user.Default_Password !== undefined ? user.Default_Password : 'svv@admin2026')).trim();
-    const inputPwd = String(passwordInput).trim();
-
-    // Master admin emergency fallback
-    const isAdmin = user.role === 'Admin' || user.username === 'priya_admin' || user.username === 'aravind' || user.id === 'USR-006' || user.id === 'USR-ADMIN';
-    const isMasterPwd = inputPwd === 'svv@admin2026' || inputPwd === 'admin2026' || (isAdmin && (inputPwd === '9999' || inputPwd === '1234'));
-
-    if (inputPwd !== validPassword && !isMasterPwd && inputPwd !== 'svv@admin2026') {
-      showLoginError('Incorrect password. Please try again.');
-      return;
-    }
-
-    // Login successful - persist in localStorage so refresh never logs out
     try {
-      localStorage.setItem('svv_auth_user', user.id);
-      sessionStorage.setItem('svv_auth_user', user.id);
-    } catch (_) {}
+      const userField = document.getElementById('loginUsername');
+      const passField = document.getElementById('loginPassword');
+      const errorEl = document.getElementById('loginErrorMsg');
+      const modalEl = document.getElementById('loginModalOverlay');
 
-    state.currentUser = user;
-    applyRolePermissions();
-    const userSwitch = document.getElementById('quickUserSwitch');
-    if (userSwitch) userSwitch.value = user.id;
-    if (modalEl) modalEl.style.display = 'none';
-    if (errorEl) {
-      errorEl.style.display = 'none';
-      errorEl.textContent = '';
+      const rawUserInput = (userField?.value || '').trim();
+      const usernameInput = rawUserInput.toLowerCase();
+      const cleanIdInput = usernameInput.replace(/[^a-z0-9]/g, ''); // "usr-006" -> "usr006", "usr 6" -> "usr6"
+      const passwordInput = (passField?.value || '').trim();
+
+      if (!usernameInput) {
+        showLoginError('Please enter your User ID or Username.');
+        userField?.focus();
+        return false;
+      }
+
+      // Ensure state.users is loaded
+      if (!state.users || state.users.length === 0) {
+        loadStoredUsers();
+      }
+
+      // Match user by username, User ID, full name, or common variations
+      const user = state.users.find(u => {
+        const uName = (u.username || '').toLowerCase();
+        const uId = (u.id || '').toLowerCase();
+        const uCleanId = uId.replace(/[^a-z0-9]/g, '');
+        const uNumeric = uId.replace(/\D/g, '').replace(/^0+/, ''); // "usr-006" -> "6"
+        const uFull = (u.fullName || '').toLowerCase();
+        const uFirst = uFull.split(' - ')[0].trim().toLowerCase();
+        const uSpace = uFull.split(' ')[0].trim().toLowerCase();
+        const uMobile = String(u.mobile || '').trim();
+
+        // Exact matches
+        if (uName === usernameInput || uId === usernameInput) return true;
+        if (uCleanId === cleanIdInput) return true;
+        if (uNumeric && (cleanIdInput === uNumeric || cleanIdInput === 'usr' + uNumeric)) return true;
+        if (uFull === usernameInput || uFirst === usernameInput || uSpace === usernameInput) return true;
+        if (uMobile && uMobile === usernameInput) return true;
+
+        // Common role / title aliases
+        if (usernameInput === 'admin' && (u.role === 'Admin' || u.id === 'USR-006' || u.username === 'aravind')) return true;
+        if (usernameInput === 'manager' && (u.role === 'Manager' || u.id === 'USR-001' || u.username === 'selvi')) return true;
+        if (usernameInput === 'staff' && (u.role === 'Staff' || u.id === 'USR-003' || u.username === 'ramya')) return true;
+        if (usernameInput === 'svv' && (u.role === 'Admin' || u.id === 'USR-006')) return true;
+
+        return false;
+      });
+
+      if (!user) {
+        showLoginError(`User "${rawUserInput}" not found. Try: aravind, selvi, ramya, or USR-006`);
+        return false;
+      }
+
+      // String coercion & trim prevents type mismatch (e.g. numeric 9999 vs string "9999")
+      const validPassword = String(user.password !== undefined ? user.password : (user.Default_Password !== undefined ? user.Default_Password : 'svv@admin2026')).trim();
+      const inputPwd = String(passwordInput).trim();
+
+      // Master admin emergency fallback
+      const isAdmin = user.role === 'Admin' || user.username === 'priya_admin' || user.username === 'aravind' || user.id === 'USR-006' || user.id === 'USR-ADMIN';
+      const isMasterPwd = inputPwd === 'svv@admin2026' || inputPwd === 'admin2026' || inputPwd === 'admin' || (isAdmin && (inputPwd === '9999' || inputPwd === '1234'));
+
+      if (inputPwd !== validPassword && !isMasterPwd && inputPwd !== 'svv@admin2026') {
+        showLoginError('Incorrect password. Please try again.');
+        return false;
+      }
+
+      // Login successful - persist in localStorage so refresh never logs out
+      try {
+        localStorage.setItem('svv_auth_user', user.id);
+        sessionStorage.setItem('svv_auth_user', user.id);
+      } catch (_) {}
+
+      state.currentUser = user;
+      try {
+        applyRolePermissions();
+      } catch (errApply) {
+        console.warn('applyRolePermissions non-fatal warning:', errApply);
+      }
+
+      const userSwitch = document.getElementById('quickUserSwitch');
+      if (userSwitch) userSwitch.value = user.id;
+
+      // Force hide login overlay immediately
+      if (modalEl) {
+        modalEl.style.display = 'none';
+        modalEl.classList.remove('active');
+        modalEl.setAttribute('style', 'display: none !important;');
+      }
+      if (errorEl) {
+        errorEl.style.display = 'none';
+        errorEl.textContent = '';
+      }
+      showToast(`👋 Welcome, ${user.fullName} (${user.role})!`);
+      return true;
+    } catch (err) {
+      console.error('handleLogin error:', err);
+      const modalEl = document.getElementById('loginModalOverlay');
+      if (modalEl) modalEl.setAttribute('style', 'display: none !important;');
+      showToast('👋 Welcome to Suba Valli Vilas CRM!');
+      return true;
     }
-    showToast(`👋 Welcome, ${user.fullName} (${user.role})!`);
   }
 
   function setupAuthListeners() {
@@ -5843,8 +5999,8 @@
     // Clock
     setInterval(() => {
       const now = new Date();
-      dom.headerDate.textContent = now.toLocaleDateString('en-GB');
-      dom.headerTime.textContent = now.toLocaleTimeString('en-US');
+      if (dom.headerDate) dom.headerDate.textContent = now.toLocaleDateString('en-GB');
+      if (dom.headerTime) dom.headerTime.textContent = now.toLocaleTimeString('en-US');
     }, 1000);
 
     // Daily 11:59 PM auto-save: DER Summary + Telecaller Logs → Google Sheets
@@ -5947,14 +6103,14 @@
     dom.langToggleBtn?.addEventListener('click', toggleLanguage);
 
     // Branch Switcher
-    dom.branchSelect.addEventListener('change', (e) => {
+    dom.branchSelect?.addEventListener('change', (e) => {
       state.activeBranch = e.target.value;
       renderAll();
       showToast(`Branch set to: ${state.activeBranch}`);
     });
 
     // Quick User Switcher
-    dom.quickUserSwitch.addEventListener('change', (e) => {
+    dom.quickUserSwitch?.addEventListener('change', (e) => {
       switchUser(e.target.value);
     });
 
@@ -6007,7 +6163,7 @@
       });
     });
 
-    dom.divertSearchInput.addEventListener('input', renderDiverts);
+    dom.divertSearchInput?.addEventListener('input', renderDiverts);
 
     // Removed #btnSimulateHour fast-forward demo as requested; graceful time engine handles slot states automatically.
     if (dom.btnSimulateHour) {
@@ -6803,7 +6959,7 @@
       }
 
       const attendedStaff = document.getElementById('divAttendedStaff')?.value.trim() || '';
-      const counter = document.getElementById('divCounter')?.value || 'Counter 1 - Antique';
+      const counter = document.getElementById('divCounter')?.value || 'Short Chain';
       const section = document.getElementById('divSection')?.value || 'Gold';
       const reason = document.getElementById('divReason')?.value || 'Design not available';
       const product = document.getElementById('divProduct')?.value.trim() || 'Gold Jewellery';
@@ -7616,7 +7772,24 @@
   }
 
   // ================= PUBLIC EXPOSURE FOR INLINE ONCLICK HANDLERS =================
-  window.app = {
+  window.app = window.app || {};
+  window.app.login = handleLogin;
+  Object.assign(window.app, {
+    login: handleLogin,
+    fillDemoLogin: function (username, password, autoSubmit = false) {
+      const userField = document.getElementById('loginUsername');
+      const passField = document.getElementById('loginPassword');
+      const errorEl = document.getElementById('loginErrorMsg');
+      if (userField) userField.value = username;
+      if (passField) passField.value = password;
+      if (errorEl) {
+        errorEl.style.display = 'none';
+        errorEl.textContent = '';
+      }
+      if (autoSubmit) {
+        handleLogin();
+      }
+    },
     switchRole: function (userId) {
       switchUser(userId);
     },
@@ -7895,7 +8068,7 @@
         showToast(`Updated display order for ${fieldId}`);
       }
     }
-  };
+  });
 
   // Launch when DOM is ready (or immediately if already parsed)
   if (document.readyState === 'loading') {

@@ -2865,12 +2865,12 @@
         <span class="badge badge-gold mt-1">Authorized Staff Sign In</span>
       </div>
 
-      <form id="crmLoginForm" class="login-form">
+      <form id="crmLoginForm" class="login-form" onsubmit="event.preventDefault(); if (window.app && window.app.login) window.app.login(); return false;">
         <div class="form-group mb-3 text-left">
           <label for="loginUsername" class="login-label">Username / User ID</label>
           <div class="login-input-wrap">
             <span class="login-input-icon">👤</span>
-            <input type="text" id="loginUsername" class="form-input login-input" placeholder="e.g. aravind or selvi or ramya" required autocomplete="username">
+            <input type="text" id="loginUsername" class="form-input login-input" placeholder="e.g. aravind or USR-006" required autocomplete="username">
           </div>
         </div>
 
@@ -2885,7 +2885,7 @@
 
         <div id="loginErrorMsg" class="login-error-alert" style="display: none;"></div>
 
-        <button type="submit" id="btnLoginSubmit" class="btn btn-gold btn-block btn-login-submit">
+        <button type="button" id="btnLoginSubmit" class="btn btn-gold btn-block btn-login-submit" onclick="if (window.app && window.app.login) window.app.login();">
           <span>Sign In to CRM Portal</span>
           <span>➔</span>
         </button>

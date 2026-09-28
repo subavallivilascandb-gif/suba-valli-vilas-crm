@@ -711,6 +711,10 @@
   // ================= DATE NORMALIZATION HELPER =================
   function normalizeDateToIso(str) {
     if (!str) return '';
+    if (str instanceof Date) {
+      if (isNaN(str.getTime())) return '';
+      return `${str.getFullYear()}-${String(str.getMonth() + 1).padStart(2, '0')}-${String(str.getDate()).padStart(2, '0')}`;
+    }
     str = String(str).trim();
     str = str.replace(/\s*\(.*?\)/, '').trim();
     if (str.includes('T')) {
@@ -736,7 +740,7 @@
     }
     const d = new Date(str);
     if (!isNaN(d.getTime())) {
-      return d.toISOString().split('T')[0];
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     }
     return str;
   }
@@ -907,7 +911,7 @@
     const container = document.getElementById('derHourlyChartContainer');
     if (!container) return;
 
-    const todayIso = new Date().toISOString().split('T')[0];
+    const todayIso = normalizeDateToIso(new Date());
     const dateVal = dom.derDateFilter?.value || todayIso;
     const targetIso = normalizeDateToIso(dateVal) || todayIso;
     const parts = targetIso.split('-');
@@ -1021,7 +1025,7 @@
     if (!container) return;
 
     const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const todayIso = new Date().toISOString().split('T')[0];
+    const todayIso = normalizeDateToIso(new Date());
     const filterDateVal = dom.derDateFilter?.value || todayIso;
     const filterIso = normalizeDateToIso(filterDateVal) || todayIso;
     const filterDateObj = new Date(filterIso + 'T12:00:00'); // parse at midday
@@ -1032,7 +1036,7 @@
     for (let i = 0; i < 7; i++) {
       const d = new Date(filterDateObj);
       d.setDate(d.getDate() - i);
-      const iso = d.toISOString().split('T')[0];
+      const iso = normalizeDateToIso(d);
       const dayNum = d.getDate();
       const monthStr = monthNames[d.getMonth()];
       const isToday = (iso === todayIso);
@@ -1695,7 +1699,7 @@
 
   // Sliding 7 Days conversion: dynamically places today's live data at Row 1, followed by 6 preceding calendar days
   function getSliding7DaysData() {
-    const todayDate = new Date().toISOString().split('T')[0];
+    const todayDate = normalizeDateToIso(new Date());
     const todayFootfall = state.slots.reduce((sum, s) => sum + (Number(s.count) || 0), 0);
     const todayBills = state.todayBills || 0;
     const todayConv = todayFootfall > 0 ? ((todayBills / todayFootfall) * 100).toFixed(1) : '0.0';
@@ -1716,7 +1720,7 @@
     for (let i = 1; i <= 6; i++) {
       const d = new Date();
       d.setDate(d.getDate() - i);
-      const iso = d.toISOString().split('T')[0];
+      const iso = normalizeDateToIso(d);
       let past = state.pastDays.find(p => normalizeDateToIso(p.date) === iso);
       if (!past) {
         past = {
@@ -1871,12 +1875,12 @@
     if (selector && !selector.value) {
       const yd = new Date();
       yd.setDate(yd.getDate() - 1);
-      selector.value = yd.toISOString().split('T')[0];
+      selector.value = normalizeDateToIso(yd);
     }
     const selectedDate = selector ? selector.value : activePastDateSelection;
-    const iso = normalizeDateToIso(selectedDate || new Date().toISOString().split('T')[0]);
+    const iso = normalizeDateToIso(selectedDate || new Date());
 
-    const todayIso = new Date().toISOString().split('T')[0];
+    const todayIso = normalizeDateToIso(new Date());
     let foundDay = state.pastDays.find(p => normalizeDateToIso(p.date) === iso);
 
     if (iso === todayIso) {
@@ -2009,7 +2013,7 @@
     found.ratio = totalFootfall > 0 && found.bills > 0 ? (totalFootfall / found.bills).toFixed(1) : '0';
     found.status = 'Audited';
 
-    if (iso === new Date().toISOString().split('T')[0]) {
+    if (iso === normalizeDateToIso(new Date())) {
       state.slots.forEach((s, idx) => {
         s.count = found.slots[idx] || 0;
         if (s.count > 0) s.status = 'SUBMITTED';
@@ -2080,13 +2084,13 @@
     if (!dateStr) {
       const d = new Date();
       d.setDate(d.getDate() - 1);
-      dateStr = d.toISOString().split('T')[0];
+      dateStr = normalizeDateToIso(d);
     }
     const iso = normalizeDateToIso(dateStr);
     if (dom.yesterdayDateSelector) dom.yesterdayDateSelector.value = iso;
     activePastDateSelection = iso;
 
-    const todayIso = new Date().toISOString().split('T')[0];
+    const todayIso = normalizeDateToIso(new Date());
     let found = state.pastDays.find(p => normalizeDateToIso(p.date) === iso);
 
     // 1. If date is today, prioritize live state data
@@ -3838,7 +3842,7 @@
     // Calculate Executive KPI Strip Metrics
     if (dom.repExecutiveKpiStrip) {
       let totalRangeFootfall = 0;
-      const todayIso = new Date().toISOString().split('T')[0];
+      const todayIso = normalizeDateToIso(new Date());
       const todayLiveFootfall = state.slots.reduce((sum, s) => sum + (Number(s.count) || 0), 0);
 
       if (fromDate || toDate) {
@@ -5365,12 +5369,37 @@
         }
       }
 
+      // Check if Cloudflare Worker returned truncated footfall or missing today's entries
+      const todayIso = normalizeDateToIso(new Date());
+      const cfHasTodayFootfall = data && Array.isArray(data.footfall) && data.footfall.some(f => normalizeDateToIso(f.Date || f.date) === todayIso);
+      const cfNeedsGasUpgrade = (!data) || (!cfHasTodayFootfall && Array.isArray(data.footfall) && data.footfall.length >= 90) || (!data.footfall) || (data.footfall.length === 0);
+
       // 2. Direct Google Apps Script (Primary & Resilient with smartFetch + JSONP fallback)
-      if (!data && state.gsheetUrl) {
-        const gasUrl = state.gsheetUrl.includes('?') 
-          ? `${state.gsheetUrl}&action=GET_ALL_DATA` 
-          : `${state.gsheetUrl}?action=GET_ALL_DATA`;
-        data = await smartFetch(gasUrl);
+      if (cfNeedsGasUpgrade && state.gsheetUrl) {
+        try {
+          const gasUrl = state.gsheetUrl.includes('?') 
+            ? `${state.gsheetUrl}&action=GET_ALL_DATA` 
+            : `${state.gsheetUrl}?action=GET_ALL_DATA`;
+          const gasData = await smartFetch(gasUrl);
+          if (gasData && (gasData.status === 'SUCCESS' || gasData.action === 'GET_ALL_DATA')) {
+            if (!data) {
+              data = gasData;
+            } else {
+              if (Array.isArray(gasData.footfall) && gasData.footfall.length > (data.footfall || []).length) {
+                console.log(`[Footfall Auto-Heal] Upgraded footfall from Google Apps Script (${gasData.footfall.length} rows vs ${(data.footfall || []).length} rows)`);
+                data.footfall = gasData.footfall;
+              }
+              if (Array.isArray(gasData.diverts) && gasData.diverts.length > (data.diverts || []).length) {
+                data.diverts = gasData.diverts;
+              }
+              if (Array.isArray(gasData.feedbacks) && gasData.feedbacks.length > (data.feedbacks || []).length) {
+                data.feedbacks = gasData.feedbacks;
+              }
+            }
+          }
+        } catch (gasErr) {
+          console.warn('[GSheet Direct Pull Fallback] Error:', gasErr);
+        }
       }
 
       if (!data) {
@@ -5471,11 +5500,13 @@
               dateGroups[iso] = {
                 date: iso,
                 slots: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                slotSubmitted: [false, false, false, false, false, false, false, false, false, false, false, false],
                 bills: 0,
+                dayEndFootfall: 0,
                 status: 'Verified'
               };
             }
-            const sId = String(ff.Slot_ID || ff.slotId || '');
+            const sId = String(ff.Slot_ID || ff.slotId || '').trim();
             const m = sId.match(/SLOT_0*(\d+)/i);
             const count = Number(ff.Footfall_Count !== undefined ? ff.Footfall_Count : (ff.footfallCount !== undefined ? ff.footfallCount : ff.count)) || 0;
             const b = Number(ff.Day_End_Bills !== undefined ? ff.Day_End_Bills : (ff.dayEndBills !== undefined ? ff.dayEndBills : ff.todayBills)) || 0;
@@ -5483,7 +5514,11 @@
               const idx = parseInt(m[1], 10) - 1;
               if (idx >= 0 && idx < 12) {
                 dateGroups[iso].slots[idx] = count;
+                dateGroups[iso].slotSubmitted[idx] = true;
               }
+            } else if (sId.toUpperCase() === 'DAY_END' || sId.toUpperCase() === 'DAY_END_TOTAL') {
+              if (count > 0) dateGroups[iso].dayEndFootfall = count;
+              if (b > 0) dateGroups[iso].bills = b;
             }
             if (b > 0) {
               dateGroups[iso].bills = b;
@@ -5491,9 +5526,9 @@
           });
 
           // Apply grouped dates to state.pastDays and localStorage
-          const todayIso = new Date().toISOString().split('T')[0];
           Object.values(dateGroups).forEach(grp => {
-            const totalFf = grp.slots.reduce((a, b) => a + b, 0);
+            const slotsSum = grp.slots.reduce((a, b) => a + b, 0);
+            const totalFf = Math.max(slotsSum, grp.dayEndFootfall || 0);
             const bills = grp.bills;
             const conv = totalFf > 0 ? ((bills / totalFf) * 100).toFixed(1) : '0.0';
             const rat = totalFf > 0 && bills > 0 ? (totalFf / bills).toFixed(1) : '0';
@@ -5523,9 +5558,16 @@
               state.slots.forEach((s, idx) => {
                 const c = grp.slots[idx] || 0;
                 s.count = c;
-                if (c > 0) s.status = 'SUBMITTED';
+                if (grp.slotSubmitted && grp.slotSubmitted[idx]) {
+                  s.status = 'SUBMITTED';
+                } else if (c > 0) {
+                  s.status = 'SUBMITTED';
+                }
               });
-              if (bills > 0) state.todayBills = bills;
+              if (bills > 0) {
+                state.todayBills = bills;
+                state.todayBillsSubmitted = true;
+              }
             }
           });
         }

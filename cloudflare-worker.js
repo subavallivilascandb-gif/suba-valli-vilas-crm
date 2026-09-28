@@ -55,8 +55,8 @@ export default {
       // GET: Questions
       if (method === "GET" && (path === "/api/questions" || path === "/api/schema")) {
         const [fb, div] = await Promise.all([
-          readSheet(token, sheetId, "FEEDBACK_QUESTIONS!A1:M100"),
-          readSheet(token, sheetId, "DIVERT_QUESTIONS!A1:H100")
+          readSheet(token, sheetId, "FEEDBACK_QUESTIONS!A:M"),
+          readSheet(token, sheetId, "DIVERT_QUESTIONS!A:H")
         ]);
         return sendJson({
           status: "SUCCESS",
@@ -69,7 +69,7 @@ export default {
 
       // GET: Users
       if (method === "GET" && path === "/api/users") {
-        const rows = await readSheet(token, sheetId, "USER_CREATION!A1:L100");
+        const rows = await readSheet(token, sheetId, "USER_CREATION!A:L");
         return sendJson({
           status: "SUCCESS",
           action: "GET_USERS",
@@ -81,9 +81,9 @@ export default {
       // GET: Masters (Users + Questions)
       if (method === "GET" && path === "/api/masters") {
         const [u, fb, div] = await Promise.all([
-          readSheet(token, sheetId, "USER_CREATION!A1:L100"),
-          readSheet(token, sheetId, "FEEDBACK_QUESTIONS!A1:M100"),
-          readSheet(token, sheetId, "DIVERT_QUESTIONS!A1:H100")
+          readSheet(token, sheetId, "USER_CREATION!A:L"),
+          readSheet(token, sheetId, "FEEDBACK_QUESTIONS!A:M"),
+          readSheet(token, sheetId, "DIVERT_QUESTIONS!A:H")
         ]);
         const users = toObjects(u);
         return sendJson({
@@ -103,13 +103,13 @@ export default {
       // GET: Pull All
       if (method === "GET" && (path === "/api/pull" || path === "/api/data")) {
         const [fb, div, u, resp, diverts, ff, calls] = await Promise.all([
-          readSheet(token, sheetId, "FEEDBACK_QUESTIONS!A1:M100"),
-          readSheet(token, sheetId, "DIVERT_QUESTIONS!A1:H100"),
-          readSheet(token, sheetId, "USER_CREATION!A1:L100"),
-          readSheet(token, sheetId, "FEEDBACK_RESPONSES!A1:AB500"),
-          readSheet(token, sheetId, "CUSTOMER_DIVERTS!A1:S500"),
-          readSheet(token, sheetId, "FOOTFALL_LOG!A1:K100"),
-          readSheet(token, sheetId, "TELECALLER_LOGS!A1:I500")
+          readSheet(token, sheetId, "FEEDBACK_QUESTIONS!A:M"),
+          readSheet(token, sheetId, "DIVERT_QUESTIONS!A:H"),
+          readSheet(token, sheetId, "USER_CREATION!A:L"),
+          readSheet(token, sheetId, "FEEDBACK_RESPONSES!A:AB"),
+          readSheet(token, sheetId, "CUSTOMER_DIVERTS!A:S"),
+          readSheet(token, sheetId, "FOOTFALL_LOG!A:K"),
+          readSheet(token, sheetId, "TELECALLER_LOGS!A:I")
         ]);
         return sendJson({
           status: "SUCCESS",

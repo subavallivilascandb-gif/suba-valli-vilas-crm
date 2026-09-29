@@ -476,50 +476,18 @@
 
     if (!cfUrl && !gsUrl) return;
 
-    // 1. Check Cloudflare Worker health and deployed version
-    if (cfUrl) {
-      try {
-        const healthUrl = `${cfUrl.replace(/\/+$/, '')}/api/health`;
-        const hRes = await fetch(healthUrl).then(r => r.json()).catch(() => null);
-        if (hRes && hRes.version === '3.2-28col') {
-          state.cfWorkerVersion = '3.2-28col';
-          console.log('⚡ [SVV Feedback] Cloudflare Worker v3.2 (28 columns) is active.');
-        } else {
-          state.cfWorkerVersion = 'legacy';
-          console.warn('⚠️ [SVV Feedback] Cloudflare Worker is running legacy code. Direct Google Apps Script dispatch enabled to safeguard Q7 & Q8.');
-        }
-      } catch (_) {
-        state.cfWorkerVersion = 'offline';
-      }
-    }
-
-    // 2. Fetch live questions from Cloudflare Worker or Google Apps Script
+    const workerUrl = cfUrl || DEFAULT_CF_WORKER || 'https://svv-crm-gateway.subavallivilas-candb.workers.dev';
     try {
-      let targetUrl = '';
-      if (cfUrl) {
-        targetUrl = `${cfUrl.replace(/\/+$/, '')}/api/questions`;
-      } else {
-        targetUrl = gsUrl.includes('?') ? `${gsUrl}&action=GET_QUESTIONS` : `${gsUrl}?action=GET_QUESTIONS`;
-      }
-
-      const res = await fetch(targetUrl, { mode: 'cors' });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-
-      if (Array.isArray(data.feedbackQuestions) && data.feedbackQuestions.length > 0) {
-        applyFeedbackQuestionsFromSheet(data.feedbackQuestions);
+      const targetUrl = `${workerUrl.replace(/\/+$/, '')}/api/questions`;
+      const res = await fetch(targetUrl);
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data.feedbackQuestions) && data.feedbackQuestions.length > 0) {
+          applyFeedbackQuestionsFromSheet(data.feedbackQuestions);
+        }
       }
     } catch (err) {
-      console.warn('Could not auto-fetch questions from cloud in customer portal, attempting Apps Script:', err);
-      if (gsUrl) {
-        try {
-          const gasTarget = gsUrl.includes('?') ? `${gsUrl}&action=GET_QUESTIONS` : `${gsUrl}?action=GET_QUESTIONS`;
-          const gasRes = await fetch(gasTarget).then(r => r.json());
-          if (Array.isArray(gasRes.feedbackQuestions) && gasRes.feedbackQuestions.length > 0) {
-            applyFeedbackQuestionsFromSheet(gasRes.feedbackQuestions);
-          }
-        } catch (_) {}
-      }
+      console.warn('[SVV Feedback] Could not auto-fetch questions from Cloudflare Worker:', err);
     }
   }
 
@@ -1125,65 +1093,21 @@
 
     let sentSuccessfully = false;
 
-    // 1. If Cloudflare Worker is verified to run version 3.2-28col, use it
-    if (cfUrl && state.cfWorkerVersion === '3.2-28col') {
-      try {
-        const cfEndpoint = `${cfUrl.replace(/\/+$/, '')}/api/feedback`;
-        const res = await fetch(cfEndpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        if (res.ok) {
-          const resJson = await res.json().catch(() => ({}));
-          if (resJson && resJson.version === '3.2-28col') {
-            console.log('✅ [SVV Feedback] Successfully pushed to Google Sheet via Cloudflare Gateway v3.2 (28 columns)!', resJson);
-            sentSuccessfully = true;
-          }
-        }
-      } catch (cfErr) {
-        console.warn('[SVV Feedback] Cloudflare Worker push warning:', cfErr);
-      }
-    }
-
-    // 2. Direct Google Apps Script dispatch
-    // If Cloudflare Worker is not v3.2 (running old 26-col code) or if CF fails, route directly to Google Apps Script.
-    // Google Apps Script writes ALL 28 COLUMNS (saving Q7 into Col X and Q8 into Col Y) directly into Google Sheets!
-    if (!sentSuccessfully && gsUrl) {
-      console.log('🚀 [SVV Feedback] Dispatching directly to Google Apps Script (all 28 columns guaranteed)...');
-      try {
-        await fetch(gsUrl, {
-          method: 'POST',
-          mode: 'no-cors',
-          cache: 'no-cache',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify(payload)
-        });
+    // 1. Direct Cloudflare Worker Gateway (Direct Sheets API v4 - all 28 columns)
+    const workerUrl = cfUrl || DEFAULT_CF_WORKER || 'https://svv-crm-gateway.subavallivilas-candb.workers.dev';
+    try {
+      const cfEndpoint = `${workerUrl.replace(/\/+$/, '')}/api/feedback`;
+      const res = await fetch(cfEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
         sentSuccessfully = true;
-        console.log('✅ [SVV Feedback] Dispatched via Google Apps Script POST!');
-      } catch (err) {
-        console.warn('[SVV Feedback] Direct Apps Script POST warning:', err);
+        console.log('✅ [SVV Feedback] Successfully pushed directly to Google Sheets via Cloudflare Gateway!');
       }
-
-      // JSONP fallback (guaranteed execution across all mobile webviews)
-      try {
-        const encoded = encodeURIComponent(JSON.stringify(payload));
-        const cbName = 'svv_cb_' + Date.now();
-        const script = document.createElement('script');
-        script.src = `${gsUrl}${gsUrl.includes('?') ? '&' : '?'}action=ADD_FEEDBACK&data=${encoded}&callback=${cbName}`;
-        window[cbName] = function(resp) {
-          delete window[cbName];
-          script.remove();
-          console.log('✅ [SVV Feedback] Confirmed write via Apps Script JSONP:', resp);
-        };
-        script.onerror = function() {
-          delete window[cbName];
-          script.remove();
-        };
-        document.head.appendChild(script);
-      } catch (e) {
-        console.warn('[SVV Feedback] JSONP backup notice:', e);
-      }
+    } catch (cfErr) {
+      console.warn('[SVV Feedback] Cloudflare Worker push notice:', cfErr);
     }
   }
 

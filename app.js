@@ -2138,64 +2138,55 @@
         found.ratio = liveFf > 0 && liveBills > 0 ? (liveFf / liveBills).toFixed(1) : '0';
       }
     } else {
-      // 2. If not today, attempt to fetch from Google Sheet or Cloudflare Worker if not already present
+      // 2. If not today, attempt to fetch directly from Cloudflare Worker Gateway if not already present
       if (!found || !found.slots || found.slots.every(s => s === 0)) {
-        if (state.gsheetUrl || state.cfWorkerUrl) {
-          try {
-            let targetUrl = '';
-            if (state.cfWorkerUrl) {
-              targetUrl = `${state.cfWorkerUrl.replace(/\/+$/, '')}/api/pull`;
-            } else {
-              targetUrl = state.gsheetUrl.includes('?') 
-                ? `${state.gsheetUrl}&action=GET_FOOTFALL&date=${iso}` 
-                : `${state.gsheetUrl}?action=GET_FOOTFALL&date=${iso}`;
-            }
-
-            const res = await smartFetch(targetUrl);
-            if (res && (res.status === 'SUCCESS' || res.footfall || res.data?.footfall)) {
-              const ffList = res.footfall || res.data?.footfall || [];
-              const matchedRows = ffList.filter(r => normalizeDateToIso(r.Date || r.date) === iso);
-              if (matchedRows.length > 0) {
-                const fetchedSlots = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-                let fetchedBills = 0;
-                matchedRows.forEach(row => {
-                  const sId = String(row.Slot_ID || row.slotId || '');
-                  const m = sId.match(/SLOT_0*(\d+)/i);
-                  if (m) {
-                    const idx = parseInt(m[1], 10) - 1;
-                    if (idx >= 0 && idx < 12) {
-                      fetchedSlots[idx] = Number(row.Footfall_Count || row.footfallCount || row.count) || 0;
-                    }
+        const workerUrl = state.cfWorkerUrl || 'https://svv-crm-gateway.subavallivilas-candb.workers.dev';
+        try {
+          const targetUrl = `${workerUrl.replace(/\/+$/, '')}/api/pull`;
+          const res = await fetch(targetUrl).then(r => r.json()).catch(() => null);
+          if (res && (res.status === 'SUCCESS' || res.footfall)) {
+            const ffList = res.footfall || [];
+            const matchedRows = ffList.filter(r => normalizeDateToIso(r.Date || r.date) === iso);
+            if (matchedRows.length > 0) {
+              const fetchedSlots = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+              let fetchedBills = 0;
+              matchedRows.forEach(row => {
+                const sId = String(row.Slot_ID || row.slotId || '');
+                const m = sId.match(/SLOT_0*(\d+)/i);
+                if (m) {
+                  const idx = parseInt(m[1], 10) - 1;
+                  if (idx >= 0 && idx < 12) {
+                    fetchedSlots[idx] = Number(row.Footfall_Count || row.footfallCount || row.count) || 0;
                   }
-                  const b = Number(row.Day_End_Bills || row.dayEndBills || row.todayBills || row.bills);
-                  if (!isNaN(b) && b > 0) fetchedBills = b;
-                });
-
-                const totalFf = fetchedSlots.reduce((a, b) => a + b, 0);
-                if (!found) {
-                  found = {
-                    date: iso,
-                    footfall: totalFf,
-                    bills: fetchedBills,
-                    conversion: totalFf > 0 ? ((fetchedBills / totalFf) * 100).toFixed(1) : '0.0',
-                    ratio: totalFf > 0 && fetchedBills > 0 ? (totalFf / fetchedBills).toFixed(1) : '0',
-                    status: 'Verified',
-                    slots: fetchedSlots
-                  };
-                  state.pastDays.push(found);
-                } else {
-                  found.slots = fetchedSlots;
-                  found.bills = fetchedBills;
-                  found.footfall = totalFf;
-                  found.conversion = totalFf > 0 ? ((fetchedBills / totalFf) * 100).toFixed(1) : '0.0';
-                  found.ratio = totalFf > 0 && fetchedBills > 0 ? (totalFf / fetchedBills).toFixed(1) : '0';
-                  found.status = 'Verified';
                 }
+                const b = Number(row.Day_End_Bills || row.dayEndBills || row.todayBills || row.bills);
+                if (!isNaN(b) && b > 0) fetchedBills = b;
+              });
+
+              const totalFf = fetchedSlots.reduce((a, b) => a + b, 0);
+              if (!found) {
+                found = {
+                  date: iso,
+                  footfall: totalFf,
+                  bills: fetchedBills,
+                  conversion: totalFf > 0 ? ((fetchedBills / totalFf) * 100).toFixed(1) : '0.0',
+                  ratio: totalFf > 0 && fetchedBills > 0 ? (totalFf / fetchedBills).toFixed(1) : '0',
+                  status: 'Verified',
+                  slots: fetchedSlots
+                };
+                state.pastDays.push(found);
+              } else {
+                found.slots = fetchedSlots;
+                found.bills = fetchedBills;
+                found.footfall = totalFf;
+                found.conversion = totalFf > 0 ? ((fetchedBills / totalFf) * 100).toFixed(1) : '0.0';
+                found.ratio = totalFf > 0 && fetchedBills > 0 ? (totalFf / fetchedBills).toFixed(1) : '0';
+                found.status = 'Verified';
               }
             }
-          } catch(e) {
-            console.warn('[SVV] Could not fetch past day footfall from cloud:', e);
           }
+        } catch(e) {
+          console.warn('[SVV] Could not fetch past day footfall from cloud gateway:', e);
         }
       }
 
@@ -5297,12 +5288,7 @@
   }
 
   function sendToGSheet(action, payload) {
-    const DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycbxScZV2koc5d68t1F9851fRi-H_60r3UJe_GwilkdDFR-2K-710v2IdB1PiHpUUztJEiA/exec';
-    const effectiveGsUrl = state.gsheetUrl || DEFAULT_GAS_URL;
-
-    if (!effectiveGsUrl && !state.cfWorkerUrl) {
-      return;
-    }
+    const workerUrl = state.cfWorkerUrl || 'https://svv-crm-gateway.subavallivilas-candb.workers.dev';
     if (!state.autoSyncGSheet && action !== 'BULK_SYNC') {
       return;
     }
@@ -5310,64 +5296,35 @@
     const fullPayload = {
       action: action,
       ...payload,
-      timestamp: payload.timestamp || new Date().toLocaleString(),
-      branch: payload.branch || state.activeBranch
+      timestamp: payload.timestamp || new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
+      branch: payload.branch || state.activeBranch || 'Cuddalore (Main Branch)'
     };
 
-    // Route via Cloudflare Worker (Direct Google Sheets API v4 using Service Account)
-    if (state.cfWorkerUrl) {
-      let endpoint = `${state.cfWorkerUrl.replace(/\/+$/, '')}/api/sync`;
-      if (action === 'ADD_FEEDBACK') endpoint = `${state.cfWorkerUrl.replace(/\/+$/, '')}/api/feedback`;
-      else if (action === 'ADD_DIVERT') endpoint = `${state.cfWorkerUrl.replace(/\/+$/, '')}/api/divert`;
-      else if (action === 'UPDATE_FOOTFALL' || action === 'SAVE_DAY_END_BILLS' || action === 'SAVE_PAST_DAY_AUDIT') endpoint = `${state.cfWorkerUrl.replace(/\/+$/, '')}/api/footfall`;
-      else if (action === 'LOG_CALL') endpoint = `${state.cfWorkerUrl.replace(/\/+$/, '')}/api/call`;
-      else if (action === 'ADD_USER' || action === 'UPDATE_USER') endpoint = `${state.cfWorkerUrl.replace(/\/+$/, '')}/api/users`;
+    let endpoint = `${workerUrl.replace(/\/+$/, '')}/api/sync`;
+    if (action === 'ADD_FEEDBACK') endpoint = `${workerUrl.replace(/\/+$/, '')}/api/feedback`;
+    else if (action === 'UPDATE_FEEDBACK_STATUS') endpoint = `${workerUrl.replace(/\/+$/, '')}/api/feedback/status`;
+    else if (action === 'ADD_DIVERT') endpoint = `${workerUrl.replace(/\/+$/, '')}/api/divert`;
+    else if (action === 'UPDATE_FOOTFALL' || action === 'SAVE_DAY_END_BILLS' || action === 'SAVE_PAST_DAY_AUDIT') endpoint = `${workerUrl.replace(/\/+$/, '')}/api/footfall`;
+    else if (action === 'LOG_CALL') endpoint = `${workerUrl.replace(/\/+$/, '')}/api/call`;
+    else if (action === 'ADD_USER' || action === 'UPDATE_USER') endpoint = `${workerUrl.replace(/\/+$/, '')}/api/users`;
+    else if (action === 'SAVE_QUESTIONS_CONFIG') endpoint = `${workerUrl.replace(/\/+$/, '')}/api/questions`;
 
-      fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(fullPayload)
-      }).then(r => r.json().catch(() => ({})))
-        .then(res => {
-          updateGSheetSyncTimestamp();
-          console.log(`[Cloudflare Gateway Sync] Dispatched action: ${action}`, res);
-        }).catch(cfErr => {
-          console.warn(`[Cloudflare Gateway Sync Fallback] Error:`, cfErr);
-          if (effectiveGsUrl) {
-            dispatchDirectGSheet(fullPayload, action, effectiveGsUrl);
-          }
-        });
-    } else if (effectiveGsUrl) {
-      dispatchDirectGSheet(fullPayload, action, effectiveGsUrl);
-    }
-  }
-
-  function dispatchDirectGSheet(fullPayload, action, urlOverride) {
-    const targetUrl = urlOverride || state.gsheetUrl;
-    if (!targetUrl) return;
-    fetch(targetUrl, {
+    fetch(endpoint, {
       method: 'POST',
-      mode: 'no-cors',
-      cache: 'no-cache',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(fullPayload)
-    }).then(() => {
-      updateGSheetSyncTimestamp();
-      console.log(`[GSheet Direct Sync] Dispatched action: ${action}`);
-    }).catch(err => {
-      console.warn(`[GSheet Sync Error] Failed on action ${action}:`, err);
-    });
+    }).then(r => r.json().catch(() => ({})))
+      .then(res => {
+        updateGSheetSyncTimestamp();
+        console.log(`⚡ [Cloud Gateway Direct Sync] Action: ${action}`, res);
+      }).catch(err => {
+        console.warn(`[Cloud Gateway Sync Error] Action ${action}:`, err);
+      });
   }
 
   async function syncAllDataToGSheet() {
-    if (!state.gsheetUrl && !state.cfWorkerUrl) {
-      showToast('⚠️ Please configure and save your Google Apps Script Web App URL or Cloudflare Worker Gateway first.');
-      if (dom.cfWorkerGatewayUrl) dom.cfWorkerGatewayUrl.focus();
-      else dom.gsheetWebhookUrl?.focus();
-      return;
-    }
-
-    showToast('☁️ Syncing all CRM records to Cloud Database...');
+    const workerUrl = state.cfWorkerUrl || 'https://svv-crm-gateway.subavallivilas-candb.workers.dev';
+    showToast('☁️ Syncing all CRM records directly to Cloud Database...');
 
     try {
       const bulkPayload = {
@@ -5379,311 +5336,256 @@
         branch: state.activeBranch
       };
 
-      if (state.cfWorkerUrl) {
-        const endpoint = `${state.cfWorkerUrl.replace(/\/+$/, '')}/api/sync`;
-        await fetch(endpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(bulkPayload)
-        });
-      } else {
-        await fetch(state.gsheetUrl, {
-          method: 'POST',
-          mode: 'no-cors',
-          cache: 'no-cache',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify(bulkPayload)
-        });
-      }
+      const endpoint = `${workerUrl.replace(/\/+$/, '')}/api/sync`;
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(bulkPayload)
+      });
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
       updateGSheetSyncTimestamp();
       setGSheetStatusUI('connected', '🟢 Synced with Cloud Database');
       showToast(`✨ Successfully synced ${state.feedbacks.length} Feedbacks and ${state.diverts.length} Diverts! ✅`);
     } catch (err) {
-      showToast(`⚠️ Sync failed: ${err.message}`);
+      showToast(`⚠️ Sync notice: ${err.message}`);
     }
   }
 
-  async function pullDataFromGSheet() {
-    if (!state.gsheetUrl && !state.cfWorkerUrl) {
-      showToast('⚠️ Please configure and save your Google Apps Script Web App URL first.');
-      if (dom.gsheetWebhookUrl) dom.gsheetWebhookUrl.focus();
-      return;
+  function applyCloudData(data, notify = false) {
+    if (!data) return;
+
+    let newFeedbacks = 0;
+    const fbList = data.feedbacks || data.data?.feedbacks;
+    if (Array.isArray(fbList)) {
+      const mappedFeedbacks = fbList.map(remFb => {
+        const fbId = remFb.Feedback_ID || remFb.id;
+        if (!fbId) return null;
+        return {
+          ...remFb,
+          id: fbId,
+          timestamp: remFb.Timestamp || remFb.timestamp || new Date().toISOString(),
+          date: remFb.Date || remFb.date || new Date().toISOString().split('T')[0],
+          branch: remFb.Branch || remFb.branch || 'Cuddalore (Main Branch)',
+          source: remFb.Source || remFb.source || 'Staff',
+          status: remFb.Status || remFb.status || 'NEW',
+          customerName: remFb.Customer_Name || remFb.customerName || '',
+          mobile: remFb.Mobile_Number || remFb.mobile || '',
+          city: remFb.City || remFb.city || '',
+          occupation: remFb.Occupation || remFb.occupation || '',
+          staffName: remFb.Staff_Name || remFb.staffName || 'Vijay',
+          rating: Number(remFb.Rating_10 || remFb.rating || remFb.Q7_Recommend || remFb.q7) || 10,
+          mood: remFb.Mood || remFb.mood || 'Appreciation',
+          remarks: remFb.Customer_Remarks || remFb.remarks || '',
+          actionRemark: remFb.Staff_Action_Remarks || remFb.actionRemark || '',
+          q0: remFb.Q0_Frequency || remFb.q0 || '',
+          q1: remFb.Q1_Heard_About || remFb.q1 || '',
+          q2: remFb.Q2_Store_Experience || remFb.q2 || remFb.overallShoppingExperience || remFb.overallExperience || '',
+          q3: remFb.Q3_Staff_Service || remFb.q3 || '',
+          q4: remFb.Q4_Occasion || remFb.q4 || '',
+          occasionDate: remFb.Occasion_Date || remFb.occasionDate || '',
+          q5: remFb.Q5_Chit_Awareness || remFb.q5 || '',
+          q6: remFb.Q6_Jewellery_Interest || remFb.q6 || '',
+          q7: remFb.Q7_Recommend || remFb.Q7_NPS || remFb.q7 || remFb.recommendation || remFb.Rating_10 || remFb.rating || '',
+          overallShoppingExperience: remFb.Overall_Shopping_Experience || remFb.Overall_Experience || remFb.overallShoppingExperience || remFb.overallExperience || remFb.Q2_Store_Experience || remFb.q2 || '',
+          invoiceNo: remFb.Invoice_No || remFb.invoiceNo || '',
+          section: remFb.Section_Zone || remFb.section || '',
+          customQ1: remFb.Custom_Q1 || remFb.customQ1 || remFb.q8_custom1 || '',
+          customQ2: remFb.Custom_Q2 || remFb.customQ2 || remFb.q9_custom2 || ''
+        };
+      }).filter(Boolean);
+
+      state.feedbacks = mappedFeedbacks;
+      newFeedbacks = mappedFeedbacks.length;
+      saveFeedbacksToStorage();
     }
 
-    showToast('📥 Fetching latest records from Cloud Database...');
+    let newDiverts = 0;
+    const divList = data.diverts || data.data?.diverts;
+    if (Array.isArray(divList)) {
+      const mappedDiverts = divList.map(remDiv => {
+        const divId = remDiv.Divert_ID || remDiv.id;
+        if (!divId) return null;
+        return {
+          ...remDiv,
+          id: divId,
+          timestamp: remDiv.Timestamp || remDiv.timestamp || '',
+          date: remDiv.Date || remDiv.date || '',
+          branch: remDiv.Branch || remDiv.branch || '',
+          customerName: remDiv.Customer_Name || remDiv.customerName || '',
+          mobile: remDiv.Mobile_Number || remDiv.mobile || '',
+          section: remDiv.Section || remDiv.section || '',
+          counter: remDiv.Counter || remDiv.counter || '',
+          reason: (remDiv.Reason || remDiv.Reason_For_Divert || remDiv.reason || '').trim(),
+          product: remDiv.Product_Name || remDiv.Product_Description || remDiv.product || '',
+          design: remDiv.Design_Style || remDiv.design || '',
+          size: remDiv.Size || remDiv.Size_Fit || remDiv.size || '',
+          gramRange: remDiv.Gram_Range || remDiv.Weight_Range || remDiv.gramRange || '',
+          purpose: remDiv.Purpose || remDiv.Purpose_For_Visit || remDiv.purpose || '',
+          employee: remDiv.Staff_Employee_Name || remDiv.Attended_Staff || remDiv.employee || '',
+          attendedStaff: remDiv.Staff_Employee_Name || remDiv.Attended_Staff || remDiv.attendedStaff || remDiv.employee || '',
+          priority: remDiv.Priority || remDiv.Followup_Priority || remDiv.priority || 'MEDIUM',
+          otherReason: remDiv.Other_Reason_Remarks || remDiv.Other_Reason || remDiv.otherReason || '',
+          status: remDiv.Status || remDiv.status || 'PENDING'
+        };
+      }).filter(Boolean);
+
+      state.diverts = mappedDiverts;
+      newDiverts = mappedDiverts.length;
+      saveDivertsToStorage();
+    }
+
+    const todayIso = normalizeDateToIso(new Date());
+    const ffList = data.footfall || data.data?.footfall || [];
+    if (Array.isArray(ffList) && ffList.length > 0) {
+      const dateGroups = {};
+      ffList.forEach(ff => {
+        const dateStr = ff.Date || ff.date;
+        if (!dateStr) return;
+        const iso = normalizeDateToIso(dateStr);
+        if (!dateGroups[iso]) {
+          dateGroups[iso] = {
+            date: iso,
+            slots: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            slotSubmitted: [false, false, false, false, false, false, false, false, false, false, false, false],
+            bills: 0,
+            dayEndFootfall: 0,
+            status: 'Verified'
+          };
+        }
+        const sId = String(ff.Slot_ID || ff.slotId || '').trim();
+        const m = sId.match(/SLOT_0*(\d+)/i);
+        const count = Number(ff.Footfall_Count !== undefined ? ff.Footfall_Count : (ff.footfallCount !== undefined ? ff.footfallCount : ff.count)) || 0;
+        const b = Number(ff.Day_End_Bills !== undefined ? ff.Day_End_Bills : (ff.dayEndBills !== undefined ? ff.dayEndBills : ff.todayBills)) || 0;
+        if (m) {
+          const idx = parseInt(m[1], 10) - 1;
+          if (idx >= 0 && idx < 12) {
+            dateGroups[iso].slots[idx] = count;
+            dateGroups[iso].slotSubmitted[idx] = true;
+          }
+        } else if (sId.toUpperCase() === 'DAY_END' || sId.toUpperCase() === 'DAY_END_TOTAL') {
+          if (count > 0) dateGroups[iso].dayEndFootfall = count;
+          if (b > 0) dateGroups[iso].bills = b;
+        }
+        if (b > 0) {
+          dateGroups[iso].bills = b;
+        }
+      });
+
+      Object.values(dateGroups).forEach(grp => {
+        const slotsSum = grp.slots.reduce((a, b) => a + b, 0);
+        const totalFf = Math.max(slotsSum, grp.dayEndFootfall || 0);
+        const bills = grp.bills;
+        const conv = totalFf > 0 ? ((bills / totalFf) * 100).toFixed(1) : '0.0';
+        const rat = totalFf > 0 && bills > 0 ? (totalFf / bills).toFixed(1) : '0';
+
+        const existingDay = state.pastDays.find(p => normalizeDateToIso(p.date) === grp.date);
+        if (!existingDay) {
+          state.pastDays.push({
+            date: grp.date,
+            footfall: totalFf,
+            bills: bills,
+            conversion: conv,
+            ratio: rat,
+            status: 'Verified',
+            slots: grp.slots
+          });
+        } else {
+          existingDay.slots = grp.slots;
+          existingDay.footfall = totalFf;
+          if (bills > 0 || !existingDay.bills) existingDay.bills = bills;
+          existingDay.conversion = conv;
+          existingDay.ratio = rat;
+          existingDay.status = 'Verified';
+        }
+
+        if (grp.date === todayIso) {
+          state.slots.forEach((s, idx) => {
+            const c = grp.slots[idx] || 0;
+            s.count = c;
+            if (grp.slotSubmitted && grp.slotSubmitted[idx]) {
+              s.status = 'SUBMITTED';
+            } else if (c > 0) {
+              s.status = 'SUBMITTED';
+            }
+          });
+          if (bills > 0) {
+            state.todayBills = bills;
+            state.todayBillsSubmitted = true;
+          }
+        }
+      });
+    }
+
+    const callList = data.calls || data.data?.calls || [];
+    if (Array.isArray(callList)) {
+      state.telecallerCalls = callList.map(c => ({
+        callId: c.Call_ID || c.callId || '',
+        timestamp: c.Timestamp || c.timestamp || '',
+        customerName: c.Customer_Name || c.customerName || '',
+        mobile: String(c.Mobile_Number || c.mobile || '').replace(/\D/g, ''),
+        queueCategory: c.Queue_Category || c.queueCategory || 'General',
+        disposition: c.Call_Disposition || c.disposition || 'Connected',
+        callbackDate: c.Callback_Date || c.callbackDate || '',
+        notes: c.Caller_Remarks || c.notes || '',
+        caller: c.Telecaller_Name || c.caller || 'Lakshmi',
+        callStatus: (c.Call_Disposition || '').includes('Converted') || (c.Call_Disposition || '').includes('Resolved') ? 'CLOSED' : 'FOLLOWUP'
+      }));
+
+      state.customerCallRegistry = {};
+      state.telecallerCalls.forEach(call => {
+        if (call.mobile) state.customerCallRegistry[call.mobile] = call;
+      });
+    }
+
+    const uList = data.users || data.data?.users;
+    if (Array.isArray(uList) && uList.length > 0) {
+      applyUsersFromSheet(uList);
+    }
+    if (Array.isArray(data.feedbackQuestions) && data.feedbackQuestions.length > 0) {
+      applyFeedbackQuestionsFromSheet(data.feedbackQuestions);
+    }
+    if (Array.isArray(data.divertQuestions) && data.divertQuestions.length > 0) {
+      applyDivertQuestionsFromSheet(data.divertQuestions);
+    }
+
+    saveFeedbacksToStorage();
+    renderAll();
+    updateGSheetSyncTimestamp();
+    setGSheetStatusUI('connected', '🟢 Direct Cloud Gateway Active');
+
+    if (notify) {
+      showToast(`✨ CRM Synced! (${newFeedbacks} Feedbacks, ${newDiverts} Diverts, ${state.pastDays.length} Days Footfall) ✅`);
+    }
+  }
+
+  async function pullDataFromGSheet(quiet = false) {
+    const workerUrl = state.cfWorkerUrl || 'https://svv-crm-gateway.subavallivilas-candb.workers.dev';
+    if (!quiet) showToast('📥 Syncing with Cloud Database...');
 
     try {
-      let data = null;
+      const cfPullUrl = `${workerUrl.replace(/\/+$/, '')}/api/pull`;
+      const res = await fetch(cfPullUrl, {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' }
+      });
+      if (!res.ok) throw new Error(`Gateway returned HTTP ${res.status}`);
+      const data = await res.json();
 
-      // 1. Try Cloudflare Worker only if configured, but catch any 404/errors gracefully
-      if (state.cfWorkerUrl) {
-        try {
-          const cfPullUrl = `${state.cfWorkerUrl.replace(/\/+$/, '')}/api/pull`;
-          const res = await fetch(cfPullUrl, { mode: 'cors' });
-          if (res.ok) {
-            data = await res.json();
-          } else {
-            console.warn(`[Cloudflare Gateway] HTTP ${res.status} returned, falling back directly to Google Apps Script...`);
-          }
-        } catch (cfErr) {
-          console.warn('[Cloudflare Gateway] Fetch error, falling back directly to Google Apps Script:', cfErr);
-        }
+      if (!data || (data.status !== 'SUCCESS' && !data.success)) {
+        throw new Error(data?.message || 'Invalid gateway response');
       }
 
-      // Check if Cloudflare Worker returned truncated footfall or missing today's entries
-      const todayIso = normalizeDateToIso(new Date());
-      const cfHasTodayFootfall = data && Array.isArray(data.footfall) && data.footfall.some(f => normalizeDateToIso(f.Date || f.date) === todayIso);
-      const cfNeedsGasUpgrade = (!data) || (!cfHasTodayFootfall && Array.isArray(data.footfall) && data.footfall.length >= 90) || (!data.footfall) || (data.footfall.length === 0);
+      // Save latest snapshot to localStorage for 0ms instant startup
+      try {
+        localStorage.setItem('svv_last_cloud_data', JSON.stringify(data));
+      } catch (_) {}
 
-      // 2. Direct Google Apps Script (Primary & Resilient with smartFetch + JSONP fallback)
-      if (cfNeedsGasUpgrade && state.gsheetUrl) {
-        try {
-          const gasUrl = state.gsheetUrl.includes('?') 
-            ? `${state.gsheetUrl}&action=GET_ALL_DATA` 
-            : `${state.gsheetUrl}?action=GET_ALL_DATA`;
-          const gasData = await smartFetch(gasUrl);
-          if (gasData && (gasData.status === 'SUCCESS' || gasData.action === 'GET_ALL_DATA')) {
-            if (!data) {
-              data = gasData;
-            } else {
-              if (Array.isArray(gasData.footfall) && gasData.footfall.length > (data.footfall || []).length) {
-                console.log(`[Footfall Auto-Heal] Upgraded footfall from Google Apps Script (${gasData.footfall.length} rows vs ${(data.footfall || []).length} rows)`);
-                data.footfall = gasData.footfall;
-              }
-              if (Array.isArray(gasData.diverts) && gasData.diverts.length > (data.diverts || []).length) {
-                data.diverts = gasData.diverts;
-              }
-              if (Array.isArray(gasData.feedbacks) && gasData.feedbacks.length > (data.feedbacks || []).length) {
-                data.feedbacks = gasData.feedbacks;
-              }
-            }
-          }
-        } catch (gasErr) {
-          console.warn('[GSheet Direct Pull Fallback] Error:', gasErr);
-        }
-      }
-
-      if (!data) {
-        throw new Error('Unable to connect to Google Apps Script or Cloudflare');
-      }
-
-      if (data.status === 'SUCCESS' || data.success) {
-        let newFeedbacks = 0;
-        const fbList = data.feedbacks || data.data?.feedbacks;
-        if (Array.isArray(fbList)) {
-          const mappedFeedbacks = fbList.map(remFb => {
-            const fbId = remFb.Feedback_ID || remFb.id;
-            if (!fbId) return null;
-            return {
-              ...remFb,
-              id: fbId,
-              timestamp: remFb.Timestamp || remFb.timestamp || new Date().toISOString(),
-              date: remFb.Date || remFb.date || new Date().toISOString().split('T')[0],
-              branch: remFb.Branch || remFb.branch || 'Cuddalore (Main Branch)',
-              source: remFb.Source || remFb.source || 'Staff',
-              status: remFb.Status || remFb.status || 'NEW',
-              customerName: remFb.Customer_Name || remFb.customerName || '',
-              mobile: remFb.Mobile_Number || remFb.mobile || '',
-              city: remFb.City || remFb.city || '',
-              occupation: remFb.Occupation || remFb.occupation || '',
-              staffName: remFb.Staff_Name || remFb.staffName || 'Vijay',
-              rating: Number(remFb.Rating_10 || remFb.rating || remFb.Q7_Recommend || remFb.q7) || 10,
-              mood: remFb.Mood || remFb.mood || 'Appreciation',
-              remarks: remFb.Customer_Remarks || remFb.remarks || '',
-              actionRemark: remFb.Staff_Action_Remarks || remFb.actionRemark || '',
-              q0: remFb.Q0_Frequency || remFb.q0 || '',
-              q1: remFb.Q1_Heard_About || remFb.q1 || '',
-              q2: remFb.Q2_Store_Experience || remFb.q2 || remFb.overallShoppingExperience || remFb.overallExperience || '',
-              q3: remFb.Q3_Staff_Service || remFb.q3 || '',
-              q4: remFb.Q4_Occasion || remFb.q4 || '',
-              occasionDate: remFb.Occasion_Date || remFb.occasionDate || '',
-              q5: remFb.Q5_Chit_Awareness || remFb.q5 || '',
-              q6: remFb.Q6_Jewellery_Interest || remFb.q6 || '',
-              q7: remFb.Q7_Recommend || remFb.Q7_NPS || remFb.q7 || remFb.recommendation || remFb.Rating_10 || remFb.rating || '',
-              overallShoppingExperience: remFb.Overall_Shopping_Experience || remFb.Overall_Experience || remFb.overallShoppingExperience || remFb.overallExperience || remFb.Q2_Store_Experience || remFb.q2 || '',
-              invoiceNo: remFb.Invoice_No || remFb.invoiceNo || '',
-              section: remFb.Section_Zone || remFb.section || '',
-              customQ1: remFb.Custom_Q1 || remFb.customQ1 || remFb.q8_custom1 || '',
-              customQ2: remFb.Custom_Q2 || remFb.customQ2 || remFb.q9_custom2 || ''
-            };
-          }).filter(Boolean);
-
-          // Full sync with cloud: clean sync mirrors deletions in Google Sheet
-          state.feedbacks = mappedFeedbacks;
-          newFeedbacks = mappedFeedbacks.length;
-          saveFeedbacksToStorage();
-        }
-
-        let newDiverts = 0;
-        const divList = data.diverts || data.data?.diverts;
-        if (Array.isArray(divList)) {
-          const mappedDiverts = divList.map(remDiv => {
-            const divId = remDiv.Divert_ID || remDiv.id;
-            if (!divId) return null;
-            return {
-              ...remDiv,
-              id: divId,
-              timestamp: remDiv.Timestamp || remDiv.timestamp || '',
-              date: remDiv.Date || remDiv.date || '',
-              branch: remDiv.Branch || remDiv.branch || '',
-              customerName: remDiv.Customer_Name || remDiv.customerName || '',
-              mobile: remDiv.Mobile_Number || remDiv.mobile || '',
-              section: remDiv.Section || remDiv.section || '',
-              counter: remDiv.Counter || remDiv.counter || '',
-              reason: (remDiv.Reason || remDiv.Reason_For_Divert || remDiv.reason || '').trim(),
-              product: remDiv.Product_Name || remDiv.Product_Description || remDiv.product || '',
-              design: remDiv.Design_Style || remDiv.design || '',
-              size: remDiv.Size || remDiv.Size_Fit || remDiv.size || '',
-              gramRange: remDiv.Gram_Range || remDiv.Weight_Range || remDiv.gramRange || '',
-              purpose: remDiv.Purpose || remDiv.Purpose_For_Visit || remDiv.purpose || '',
-              employee: remDiv.Staff_Employee_Name || remDiv.Attended_Staff || remDiv.employee || '',
-              attendedStaff: remDiv.Staff_Employee_Name || remDiv.Attended_Staff || remDiv.attendedStaff || remDiv.employee || '',
-              priority: remDiv.Priority || remDiv.Followup_Priority || remDiv.priority || 'MEDIUM',
-              otherReason: remDiv.Other_Reason_Remarks || remDiv.Other_Reason || remDiv.otherReason || '',
-              status: remDiv.Status || remDiv.status || 'PENDING'
-            };
-          }).filter(Boolean);
-
-          state.diverts = mappedDiverts;
-          newDiverts = mappedDiverts.length;
-          saveDivertsToStorage();
-        }
-
-        const ffList = data.footfall || data.data?.footfall || [];
-        if (Array.isArray(ffList) && ffList.length > 0) {
-          // Group by date to reconstruct 12 slots and bills
-          const dateGroups = {};
-          ffList.forEach(ff => {
-            const dateStr = ff.Date || ff.date;
-            if (!dateStr) return;
-            const iso = normalizeDateToIso(dateStr);
-            if (!dateGroups[iso]) {
-              dateGroups[iso] = {
-                date: iso,
-                slots: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                slotSubmitted: [false, false, false, false, false, false, false, false, false, false, false, false],
-                bills: 0,
-                dayEndFootfall: 0,
-                status: 'Verified'
-              };
-            }
-            const sId = String(ff.Slot_ID || ff.slotId || '').trim();
-            const m = sId.match(/SLOT_0*(\d+)/i);
-            const count = Number(ff.Footfall_Count !== undefined ? ff.Footfall_Count : (ff.footfallCount !== undefined ? ff.footfallCount : ff.count)) || 0;
-            const b = Number(ff.Day_End_Bills !== undefined ? ff.Day_End_Bills : (ff.dayEndBills !== undefined ? ff.dayEndBills : ff.todayBills)) || 0;
-            if (m) {
-              const idx = parseInt(m[1], 10) - 1;
-              if (idx >= 0 && idx < 12) {
-                dateGroups[iso].slots[idx] = count;
-                dateGroups[iso].slotSubmitted[idx] = true;
-              }
-            } else if (sId.toUpperCase() === 'DAY_END' || sId.toUpperCase() === 'DAY_END_TOTAL') {
-              if (count > 0) dateGroups[iso].dayEndFootfall = count;
-              if (b > 0) dateGroups[iso].bills = b;
-            }
-            if (b > 0) {
-              dateGroups[iso].bills = b;
-            }
-          });
-
-          // Apply grouped dates to state.pastDays and localStorage
-          Object.values(dateGroups).forEach(grp => {
-            const slotsSum = grp.slots.reduce((a, b) => a + b, 0);
-            const totalFf = Math.max(slotsSum, grp.dayEndFootfall || 0);
-            const bills = grp.bills;
-            const conv = totalFf > 0 ? ((bills / totalFf) * 100).toFixed(1) : '0.0';
-            const rat = totalFf > 0 && bills > 0 ? (totalFf / bills).toFixed(1) : '0';
-
-            const existingDay = state.pastDays.find(p => normalizeDateToIso(p.date) === grp.date);
-            if (!existingDay) {
-              state.pastDays.push({
-                date: grp.date,
-                footfall: totalFf,
-                bills: bills,
-                conversion: conv,
-                ratio: rat,
-                status: 'Verified',
-                slots: grp.slots
-              });
-            } else {
-              existingDay.slots = grp.slots;
-              existingDay.footfall = totalFf;
-              if (bills > 0 || !existingDay.bills) existingDay.bills = bills;
-              existingDay.conversion = conv;
-              existingDay.ratio = rat;
-              existingDay.status = 'Verified';
-            }
-
-            // If it matches today, sync today's slots & bills directly from Google Sheets
-            if (grp.date === todayIso) {
-              state.slots.forEach((s, idx) => {
-                const c = grp.slots[idx] || 0;
-                s.count = c;
-                if (grp.slotSubmitted && grp.slotSubmitted[idx]) {
-                  s.status = 'SUBMITTED';
-                } else if (c > 0) {
-                  s.status = 'SUBMITTED';
-                }
-              });
-              if (bills > 0) {
-                state.todayBills = bills;
-                state.todayBillsSubmitted = true;
-              }
-            }
-          });
-        }
-
-        // 4. Synchronize Telecaller Calls from Google Sheets
-        const callList = data.calls || data.data?.calls || [];
-        if (Array.isArray(callList)) {
-          state.telecallerCalls = callList.map(c => ({
-            callId: c.Call_ID || c.callId || '',
-            timestamp: c.Timestamp || c.timestamp || '',
-            customerName: c.Customer_Name || c.customerName || '',
-            mobile: String(c.Mobile_Number || c.mobile || '').replace(/\D/g, ''),
-            queueCategory: c.Queue_Category || c.queueCategory || 'General',
-            disposition: c.Call_Disposition || c.disposition || 'Connected',
-            callbackDate: c.Callback_Date || c.callbackDate || '',
-            notes: c.Caller_Remarks || c.notes || '',
-            caller: c.Telecaller_Name || c.caller || 'Lakshmi',
-            callStatus: (c.Call_Disposition || '').includes('Converted') || (c.Call_Disposition || '').includes('Resolved') ? 'CLOSED' : 'FOLLOWUP'
-          }));
-
-          // Rebuild customerCallRegistry from Google Sheets call logs
-          state.customerCallRegistry = {};
-          state.telecallerCalls.forEach(call => {
-            if (call.mobile) {
-              state.customerCallRegistry[call.mobile] = call;
-            }
-          });
-        }
-
-        let schemaUpdatedMsg = '';
-        const uList = data.users || data.data?.users;
-        if (Array.isArray(uList) && uList.length > 0) {
-          applyUsersFromSheet(uList);
-          schemaUpdatedMsg += ` ${uList.length} Users/Staff,`;
-        }
-        if (Array.isArray(data.feedbackQuestions) && data.feedbackQuestions.length > 0) {
-          applyFeedbackQuestionsFromSheet(data.feedbackQuestions);
-          schemaUpdatedMsg += ` ${data.feedbackQuestions.length} Questions,`;
-        }
-        if (Array.isArray(data.divertQuestions) && data.divertQuestions.length > 0) {
-          applyDivertQuestionsFromSheet(data.divertQuestions);
-          schemaUpdatedMsg += ` ${data.divertQuestions.length} Divert fields,`;
-        }
-
-        saveFeedbacksToStorage();
-        renderAll();
-        updateGSheetSyncTimestamp();
-        setGSheetStatusUI('connected', '🟢 Up to date with Cloud Database');
-        showToast(`📥 Pulled data successfully via ${state.cfWorkerUrl ? 'Cloudflare Gateway' : 'Google Sheets'}! (${newFeedbacks} feedbacks, ${newDiverts} diverts synced${schemaUpdatedMsg ? ',' + schemaUpdatedMsg + ' schema refreshed' : ''}) ✅`);
-      } else {
-        showToast('⚠️ Cloud Database responded with: ' + (data.message || 'No data'));
-      }
-    } catch (e) {
-      showToast('⚠️ Pull failed: ' + e.message + '. Check Cloudflare / Google Apps Script configuration.');
+      applyCloudData(data, !quiet);
+    } catch (err) {
+      console.warn('[SVV Direct Cloud Pull] Sync notice:', err.message);
+      if (!quiet) showToast(`⚠️ Cloud Sync Notice: ${err.message}`);
     }
   }
 
@@ -6122,6 +6024,15 @@
     renderDivertModalOptions();
     populateDivertCollectedBy();
 
+    // 0ms INSTANT HYDRATION: Load cached full cloud snapshot immediately
+    try {
+      const cachedCloud = localStorage.getItem('svv_last_cloud_data');
+      if (cachedCloud) {
+        applyCloudData(JSON.parse(cachedCloud), false);
+        console.log('⚡ [SVV Instant Startup] Hydrated all screens in 0ms from local cloud cache.');
+      }
+    } catch (_) {}
+
     // Google Sheets Cloud Database UI & Listeners
     initGSheetConfig();
     dom.btnSaveGSheetUrl?.addEventListener('click', () => {
@@ -6136,7 +6047,7 @@
       showToast(`⚡ Google Sheet Auto-Sync: ${state.autoSyncGSheet ? 'ON' : 'OFF'}`);
     });
     dom.btnSyncAllToGSheet?.addEventListener('click', syncAllDataToGSheet);
-    dom.btnPullFromGSheet?.addEventListener('click', pullDataFromGSheet);
+    dom.btnPullFromGSheet?.addEventListener('click', () => pullDataFromGSheet(false));
     dom.btnToggleGSheetGuide?.addEventListener('click', toggleGSheetGuide);
     dom.btnCopyAppsScriptCode?.addEventListener('click', copyAppsScriptCode);
     dom.btnDownloadAppsScript?.addEventListener('click', downloadAppsScriptFile);
@@ -6150,46 +6061,25 @@
       testCFWorkerConnection(true);
     });
 
-    // Fetch latest questions & users from Google Sheets in background
-    fetchQuestionsFromCloud(false);
-    fetchUsersFromCloud(false);
+    // Immediate background sync via Cloudflare Worker Gateway
+    pullDataFromGSheet(true);
 
-    // Auto-sync questions + users when user switches back to this browser tab from Google Sheets
+    // Auto-sync when user switches back to this browser tab
     let lastFocusTime = 0;
     window.addEventListener('focus', () => {
       const now = Date.now();
-      if (now - lastFocusTime > 15000 && (state.cfWorkerUrl || state.gsheetUrl)) {
+      if (now - lastFocusTime > 30000 && state.cfWorkerUrl) {
         lastFocusTime = now;
-        fetchQuestionsFromCloud(false);
-        fetchUsersFromCloud(false);
+        pullDataFromGSheet(true);
       }
     });
 
-    // Background periodic poll every 45s for questions, 60s for users
+    // Background periodic poll every 90 seconds
     setInterval(() => {
-      if (state.cfWorkerUrl || state.gsheetUrl) {
-        fetchQuestionsFromCloud(false);
+      if (state.cfWorkerUrl) {
+        pullDataFromGSheet(true);
       }
-    }, 45000);
-    setInterval(() => {
-      if (state.cfWorkerUrl || state.gsheetUrl) {
-        fetchUsersFromCloud(false);
-      }
-    }, 60000);
-
-    // Auto-pull all data from Sheet every 2 minutes (sheet is single source of truth)
-    setInterval(() => {
-      if (state.gsheetUrl || state.cfWorkerUrl) {
-        pullDataFromGSheet();
-      }
-    }, 120000);
-
-    // First pull — immediately on load to populate all records directly from Google Sheets
-    setTimeout(() => {
-      if (state.gsheetUrl || state.cfWorkerUrl) {
-        pullDataFromGSheet();
-      }
-    }, 500);
+    }, 90000);
 
     // Dedicated button listeners to sync questions
     document.getElementById('btnRefreshQuestionsCloud')?.addEventListener('click', () => {

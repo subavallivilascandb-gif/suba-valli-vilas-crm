@@ -906,6 +906,15 @@
     showToast(`Language switched to: ${nextLang === 'en' ? 'English' : 'தமிழ் (Tamil)'}`);
   }
 
+  // Global robust helper for Chit Scheme Unaware classification across DER, AI Suggestions, Telecaller & Reports
+  function isChitUnaware(val) {
+    if (!val) return false;
+    const s = String(val).trim().toLowerCase();
+    if (s.includes('already enrolled') || s.includes('enrolled') || s.includes('ஏற்கனவே')) return false;
+    if (s.includes('aware but not joined') || s.includes('aware, not joined') || s.includes('இணையவில்லை')) return false;
+    return s.includes('not aware') || s.includes('தெரியாது') || s.includes('no') || s.includes('unaware') || s.includes('explain') || s.includes('விவரம்') || s.includes('இல்லை');
+  }
+
   // ================= 1. DER DASHBOARD RENDERING =================
   function renderDERHourlyLineChart() {
     const container = document.getElementById('derHourlyChartContainer');
@@ -942,8 +951,19 @@
     const subTitleEl = document.getElementById('derHourlySlotsSubtitle');
     if (subTitleEl) subTitleEl.textContent = `${submittedCount} of 12 slots recorded`;
 
-    const maxVal = Math.max(...counts, 430);
-    const yGridMax = Math.ceil(maxVal / 100) * 100 || 450;
+    const rawMax = Math.max(...counts, 0);
+    let yGridMax;
+    if (rawMax <= 6) {
+      yGridMax = 8;
+    } else if (rawMax <= 15) {
+      yGridMax = Math.ceil(rawMax / 3) * 3;
+    } else if (rawMax <= 35) {
+      yGridMax = Math.ceil((rawMax * 1.2) / 5) * 5;
+    } else if (rawMax <= 100) {
+      yGridMax = Math.ceil((rawMax * 1.15) / 10) * 10;
+    } else {
+      yGridMax = Math.ceil((rawMax * 1.15) / 50) * 50;
+    }
     const ySteps = [0, Math.round(yGridMax * 0.33), Math.round(yGridMax * 0.66), yGridMax];
 
     const svgWidth = 540;
@@ -1193,8 +1213,7 @@
         else neutral++;
       }
 
-      const q5Val = (f.q5 || '').toLowerCase();
-      if (q5Val.includes('not aware') || q5Val.includes('தெரியாது') || q5Val.includes('no')) schemeUnaware++;
+      if (isChitUnaware(f.q5)) schemeUnaware++;
     });
 
     if (dom.derApprecCount) dom.derApprecCount.textContent = apprec;
@@ -1555,9 +1574,11 @@
     }
 
     // 4. Telecaller & Scheme Pipeline
-    const unawareCount = fbList.filter(f => f.q5 && (f.q5.includes('Not aware') || f.q5.includes('தெரியாது'))).length;
-    const pendingLeads = Object.values(state.customerCallRegistry || {}).filter(c => c.callStatus === 'PENDING' || c.callStatus === 'FOLLOWUP').length;
-    const teleText = `<strong>${unawareCount} visitors</strong> expressed unfamiliarity with the Suba Valli Vilas 11-Month Gold Savings Chit Scheme today. <strong>${pendingLeads} active leads</strong> queued in telecaller registry for courtesy calls.`;
+    const unawareCount = fbList.filter(f => isChitUnaware(f.q5)).length;
+    const allCustomerLeads = typeof getAllCustomerLeads === 'function' ? getAllCustomerLeads() : [];
+    const pendingChitLeads = allCustomerLeads.filter(l => l.isUnaware && (l.callStatus === 'PENDING' || l.callStatus === 'FOLLOWUP')).length;
+    const queuedCount = unawareCount > 0 ? unawareCount : pendingChitLeads;
+    const teleText = `<strong>${unawareCount} visitors</strong> expressed unfamiliarity with the Suba Valli Vilas 11-Month Gold Savings Chit Scheme today. <strong>${queuedCount} active leads</strong> queued in telecaller registry for courtesy calls.`;
 
     list.innerHTML = `
       <div class="ai-rec-card">
@@ -3602,10 +3623,24 @@
 
   // ================= 5. TELECALLER MODULE RENDERING =================
   function getCustomerLeadProfile(item) {
-    const cleanMobile = (item.mobile || '').replace(/\D/g, '');
-    const feedbacks = state.feedbacks.filter(f => (f.mobile || '').replace(/\D/g, '') === cleanMobile);
-    const diverts = state.diverts.filter(d => (d.mobile || '').replace(/\D/g, '') === cleanMobile);
-    const callRecord = state.customerCallRegistry[cleanMobile];
+    const rawMobile = (item.mobile || '').replace(/\D/g, '');
+    const cleanMobile = rawMobile.length === 12 && rawMobile.startsWith('91') ? rawMobile.slice(2) : rawMobile;
+
+    const feedbacks = cleanMobile
+      ? state.feedbacks.filter(f => {
+          const m = (f.mobile || '').replace(/\D/g, '');
+          const normM = m.length === 12 && m.startsWith('91') ? m.slice(2) : m;
+          return normM === cleanMobile;
+        })
+      : [item];
+    const diverts = cleanMobile
+      ? state.diverts.filter(d => {
+          const m = (d.mobile || '').replace(/\D/g, '');
+          const normM = m.length === 12 && m.startsWith('91') ? m.slice(2) : m;
+          return normM === cleanMobile;
+        })
+      : [];
+    const callRecord = state.customerCallRegistry[cleanMobile] || state.customerCallRegistry[rawMobile];
 
     const tags = [];
     let isUnaware = false;
@@ -3617,17 +3652,19 @@
 
     // Check Feedbacks
     feedbacks.forEach(f => {
-      if (f.q5 && f.q5.includes('Not aware')) {
+      if (isChitUnaware(f.q5)) {
         tags.push({ label: '💎 Chit Unaware', class: 'badge-gold' });
         isUnaware = true;
-      } else if (f.q5 && f.q5.includes('Already Enrolled')) {
+      } else if (f.q5 && (f.q5.includes('Already Enrolled') || f.q5.toLowerCase().includes('enrolled'))) {
         tags.push({ label: '💎 Chit Enrolled', class: 'badge-emerald' });
+      } else if (f.q5 && (f.q5.includes('Aware but not joined') || f.q5.toLowerCase().includes('not joined') || f.q5.toLowerCase().includes('aware'))) {
+        tags.push({ label: '💎 Chit Aware (Not Joined)', class: 'badge-amber' });
       }
 
-      if (f.mood === 'Concern' || (f.rating && f.rating <= 6)) {
+      if (f.mood === 'Concern' || (f.rating && Number(f.rating) <= 6)) {
         tags.push({ label: '⚠️ Concern', class: 'badge-rose' });
         isConcern = true;
-      } else if (f.mood === 'Appreciation' || (f.rating && f.rating >= 9)) {
+      } else if (f.mood === 'Appreciation' || (f.rating && Number(f.rating) >= 9)) {
         tags.push({ label: `⭐ ${f.rating}/10 VIP`, class: 'badge-emerald' });
       }
 
@@ -3660,16 +3697,18 @@
     });
 
     const defaultStatus = item.status === 'CLOSED' || item.status === 'CONVERTED' ? 'CLOSED' : (item.status === 'FOLLOWUP' ? 'FOLLOWUP' : 'PENDING');
-    const callStatus = callRecord ? (callRecord.callStatus || (callRecord.disposition.includes('Closed') || callRecord.disposition.includes('Resolved') || callRecord.disposition.includes('Enrolled') ? 'CLOSED' : 'FOLLOWUP')) : defaultStatus;
+    const callStatus = callRecord ? (callRecord.callStatus || (callRecord.disposition && (callRecord.disposition.includes('Closed') || callRecord.disposition.includes('Resolved') || callRecord.disposition.includes('Enrolled')) ? 'CLOSED' : 'FOLLOWUP')) : defaultStatus;
+
+    const normalizedDate = normalizeDateToIso(item.date || item.timestamp) || '2026-09-20';
 
     return {
-      customerName: item.customerName || 'Valued Customer',
-      mobile: item.mobile || '',
-      cleanMobile: cleanMobile,
+      customerName: item.customerName || (diverts[0]?.customerName ? diverts[0].customerName : 'Valued Customer'),
+      mobile: item.mobile || (cleanMobile || '—'),
+      cleanMobile: cleanMobile || item.id || '',
       city: item.city || (diverts[0]?.counter ? 'Cuddalore' : 'Salem'),
       tags: uniqueTags,
       visitDate: item.timestamp || item.date || '—',
-      date: item.date || (item.timestamp ? item.timestamp.split(' ')[0].split('/').reverse().join('-') : '2026-09-20'),
+      date: normalizedDate,
       occasionDesc: occasionDesc || item.section || item.product || '—',
       callStatus: callStatus,
       callRecord: callRecord,
@@ -3684,16 +3723,20 @@
 
   function getAllCustomerLeads() {
     const map = new Map();
-    state.feedbacks.forEach(f => {
-      const clean = (f.mobile || '').replace(/\D/g, '');
-      if (clean && !map.has(clean)) {
-        map.set(clean, getCustomerLeadProfile(f));
+    state.feedbacks.forEach((f, idx) => {
+      let clean = (f.mobile || '').replace(/\D/g, '');
+      if (clean.length === 12 && clean.startsWith('91')) clean = clean.slice(2);
+      const leadKey = clean || f.id || `FB-LEAD-${idx}`;
+      if (!map.has(leadKey)) {
+        map.set(leadKey, getCustomerLeadProfile(f));
       }
     });
-    state.diverts.forEach(d => {
-      const clean = (d.mobile || '').replace(/\D/g, '');
-      if (clean && !map.has(clean)) {
-        map.set(clean, getCustomerLeadProfile(d));
+    state.diverts.forEach((d, idx) => {
+      let clean = (d.mobile || '').replace(/\D/g, '');
+      if (clean.length === 12 && clean.startsWith('91')) clean = clean.slice(2);
+      const leadKey = clean || d.id || `DIV-LEAD-${idx}`;
+      if (!map.has(leadKey)) {
+        map.set(leadKey, getCustomerLeadProfile(d));
       }
     });
     return Array.from(map.values());
@@ -3743,9 +3786,10 @@
     const toDate = dom.telFilterToDate?.value;
     if (fromDate || toDate) {
       queueItems = queueItems.filter(item => {
-        if (!item.date) return true;
-        if (fromDate && item.date < fromDate) return false;
-        if (toDate && item.date > toDate) return false;
+        const itemIso = normalizeDateToIso(item.date || item.visitDate);
+        if (!itemIso) return true;
+        if (fromDate && itemIso < fromDate) return false;
+        if (toDate && itemIso > toDate) return false;
         return true;
       });
     }
@@ -3867,6 +3911,7 @@
       const totalRating = filteredFeedbacks.reduce((sum, f) => sum + (Number(f.rating) || 9), 0);
       const avgRating = totalFeedbacks > 0 ? (totalRating / totalFeedbacks).toFixed(1) : '9.5';
       const chitEnrolled = filteredFeedbacks.filter(f => (f.q5 || '').includes('Already Enrolled') || (f.q5 || '').toLowerCase().includes('enrolled')).length;
+      const chitUnaware = filteredFeedbacks.filter(f => isChitUnaware(f.q5)).length;
 
       if (dom.repKpiTotalFootfall) dom.repKpiTotalFootfall.textContent = totalRangeFootfall;
       if (dom.repKpiTotalFeedbacks) dom.repKpiTotalFeedbacks.textContent = totalFeedbacks;
@@ -3875,6 +3920,8 @@
       if (dom.repKpiDivertsSub) dom.repKpiDivertsSub.textContent = `${pendingDiverts} Pending recovery`;
       if (dom.repKpiAvgRating) dom.repKpiAvgRating.textContent = `${avgRating} / 10`;
       if (dom.repKpiChitEnrolled) dom.repKpiChitEnrolled.textContent = `${chitEnrolled} Members`;
+      const repKpiChitSubEl = document.getElementById('repKpiChitSub');
+      if (repKpiChitSubEl) repKpiChitSubEl.textContent = `${chitUnaware} Unaware Leads Queued`;
     }
 
     // 1. Footfall Report Tab (Filtered by date range)
@@ -4341,6 +4388,21 @@
           </tr>
         `;
       }).join('');
+
+      // Lead Classification Summary Cards in Reports Telecaller View
+      const repTelChitUnaware = filteredFeedbacks.filter(f => isChitUnaware(f.q5)).length;
+      const repTelDiverts = filteredDiverts.length;
+      const repTelConcerns = filteredFeedbacks.filter(f => f.mood === 'Concern' || (f.rating && Number(f.rating) <= 6)).length;
+      const repTelEnrolled = filteredFeedbacks.filter(f => (f.q5 || '').toLowerCase().includes('enrolled')).length;
+
+      const elChitUnaware = document.getElementById('repTelChitUnawareCount');
+      if (elChitUnaware) elChitUnaware.textContent = repTelChitUnaware;
+      const elDivert = document.getElementById('repTelDivertCount');
+      if (elDivert) elDivert.textContent = repTelDiverts;
+      const elConcern = document.getElementById('repTelConcernCount');
+      if (elConcern) elConcern.textContent = repTelConcerns;
+      const elEnrolled = document.getElementById('repTelChitEnrolledCount');
+      if (elEnrolled) elEnrolled.textContent = repTelEnrolled;
     }
 
     // 5. Customer Remarks Sentiment Breakdown
@@ -7094,10 +7156,10 @@
 
     if (dom.btnTelDateReset) {
       dom.btnTelDateReset.addEventListener('click', () => {
-        if (dom.telFilterFromDate) dom.telFilterFromDate.value = '2026-09-01';
-        if (dom.telFilterToDate) dom.telFilterToDate.value = '2026-09-20';
+        if (dom.telFilterFromDate) dom.telFilterFromDate.value = '';
+        if (dom.telFilterToDate) dom.telFilterToDate.value = '';
         renderTelecaller();
-        showToast('Telecaller date filter reset');
+        showToast('Telecaller date filter reset (showing all leads)');
       });
     }
 

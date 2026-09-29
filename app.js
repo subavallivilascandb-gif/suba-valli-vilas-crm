@@ -1121,15 +1121,21 @@
     let selectedFootfall = 0;
     let selectedBills = 0;
 
+    const pastDay = (state.pastDays || []).find(d => normalizeDateToIso(d.date) === targetIso);
+    const pastSlotSum = (pastDay && Array.isArray(pastDay.slots)) ? pastDay.slots.reduce((sum, s) => sum + (Number(s) || 0), 0) : 0;
+
     if (targetIso === todayIso) {
-      selectedFootfall = state.slots.reduce((sum, s) => sum + (Number(s.count) || 0), 0);
-      selectedBills = Number(state.todayBills) || 0;
+      const liveSlotSum = (state.slots || []).reduce((sum, s) => sum + (Number(s.count) || 0), 0);
+      selectedFootfall = Math.max(liveSlotSum, Number(pastDay?.footfall) || 0, pastSlotSum);
+      selectedBills = Number(state.todayBills) || Number(pastDay?.bills) || 0;
     } else {
       // Check state.pastDays
-      const pastDay = state.pastDays.find(d => normalizeDateToIso(d.date) === targetIso);
       if (pastDay) {
-        selectedFootfall = Number(pastDay.footfall) || 0;
-        selectedBills = Number(pastDay.bills) || 0;
+        selectedFootfall = Number(pastDay.footfall) || pastSlotSum;
+        selectedBills = Number(pastDay.bills) || (normalizeDateToIso(state.slotsDate) === targetIso ? Number(state.todayBills) || 0 : 0);
+      } else if (normalizeDateToIso(state.slotsDate) === targetIso) {
+        selectedFootfall = (state.slots || []).reduce((sum, s) => sum + (Number(s.count) || 0), 0);
+        selectedBills = Number(state.todayBills) || 0;
       }
     }
 

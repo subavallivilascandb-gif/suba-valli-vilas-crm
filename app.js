@@ -16,7 +16,7 @@
     currentHourIndex: 0, // 0 = 10AM, 1 = 11AM, etc. (Demo default: 10:00 AM)
     // Hardcoded Google Apps Script Web App URL — single source of truth (Sheet)
     gsheetUrl: localStorage.getItem('svv_gsheet_url') || 'https://script.google.com/macros/s/AKfycbxScZV2koc5d68t1F9851fRi-H_60r3UJe_GwilkdDFR-2K-710v2IdB1PiHpUUztJEiA/exec',
-    cfWorkerUrl: localStorage.getItem('svv_cloudflare_worker_url') || 'https://svv-crm-gateway.subavallivilas-candb.workers.dev',
+    cfWorkerUrl: localStorage.getItem('svv_cloudflare_worker_url') || '',
     autoSyncGSheet: true, // Always ON — sheet is the only data store
     lastSyncTime: localStorage.getItem('svv_last_sync_time') || '',
     gsheetConnected: false,
@@ -5294,7 +5294,6 @@
   }
 
   function sendToGSheet(action, payload) {
-    const workerUrl = state.cfWorkerUrl || 'https://svv-crm-gateway.subavallivilas-candb.workers.dev';
     if (!state.autoSyncGSheet && action !== 'BULK_SYNC') {
       return;
     }
@@ -5306,56 +5305,97 @@
       branch: payload.branch || state.activeBranch || 'Cuddalore (Main Branch)'
     };
 
-    let endpoint = `${workerUrl.replace(/\/+$/, '')}/api/sync`;
-    if (action === 'ADD_FEEDBACK') endpoint = `${workerUrl.replace(/\/+$/, '')}/api/feedback`;
-    else if (action === 'UPDATE_FEEDBACK_STATUS') endpoint = `${workerUrl.replace(/\/+$/, '')}/api/feedback/status`;
-    else if (action === 'ADD_DIVERT') endpoint = `${workerUrl.replace(/\/+$/, '')}/api/divert`;
-    else if (action === 'UPDATE_FOOTFALL' || action === 'SAVE_DAY_END_BILLS' || action === 'SAVE_PAST_DAY_AUDIT') endpoint = `${workerUrl.replace(/\/+$/, '')}/api/footfall`;
-    else if (action === 'LOG_CALL') endpoint = `${workerUrl.replace(/\/+$/, '')}/api/call`;
-    else if (action === 'ADD_USER' || action === 'UPDATE_USER') endpoint = `${workerUrl.replace(/\/+$/, '')}/api/users`;
-    else if (action === 'SAVE_QUESTIONS_CONFIG') endpoint = `${workerUrl.replace(/\/+$/, '')}/api/questions`;
+    const workerUrl = (state.cfWorkerUrl || '').trim();
+    const isWorkerValid = workerUrl && !workerUrl.includes('candb.workers.dev');
 
-    fetch(endpoint, {
+    if (isWorkerValid) {
+      let endpoint = `${workerUrl.replace(/\/+$/, '')}/api/sync`;
+      if (action === 'ADD_FEEDBACK') endpoint = `${workerUrl.replace(/\/+$/, '')}/api/feedback`;
+      else if (action === 'UPDATE_FEEDBACK_STATUS') endpoint = `${workerUrl.replace(/\/+$/, '')}/api/feedback/status`;
+      else if (action === 'ADD_DIVERT') endpoint = `${workerUrl.replace(/\/+$/, '')}/api/divert`;
+      else if (action === 'UPDATE_FOOTFALL' || action === 'SAVE_DAY_END_BILLS' || action === 'SAVE_PAST_DAY_AUDIT') endpoint = `${workerUrl.replace(/\/+$/, '')}/api/footfall`;
+      else if (action === 'LOG_CALL') endpoint = `${workerUrl.replace(/\/+$/, '')}/api/call`;
+      else if (action === 'ADD_USER' || action === 'UPDATE_USER') endpoint = `${workerUrl.replace(/\/+$/, '')}/api/users`;
+      else if (action === 'SAVE_QUESTIONS_CONFIG') endpoint = `${workerUrl.replace(/\/+$/, '')}/api/questions`;
+
+      fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(fullPayload)
+      }).then(r => r.json().catch(() => ({})))
+        .then(res => {
+          updateGSheetSyncTimestamp();
+          console.log(`⚡ [Cloud Gateway Direct Sync] Action: ${action}`, res);
+        }).catch(err => {
+          console.warn(`[Cloud Gateway Sync Error] Action ${action}:`, err);
+          sendDirectToGas(fullPayload);
+        });
+    } else if (state.gsheetUrl) {
+      sendDirectToGas(fullPayload);
+    }
+  }
+
+  function sendDirectToGas(payload) {
+    const gasUrl = (state.gsheetUrl || '').trim();
+    if (!gasUrl) return;
+
+    fetch(gasUrl, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(fullPayload)
-    }).then(r => r.json().catch(() => ({})))
-      .then(res => {
-        updateGSheetSyncTimestamp();
-        console.log(`⚡ [Cloud Gateway Direct Sync] Action: ${action}`, res);
-      }).catch(err => {
-        console.warn(`[Cloud Gateway Sync Error] Action ${action}:`, err);
-      });
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    }).then(() => {
+      updateGSheetSyncTimestamp();
+      console.log(`⚡ [Direct Google Sheet Sync] Action: ${payload.action}`);
+    }).catch(err => {
+      console.warn(`[Direct Google Sheet Sync Error] Action ${payload.action}:`, err);
+    });
   }
 
   async function syncAllDataToGSheet() {
-    const workerUrl = state.cfWorkerUrl || 'https://svv-crm-gateway.subavallivilas-candb.workers.dev';
     showToast('☁️ Syncing all CRM records directly to Cloud Database...');
 
-    try {
-      const bulkPayload = {
-        action: 'BULK_SYNC',
-        feedbacks: state.feedbacks,
-        diverts: state.diverts,
-        slots: state.slots,
-        todayBills: state.todayBills,
-        branch: state.activeBranch
-      };
+    const bulkPayload = {
+      action: 'BULK_SYNC',
+      feedbacks: state.feedbacks,
+      diverts: state.diverts,
+      slots: state.slots,
+      todayBills: state.todayBills,
+      branch: state.activeBranch
+    };
 
-      const endpoint = `${workerUrl.replace(/\/+$/, '')}/api/sync`;
-      const res = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(bulkPayload)
-      });
+    const workerUrl = (state.cfWorkerUrl || '').trim();
+    const isWorkerValid = workerUrl && !workerUrl.includes('candb.workers.dev');
 
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    if (isWorkerValid) {
+      try {
+        const endpoint = `${workerUrl.replace(/\/+$/, '')}/api/sync`;
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(bulkPayload)
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        updateGSheetSyncTimestamp();
+        setGSheetStatusUI('connected', '🟢 Synced with Cloud Database');
+        showToast(`✨ Successfully synced ${state.feedbacks.length} Feedbacks and ${state.diverts.length} Diverts! ✅`);
+        return;
+      } catch (err) {
+        console.warn('Worker bulk sync notice, trying direct Google Sheet:', err);
+      }
+    }
 
-      updateGSheetSyncTimestamp();
-      setGSheetStatusUI('connected', '🟢 Synced with Cloud Database');
-      showToast(`✨ Successfully synced ${state.feedbacks.length} Feedbacks and ${state.diverts.length} Diverts! ✅`);
-    } catch (err) {
-      showToast(`⚠️ Sync notice: ${err.message}`);
+    if (state.gsheetUrl) {
+      try {
+        sendDirectToGas(bulkPayload);
+        updateGSheetSyncTimestamp();
+        setGSheetStatusUI('connected', '🟢 Dispatched to Google Sheet');
+        showToast(`✨ Dispatched ${state.feedbacks.length} Feedbacks and ${state.diverts.length} Diverts to Google Sheet! ✅`);
+      } catch (gasErr) {
+        showToast(`⚠️ Sync notice: ${gasErr.message}`);
+      }
+    } else {
+      showToast('⚠️ Please configure Google Apps Script Web App URL or Cloudflare Gateway URL first.');
     }
   }
 
@@ -5567,31 +5607,63 @@
   }
 
   async function pullDataFromGSheet(quiet = false) {
-    const workerUrl = state.cfWorkerUrl || 'https://svv-crm-gateway.subavallivilas-candb.workers.dev';
     if (!quiet) showToast('📥 Syncing with Cloud Database...');
 
-    try {
-      const cfPullUrl = `${workerUrl.replace(/\/+$/, '')}/api/pull`;
-      const res = await fetch(cfPullUrl, {
-        method: 'GET',
-        headers: { 'Accept': 'application/json' }
-      });
-      if (!res.ok) throw new Error(`Gateway returned HTTP ${res.status}`);
-      const data = await res.json();
+    let syncSuccess = false;
+    let syncErrorMsg = '';
 
-      if (!data || (data.status !== 'SUCCESS' && !data.success)) {
-        throw new Error(data?.message || 'Invalid gateway response');
-      }
+    // Step 1: Try Cloudflare Worker Gateway if configured and not the placeholder
+    const workerUrl = (state.cfWorkerUrl || '').trim();
+    const isWorkerValid = workerUrl && !workerUrl.includes('candb.workers.dev');
 
-      // Save latest snapshot to localStorage for 0ms instant startup
+    if (isWorkerValid) {
       try {
-        localStorage.setItem('svv_last_cloud_data', JSON.stringify(data));
-      } catch (_) {}
+        const cfPullUrl = `${workerUrl.replace(/\/+$/, '')}/api/pull`;
+        const res = await fetch(cfPullUrl, {
+          method: 'GET',
+          headers: { 'Accept': 'application/json' }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data && (data.status === 'SUCCESS' || data.success || data.action === 'GET_ALL_DATA')) {
+            applyCloudData(data, !quiet);
+            syncSuccess = true;
+            try { localStorage.setItem('svv_last_cloud_data', JSON.stringify(data)); } catch (_) {}
+            return;
+          }
+        }
+      } catch (workerErr) {
+        console.warn('[SVV Gateway Pull] Cloudflare Worker pull notice, falling back to direct Google Sheet:', workerErr.message);
+        syncErrorMsg = workerErr.message;
+      }
+    }
 
-      applyCloudData(data, !quiet);
-    } catch (err) {
-      console.warn('[SVV Direct Cloud Pull] Sync notice:', err.message);
-      if (!quiet) showToast(`⚠️ Cloud Sync Notice: ${err.message}`);
+    // Step 2: Fall back directly to Google Apps Script Web App
+    const gasUrl = (state.gsheetUrl || '').trim();
+    if (gasUrl) {
+      try {
+        const targetUrl = gasUrl.includes('?') 
+          ? `${gasUrl}&action=GET_ALL_DATA` 
+          : `${gasUrl}?action=GET_ALL_DATA`;
+
+        // smartFetch: tries CORS, then auto-falls back to JSONP (bypasses GAS 302 redirect CORS)
+        const data = await smartFetch(targetUrl);
+        if (data && (data.status === 'SUCCESS' || data.action === 'GET_ALL_DATA' || data.feedbacks || data.diverts)) {
+          applyCloudData(data, !quiet);
+          syncSuccess = true;
+          try { localStorage.setItem('svv_last_cloud_data', JSON.stringify(data)); } catch (_) {}
+          return;
+        } else {
+          throw new Error(data?.message || 'Empty or invalid response from Google Sheet');
+        }
+      } catch (gasErr) {
+        console.warn('[SVV Direct Pull] Google Sheet direct pull notice:', gasErr.message);
+        syncErrorMsg = gasErr.message;
+      }
+    }
+
+    if (!syncSuccess && !quiet) {
+      showToast(`⚠️ Cloud Sync Notice: ${syncErrorMsg || 'Please configure Google Sheet Web App URL or Cloudflare Worker Gateway in Settings.'}`);
     }
   }
 

@@ -34,6 +34,141 @@ const CORS_HEADERS = {
   "Access-Control-Max-Age": "86400"
 };
 
+/**
+ * Apps Script Web App Forwarding Engine:
+ * When env.GSHEET_WEBHOOK_URL is set (from Cloudflare dashboard Variables and Secrets),
+ * the worker acts as a lightning-fast reverse proxy and edge cache to Google Apps Script.
+ */
+async function handleAppsScriptProxy(request, gsheetWebhookUrl, path, method) {
+  // 1. Health check
+  if (path === "/" || path === "/api/health") {
+    return sendJson({
+      status: "online",
+      service: "SVV CRM Cloudflare Gateway",
+      version: "5.0-hybrid-gateway",
+      mode: "GOOGLE_APPS_SCRIPT_PROXY",
+      targetWebhookConfigured: true,
+      cachedRecordsAvailable: pullCache !== null,
+      timestamp: new Date().toISOString()
+    });
+  }
+
+  // 2. GET /api/pull or /api/data
+  if (method === "GET" && (path === "/api/pull" || path === "/api/data")) {
+    const url = new URL(request.url);
+    const now = Date.now();
+    const forceFresh = url.searchParams.get("fresh") === "true";
+
+    if (!forceFresh && pullCache && (now - pullCacheTime < CACHE_TTL_MS)) {
+      return sendJson({ ...pullCache, cached: true }, 200, {
+        "Cache-Control": "public, max-age=15, stale-while-revalidate=30",
+        "X-Data-Source": "Edge-Memory-Cache"
+      });
+    }
+
+    const targetUrl = gsheetWebhookUrl.includes("?") 
+      ? `${gsheetWebhookUrl}&action=GET_ALL_DATA` 
+      : `${gsheetWebhookUrl}?action=GET_ALL_DATA`;
+
+    const gasRes = await fetch(targetUrl, {
+      method: "GET",
+      headers: { "Accept": "application/json" }
+    });
+
+    if (!gasRes.ok) {
+      return sendJson({
+        status: "ERROR",
+        message: `Google Apps Script returned HTTP ${gasRes.status}`
+      }, gasRes.status);
+    }
+
+    const data = await gasRes.json();
+    if (data && !data.status) data.status = "SUCCESS";
+
+    pullCache = data;
+    pullCacheTime = Date.now();
+
+    return sendJson(data, 200, {
+      "Cache-Control": "public, max-age=15, stale-while-revalidate=30",
+      "X-Data-Source": "Google-Apps-Script-Proxy"
+    });
+  }
+
+  // 3. GET /api/questions or /api/schema
+  if (method === "GET" && (path === "/api/questions" || path === "/api/schema")) {
+    const targetUrl = gsheetWebhookUrl.includes("?") 
+      ? `${gsheetWebhookUrl}&action=GET_QUESTIONS` 
+      : `${gsheetWebhookUrl}?action=GET_QUESTIONS`;
+    const gasRes = await fetch(targetUrl, { method: "GET", headers: { "Accept": "application/json" } });
+    const data = await gasRes.json();
+    return sendJson(data);
+  }
+
+  // 4. GET /api/users
+  if (method === "GET" && path === "/api/users") {
+    const targetUrl = gsheetWebhookUrl.includes("?") 
+      ? `${gsheetWebhookUrl}&action=GET_USERS` 
+      : `${gsheetWebhookUrl}?action=GET_USERS`;
+    const gasRes = await fetch(targetUrl, { method: "GET", headers: { "Accept": "application/json" } });
+    const data = await gasRes.json();
+    return sendJson(data);
+  }
+
+  // 5. GET /api/masters
+  if (method === "GET" && path === "/api/masters") {
+    const targetUrl = gsheetWebhookUrl.includes("?") 
+      ? `${gsheetWebhookUrl}&action=GET_MASTERS` 
+      : `${gsheetWebhookUrl}?action=GET_MASTERS`;
+    const gasRes = await fetch(targetUrl, { method: "GET", headers: { "Accept": "application/json" } });
+    const data = await gasRes.json();
+    return sendJson(data);
+  }
+
+  // 6. Governance endpoints (RNR, RACI, KPI, TRAINING)
+  if (method === "GET" && (path === "/api/rnr" || path === "/api/raci" || path === "/api/kpi" || path === "/api/training")) {
+    const actionMap = {
+      "/api/rnr": "GET_RNR",
+      "/api/raci": "GET_RACI",
+      "/api/kpi": "GET_KPI",
+      "/api/training": "GET_TRAINING"
+    };
+    const action = actionMap[path];
+    const targetUrl = gsheetWebhookUrl.includes("?") 
+      ? `${gsheetWebhookUrl}&action=${action}` 
+      : `${gsheetWebhookUrl}?action=${action}`;
+    const gasRes = await fetch(targetUrl, { method: "GET", headers: { "Accept": "application/json" } });
+    const data = await gasRes.json();
+    return sendJson(data);
+  }
+
+  // 7. POST mutation endpoints
+  if (method === "POST") {
+    invalidateCache();
+    const body = await request.json().catch(() => ({}));
+    if (!body.action) {
+      if (path === "/api/feedback") body.action = "ADD_FEEDBACK";
+      else if (path === "/api/feedback/status") body.action = "UPDATE_FEEDBACK_STATUS";
+      else if (path === "/api/divert") body.action = "ADD_DIVERT";
+      else if (path === "/api/footfall") body.action = "UPDATE_FOOTFALL";
+      else if (path === "/api/call") body.action = "LOG_CALL";
+      else if (path === "/api/users") body.action = "ADD_USER";
+      else if (path === "/api/questions") body.action = "SAVE_QUESTIONS_CONFIG";
+      else if (path === "/api/sync") body.action = "BULK_SYNC";
+    }
+
+    const gasRes = await fetch(gsheetWebhookUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+
+    const data = await gasRes.json().catch(() => ({ status: "SUCCESS", message: "Recorded" }));
+    return sendJson(data);
+  }
+
+  return sendJson({ status: "ERROR", message: "Route not found: " + path }, 404);
+}
+
 export default {
   async fetch(request, env) {
     if (request.method === "OPTIONS") {
@@ -45,12 +180,30 @@ export default {
     const method = request.method;
     const sheetId = (env && env.SPREADSHEET_ID) || DEFAULT_SHEET_ID;
 
-    // Health check
+    // Check if Google Apps Script Web App URL is configured in Cloudflare secrets
+    const gsheetWebhookUrl = (env && (env.GSHEET_WEBHOOK_URL || env.GSHEET_URL || env.WEBHOOK_URL)) || null;
+
+    if (gsheetWebhookUrl) {
+      return handleAppsScriptProxy(request, gsheetWebhookUrl, path, method);
+    }
+
+    // Health check (when no webhook or service account is set yet)
     if (path === "/" || path === "/api/health") {
+      if (!env || (!env.GOOGLE_SERVICE_ACCOUNT_JSON && !gsheetWebhookUrl)) {
+        return sendJson({
+          status: "online",
+          service: "SVV CRM Cloudflare Gateway",
+          version: "5.0-hybrid-gateway",
+          mode: "NEEDS_CONFIGURATION",
+          setupInstructions: "To connect your Google Sheet, add the Secret 'GSHEET_WEBHOOK_URL' in Cloudflare Dashboard -> Workers & Pages -> your worker -> Settings -> Variables and Secrets with your Google Apps Script /exec URL.",
+          timestamp: new Date().toISOString()
+        });
+      }
+
       return sendJson({
         status: "online",
         service: "SVV CRM Cloudflare Gateway",
-        version: "4.0-direct-batch",
+        version: "5.0-direct-batch",
         mode: "DIRECT_SHEETS_API_V4",
         sheetId: sheetId,
         cachedRecordsAvailable: pullCache !== null,
@@ -60,9 +213,10 @@ export default {
 
     if (!env || !env.GOOGLE_SERVICE_ACCOUNT_JSON) {
       return sendJson({
-        status: "ERROR",
-        message: "Missing GOOGLE_SERVICE_ACCOUNT_JSON secret in Cloudflare Worker environment. Please configure it in Cloudflare Dashboard -> Settings -> Variables & Secrets."
-      }, 500);
+        status: "SETUP_REQUIRED",
+        service: "SVV CRM Cloudflare Gateway",
+        message: "Cloudflare Worker is running! To connect your Google Sheet, add the Secret 'GSHEET_WEBHOOK_URL' in Cloudflare Dashboard -> Workers & Pages -> your worker -> Settings -> Variables and Secrets with your Google Apps Script /exec URL."
+      }, 200);
     }
 
     try {

@@ -1093,21 +1093,39 @@
 
     let sentSuccessfully = false;
 
-    // 1. Direct Cloudflare Worker Gateway (Direct Sheets API v4 - all 28 columns)
-    const workerUrl = cfUrl || DEFAULT_CF_WORKER || 'https://svv-crm-gateway.subavallivilas-candb.workers.dev';
-    try {
-      const cfEndpoint = `${workerUrl.replace(/\/+$/, '')}/api/feedback`;
-      const res = await fetch(cfEndpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      if (res.ok) {
-        sentSuccessfully = true;
-        console.log('✅ [SVV Feedback] Successfully pushed directly to Google Sheets via Cloudflare Gateway!');
+    // 1. Direct Cloudflare Worker Gateway
+    const isWorkerValid = workerUrl && !workerUrl.includes('candb.workers.dev');
+    if (isWorkerValid) {
+      try {
+        const cfEndpoint = `${workerUrl.replace(/\/+$/, '')}/api/feedback`;
+        const res = await fetch(cfEndpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          sentSuccessfully = true;
+          console.log('✅ [SVV Feedback] Successfully pushed directly to Google Sheets via Cloudflare Gateway!');
+        }
+      } catch (cfErr) {
+        console.warn('[SVV Feedback] Cloudflare Worker push notice:', cfErr);
       }
-    } catch (cfErr) {
-      console.warn('[SVV Feedback] Cloudflare Worker push notice:', cfErr);
+    }
+
+    // 2. Fall back to Direct Google Apps Script Web App
+    if (!sentSuccessfully && gsUrl) {
+      try {
+        await fetch(gsUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+        sentSuccessfully = true;
+        console.log('✅ [SVV Feedback] Successfully dispatched feedback directly to Google Sheet Web App!');
+      } catch (gsErr) {
+        console.warn('[SVV Feedback] Direct Google Sheet push notice:', gsErr);
+      }
     }
   }
 

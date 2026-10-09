@@ -16,7 +16,7 @@
     currentHourIndex: 0, // 0 = 10AM, 1 = 11AM, etc. (Demo default: 10:00 AM)
     // Hardcoded Google Apps Script Web App URL — single source of truth (Sheet)
     gsheetUrl: localStorage.getItem('svv_gsheet_url') || 'https://script.google.com/macros/s/AKfycbxScZV2koc5d68t1F9851fRi-H_60r3UJe_GwilkdDFR-2K-710v2IdB1PiHpUUztJEiA/exec',
-    cfWorkerUrl: localStorage.getItem('svv_cloudflare_worker_url') || '',
+    cfWorkerUrl: localStorage.getItem('svv_cloudflare_worker_url') || 'https://svv-crm-gateway.subavallivilas-candb.workers.dev',
     autoSyncGSheet: true, // Always ON — sheet is the only data store
     lastSyncTime: localStorage.getItem('svv_last_sync_time') || '',
     gsheetConnected: false,
@@ -5306,7 +5306,7 @@
     };
 
     const workerUrl = (state.cfWorkerUrl || '').trim();
-    const isWorkerValid = workerUrl && !workerUrl.includes('candb.workers.dev');
+    const isWorkerValid = Boolean(workerUrl);
 
     if (isWorkerValid) {
       let endpoint = `${workerUrl.replace(/\/+$/, '')}/api/sync`;
@@ -5365,7 +5365,7 @@
     };
 
     const workerUrl = (state.cfWorkerUrl || '').trim();
-    const isWorkerValid = workerUrl && !workerUrl.includes('candb.workers.dev');
+    const isWorkerValid = Boolean(workerUrl);
 
     if (isWorkerValid) {
       try {
@@ -5614,7 +5614,7 @@
 
     // Step 1: Try Cloudflare Worker Gateway if configured and not the placeholder
     const workerUrl = (state.cfWorkerUrl || '').trim();
-    const isWorkerValid = workerUrl && !workerUrl.includes('candb.workers.dev');
+    const isWorkerValid = Boolean(workerUrl);
 
     if (isWorkerValid) {
       try {

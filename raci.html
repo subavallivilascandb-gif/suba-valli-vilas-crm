@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Suba Valli Vilas | CRM Team RACI Matrix</title>
+  <link rel="icon" type="image/png" href="svv-logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="governance-shared.css">
+  <style>
+    .raci-member-chips-wrap {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 18px;
+    }
+    .raci-chip-btn {
+      padding: 8px 14px;
+      border-radius: 20px;
+      border: 1.5px solid var(--svv-border-gold);
+      background: #FFFFFF;
+      color: var(--svv-maroon);
+      cursor: pointer;
+      display: inline-flex;
+      flex-direction: column;
+      align-items: flex-start;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+    .raci-chip-btn:hover {
+      background: var(--svv-gold-light);
+      border-color: var(--svv-gold);
+    }
+    .raci-chip-btn.active {
+      background: linear-gradient(135deg, var(--svv-maroon) 0%, #3F0202 100%);
+      color: #FFFFFF;
+      border-color: var(--svv-maroon);
+      box-shadow: 0 4px 10px rgba(88, 5, 5, 0.2);
+    }
+    .raci-legend-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+      padding: 14px;
+      background: #FDFBF7;
+      border-radius: 10px;
+      border: 1px solid var(--svv-border-gold);
+    }
+    .raci-legend-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 0.85rem;
+    }
+    .raci-tag {
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.78rem;
+    }
+    .tag-r1 { background: #DCFCE7; color: #166534; border: 1px solid #86EFAC; }
+    .tag-r2 { background: #FEF9C3; color: #854D0E; border: 1px solid #FDE047; }
+    .tag-a { background: #FEE2E2; color: #991B1B; border: 1px solid #FCA5A5; }
+    .tag-c { background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D; }
+    .tag-i { background: #F1F5F9; color: #475569; border: 1px solid #CBD5E1; }
+  </style>
+</head>
+<body>
+
+  <!-- UNIFIED TOP NAVIGATION -->
+  <header class="gov-top-bar">
+    <div class="gov-bar-inner">
+      <a href="crm-hub.html" class="gov-brand">
+        <div class="gov-cb-badge" title="Consulting & Beyond (C&B)">
+          <img src="cb-logo.png" alt="C&B Consulting & Beyond">
+        </div>
+        <div class="gov-logo-badge" title="Suba Valli Vilas Jewellery">
+          <img src="svv-logo.png" alt="Suba Valli Vilas">
+        </div>
+        <div>
+          <div class="gov-brand-title">SUBA VALLI VILAS</div>
+          <div class="gov-brand-sub">CRM GOVERNANCE &amp; MANAGEMENT SUITE</div>
+        </div>
+      </a>
+
+      <nav class="gov-nav-links">
+        <a href="index.html" class="gov-nav-link nav-home"><span>🏠</span> Main App</a>
+        <a href="crm-hub.html" class="gov-nav-link"><span>🏛️</span> Hub</a>
+        <a href="mis-report.html" class="gov-nav-link"><span>📊</span> MIS Report</a>
+        <a href="rnr.html" class="gov-nav-link"><span>📋</span> RNR</a>
+        <a href="raci.html" class="gov-nav-link active"><span>🎯</span> RACI</a>
+        <a href="kpi.html" class="gov-nav-link"><span>📈</span> KPI &amp; Incentive</a>
+        <a href="training.html" class="gov-nav-link"><span>🎓</span> Training Kit</a>
+      </nav>
+
+      <div class="gov-bar-actions">
+        <div class="gov-sync-badge" id="btnSyncGSheet" title="Click to refresh from Google Sheet">
+          <span class="gov-sync-dot"></span>
+          <span id="syncStatusText">GSheet Linked</span>
+        </div>
+        <button class="btn-gov btn-gov-gold no-print" onclick="window.print()">🖨️ Print / PDF</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="gov-main">
+    <div class="gov-hero">
+      <div>
+        <h1 class="gov-hero-title">CRM Team RACI Matrix</h1>
+        <p class="gov-hero-desc">Document Ref: RACI/101/CRM/002/HS/SEP-26 • 17 Major CRM Processes &amp; Clear Operational Ownership</p>
+      </div>
+      <div class="gov-hero-actions no-print">
+        <button class="btn-gov btn-gov-outline" onclick="window.print()">📥 Export RACI Deck</button>
+      </div>
+    </div>
+
+    <!-- FILTER BY TEAM MEMBER CHIPS -->
+    <div class="gov-card no-print" style="padding: 16px 20px; margin-bottom: 16px;">
+      <div style="font-size: 0.85rem; font-weight: 700; color: var(--svv-maroon); margin-bottom: 8px;">
+        👤 Filter by CRM Team Member (தனிநபர் பொறுப்புகளைக் காண கிளிக் செய்க):
+      </div>
+      <div class="raci-member-chips-wrap" id="raciMemberChips">
+        <!-- Rendered via raci.js -->
+      </div>
+      <div>
+        <input type="text" id="raciSearchInput" class="gov-input" style="width: 100%; max-width: 500px;" placeholder="🔍 Search CRM process, task, or team member...">
+      </div>
+    </div>
+
+    <!-- RACI TABLE CARD -->
+    <div class="gov-card">
+      <div class="gov-card-header">
+        <h2 class="gov-card-title">
+          <span>🎯 Operational RACI Accountability Table</span>
+          <span class="gov-badge gov-badge-gold">C&amp;B Certified Governance</span>
+        </h2>
+        <span class="gov-badge gov-badge-maroon" id="raciCountBadge">17 of 17 Processes</span>
+      </div>
+
+      <div class="gov-table-wrap">
+        <table class="gov-table">
+          <thead>
+            <tr>
+              <th style="width: 45px; text-align: center;">S.NO</th>
+              <th style="min-width: 280px;">Major Point (CRM Process) / முக்கிய செயல்முறை</th>
+              <th style="min-width: 160px; background: #E8F8F0; color: #15803D;">Responsible 1 (R1)<br><small>முதன்மையானவர்</small></th>
+              <th style="min-width: 160px; background: #FEF9C3; color: #854D0E;">Responsible 2 (R2)<br><small>துணை நிற்பவர்</small></th>
+              <th style="min-width: 150px; background: #FDF2F2; color: #991B1B;">Accountable (A)<br><small>ஒப்புதல் அளிப்பவர்</small></th>
+              <th style="min-width: 140px; background: #FFFBEB; color: #92400E;">Consulted (C)<br><small>ஆலோசகர்</small></th>
+              <th style="min-width: 120px;">Informed (I)<br><small>தகவல் பெறுபவர்</small></th>
+            </tr>
+          </thead>
+          <tbody id="raciTableBody">
+            <!-- Populated via raci.js -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- RACI LEGEND -->
+      <div class="raci-legend-grid">
+        <div class="raci-legend-item">
+          <span class="raci-tag tag-r1">R1</span>
+          <div><strong>Responsible 1:</strong> Primary person who does the work (பணியை முதன்மையாகச் செய்பவர்)</div>
+        </div>
+        <div class="raci-legend-item">
+          <span class="raci-tag tag-r2">R2</span>
+          <div><strong>Responsible 2:</strong> Supports / co-does the work (பணியில் துணைநின்று உதவுபவர்)</div>
+        </div>
+        <div class="raci-legend-item">
+          <span class="raci-tag tag-a">A</span>
+          <div><strong>Accountable:</strong> Single owner who signs off and answers for result (முடிவுக்குப் பொறுப்பேற்று ஒப்புதல் அளிப்பவர்)</div>
+        </div>
+        <div class="raci-legend-item">
+          <span class="raci-tag tag-c">C</span>
+          <div><strong>Consulted:</strong> Gives input before work is done (பணிக்கு முன் ஆலோசனை வழங்குபவர்)</div>
+        </div>
+        <div class="raci-legend-item">
+          <span class="raci-tag tag-i">I</span>
+          <div><strong>Informed:</strong> Kept updated on progress/results (முன்னேற்றம்/முடிவு குறித்து தகவல் பெறுபவர்)</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="govToast" class="gov-toast"></div>
+
+  <script src="raci.js"></script>
+</body>
+</html>

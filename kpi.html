@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Suba Valli Vilas | CRM KPI Scorecards &amp; Incentive Engine</title>
+  <link rel="icon" type="image/png" href="svv-logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="governance-shared.css">
+  <style>
+    .kpi-roster-bar {
+      background: #FFFFFF;
+      border: 1.5px solid var(--svv-border-gold);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .kpi-score-dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .kpi-score-tile {
+      background: #FFFFFF;
+      border: 1px solid var(--svv-border);
+      border-radius: 12px;
+      padding: 18px 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+      position: relative;
+      overflow: hidden;
+    }
+    .kpi-score-tile.highlight {
+      border-color: var(--svv-gold);
+      background: linear-gradient(180deg, #FFFFFF 0%, #FFFDF9 100%);
+    }
+    .kpi-score-tile-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--svv-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+    .kpi-score-tile-val {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--svv-maroon);
+      line-height: 1.1;
+    }
+    .kpi-score-tile-sub {
+      font-size: 0.75rem;
+      color: var(--svv-muted);
+      margin-top: 4px;
+    }
+    .incentive-box {
+      border-top: 3px solid #15803D;
+    }
+    .incentive-box .kpi-score-tile-val {
+      color: #15803D;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- UNIFIED TOP NAVIGATION -->
+  <header class="gov-top-bar">
+    <div class="gov-bar-inner">
+      <a href="crm-hub.html" class="gov-brand">
+        <div class="gov-cb-badge" title="Consulting & Beyond (C&B)">
+          <img src="cb-logo.png" alt="C&B Consulting & Beyond">
+        </div>
+        <div class="gov-logo-badge" title="Suba Valli Vilas Jewellery">
+          <img src="svv-logo.png" alt="Suba Valli Vilas">
+        </div>
+        <div>
+          <div class="gov-brand-title">SUBA VALLI VILAS</div>
+          <div class="gov-brand-sub">CRM GOVERNANCE &amp; MANAGEMENT SUITE</div>
+        </div>
+      </a>
+
+      <nav class="gov-nav-links">
+        <a href="index.html" class="gov-nav-link nav-home"><span>🏠</span> Main App</a>
+        <a href="crm-hub.html" class="gov-nav-link"><span>🏛️</span> Hub</a>
+        <a href="mis-report.html" class="gov-nav-link"><span>📊</span> MIS Report</a>
+        <a href="rnr.html" class="gov-nav-link"><span>📋</span> RNR</a>
+        <a href="raci.html" class="gov-nav-link"><span>🎯</span> RACI</a>
+        <a href="kpi.html" class="gov-nav-link active"><span>📈</span> KPI &amp; Incentive</a>
+        <a href="training.html" class="gov-nav-link"><span>🎓</span> Training Kit</a>
+      </nav>
+
+      <div class="gov-bar-actions">
+        <div class="gov-sync-badge" id="btnSyncGSheet" title="Click to refresh from Google Sheet">
+          <span class="gov-sync-dot"></span>
+          <span id="syncStatusText">GSheet Linked</span>
+        </div>
+        <button class="btn-gov btn-gov-gold no-print" id="btnPrintStaffPdf">📄 Download Staff KPI PDF</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="gov-main">
+    <div class="gov-hero">
+      <div>
+        <h1 class="gov-hero-title">CRM KPI Scorecards &amp; Incentive Engine</h1>
+        <p class="gov-hero-desc">Dynamic Weightages by Manager • Real-Time Scoring &amp; Formula-Driven Monthly Incentive Payouts</p>
+      </div>
+      <div class="gov-hero-actions no-print">
+        <button class="btn-gov btn-gov-primary" id="btnSaveKpi">💾 Save Weightages &amp; Actuals</button>
+      </div>
+    </div>
+
+    <!-- STAFF SELECTION & EVALUATION BAR -->
+    <div class="kpi-roster-bar no-print">
+      <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+        <label for="kpiStaffSelect" style="font-weight:700; color:var(--svv-maroon); font-size:0.92rem;">
+          Select CRM Staff Member:
+        </label>
+        <select id="kpiStaffSelect" class="gov-select" style="min-width:280px; font-weight:600;">
+          <!-- Loaded via kpi.js -->
+        </select>
+        <span class="gov-badge gov-badge-maroon" id="kpiStaffRoleBadge">CRM Staff 1 (Showroom Greeter)</span>
+        <span class="gov-badge gov-badge-gold" id="kpiEvaluatorBadge">Evaluator: Selvi (CRM Manager)</span>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:10px;">
+        <label for="baseIncentiveInput" style="font-size:0.85rem; font-weight:700; color:#334155;">
+          Base Monthly Incentive Pool:
+        </label>
+        <div style="display:flex; align-items:center; gap:4px;">
+          <span style="font-weight:700; color:#580505;">₹</span>
+          <input type="number" id="baseIncentiveInput" class="gov-input" style="width:110px; font-weight:700;" value="1000" step="100">
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI SCORE SUMMARY TILES -->
+    <div class="kpi-score-dashboard">
+      <div class="kpi-score-tile highlight">
+        <div class="kpi-score-tile-label">Weightage Verification</div>
+        <div class="kpi-score-tile-val" style="font-size:1.4rem;">
+          <span id="totalWeightageBadge" class="gov-badge gov-badge-green">Total: 100% ✅</span>
+        </div>
+        <div class="kpi-score-tile-sub">Configured by CRM / Store Manager</div>
+      </div>
+
+      <div class="kpi-score-tile highlight">
+        <div class="kpi-score-tile-label">Total KPI Score (மதிப்பெண்)</div>
+        <div class="kpi-score-tile-val" id="kpiTotalScoreDisplay">88.5 / 100</div>
+        <div class="kpi-score-tile-sub">Weighted calculation out of 100</div>
+      </div>
+
+      <div class="kpi-score-tile">
+        <div class="kpi-score-tile-label">Performance Rating Band</div>
+        <div class="kpi-score-tile-val" style="font-size:1.3rem;">
+          <span class="gov-badge gov-badge-gold" id="kpiRatingBandDisplay">Good (நன்று)</span>
+        </div>
+        <div class="kpi-score-tile-sub">Based on official C&amp;B performance scale</div>
+      </div>
+
+      <div class="kpi-score-tile incentive-box">
+        <div class="kpi-score-tile-label">Earned Monthly Incentive Payout</div>
+        <div class="kpi-score-tile-val" id="kpiEarnedIncentiveDisplay">₹ 885</div>
+        <div class="kpi-score-tile-sub" id="kpiIncentiveFormulaNote">Base ₹1000 × (88.5% ÷ 100) = ₹885</div>
+      </div>
+    </div>
+
+    <!-- KPI BREAKDOWN TABLE CARD -->
+    <div class="gov-card">
+      <div class="gov-card-header">
+        <h2 class="gov-card-title">
+          <span>📊 Individual Metric Evaluation &amp; Weightages Table</span>
+          <span class="gov-badge gov-badge-gold">Capped at Weightage Formula</span>
+        </h2>
+        <div style="font-size:0.82rem; color:#64748B;">
+          Formula: <code>Score = Weightage × min(1, Actual ÷ Target)</code>
+        </div>
+      </div>
+
+      <div class="gov-table-wrap">
+        <table class="gov-table">
+          <thead>
+            <tr>
+              <th style="width: 40px; text-align: center;">#</th>
+              <th style="min-width: 180px;">KPI Area / பகுதி</th>
+              <th style="min-width: 240px;">KPI Metric &amp; Formula (அளவிடும் முறை)</th>
+              <th style="width: 110px; text-align: center;">Target (இலக்கு)</th>
+              <th style="width: 105px; text-align: center;">Weightage (எடை %)</th>
+              <th style="width: 115px; text-align: center;">Actual (உண்மை நிலை)</th>
+              <th style="width: 95px; text-align: right;">Score (மதிப்பெண்)</th>
+            </tr>
+          </thead>
+          <tbody id="kpiTableBody">
+            <!-- Populated via kpi.js -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- POLICY FOOTER -->
+      <div style="margin-top: 18px; padding: 12px 16px; background: #F8FAFC; border-radius: 8px; border: 1px solid var(--svv-border); font-size: 0.85rem; color: #475569;">
+        <strong>Manager Evaluation Protocol:</strong>
+        CRM Manager sets weightages for Greeters &amp; Telecallers. Store Manager sets weightages for CRM Manager.
+        Performance Scale: 90–100 Excellent (சிறப்பு) | 75–89 Good (நன்று) | 60–74 Needs Improvement (முன்னேற்றம் தேவை) | Below 60 Poor (மிகக் குறைவு).
+        Incentive amount is directly proportionate to score achievement percentage.
+      </div>
+    </div>
+  </main>
+
+  <div id="govToast" class="gov-toast"></div>
+
+  <script src="kpi.js"></script>
+</body>
+</html>

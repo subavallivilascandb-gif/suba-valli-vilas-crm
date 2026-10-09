@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Suba Valli Vilas | Roles & Responsibilities (RNR) - CRM Team</title>
+  <link rel="icon" type="image/png" href="svv-logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="governance-shared.css">
+  <style>
+    .rnr-tabs-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .rnr-tab-btn {
+      padding: 10px 20px;
+      border-radius: 10px;
+      border: 1.5px solid var(--svv-border-gold);
+      background: #FFFFFF;
+      color: var(--svv-maroon);
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+    .rnr-tab-btn:hover {
+      background: var(--svv-gold-light);
+      border-color: var(--svv-gold);
+    }
+    .rnr-tab-btn.active {
+      background: linear-gradient(135deg, var(--svv-maroon) 0%, var(--svv-maroon-deep) 100%);
+      color: #FFFFFF;
+      border-color: var(--svv-maroon);
+      box-shadow: 0 4px 12px rgba(88, 5, 5, 0.25);
+    }
+    .rnr-controls-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+      justify-content: space-between;
+    }
+    .rnr-search-wrap {
+      display: flex;
+      gap: 10px;
+      flex: 1;
+      max-width: 600px;
+    }
+    .lang-segmented {
+      display: inline-flex;
+      background: #EDE8DF;
+      padding: 3px;
+      border-radius: 8px;
+      border: 1px solid var(--svv-border-gold);
+    }
+    .lang-seg-btn {
+      border: none;
+      background: transparent;
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #555;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .lang-seg-btn.active {
+      background: #FFFFFF;
+      color: var(--svv-maroon);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- UNIFIED TOP NAVIGATION -->
+  <header class="gov-top-bar">
+    <div class="gov-bar-inner">
+      <a href="crm-hub.html" class="gov-brand">
+        <div class="gov-cb-badge" title="Consulting & Beyond (C&B)">
+          <img src="cb-logo.png" alt="C&B Consulting & Beyond">
+        </div>
+        <div class="gov-logo-badge" title="Suba Valli Vilas Jewellery">
+          <img src="svv-logo.png" alt="Suba Valli Vilas">
+        </div>
+        <div>
+          <div class="gov-brand-title">SUBA VALLI VILAS</div>
+          <div class="gov-brand-sub">CRM GOVERNANCE &amp; MANAGEMENT SUITE</div>
+        </div>
+      </a>
+
+      <nav class="gov-nav-links">
+        <a href="index.html" class="gov-nav-link nav-home"><span>🏠</span> Main App</a>
+        <a href="crm-hub.html" class="gov-nav-link"><span>🏛️</span> Hub</a>
+        <a href="mis-report.html" class="gov-nav-link"><span>📊</span> MIS Report</a>
+        <a href="rnr.html" class="gov-nav-link active"><span>📋</span> RNR</a>
+        <a href="raci.html" class="gov-nav-link"><span>🎯</span> RACI</a>
+        <a href="kpi.html" class="gov-nav-link"><span>📈</span> KPI &amp; Incentive</a>
+        <a href="training.html" class="gov-nav-link"><span>🎓</span> Training Kit</a>
+      </nav>
+
+      <div class="gov-bar-actions">
+        <div class="gov-sync-badge" id="btnSyncGSheet" title="Click to refresh from Google Sheet">
+          <span class="gov-sync-dot"></span>
+          <span id="syncStatusText">GSheet Linked</span>
+        </div>
+        <button class="btn-gov btn-gov-gold no-print" onclick="window.print()">🖨️ Print / PDF</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="gov-main">
+    <div class="gov-hero">
+      <div>
+        <h1 class="gov-hero-title">Roles &amp; Responsibilities (RNR) Matrix</h1>
+        <p class="gov-hero-desc">Suba Valli Vilas Jewellery — Operational Governance Standards formulated by Consulting &amp; Beyond (C&amp;B)</p>
+      </div>
+      <div class="gov-hero-actions no-print">
+        <div class="lang-segmented">
+          <button class="lang-seg-btn active" data-rnr-lang="both">Bilingual (இருமொழியும்)</button>
+          <button class="lang-seg-btn" data-rnr-lang="en">English Only</button>
+          <button class="lang-seg-btn" data-rnr-lang="ta">தமிழ் மட்டும்</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROLE SWITCHER TABS -->
+    <div class="rnr-tabs-bar no-print">
+      <button class="rnr-tab-btn active" data-rnr-role="greeter">
+        <span>👋</span> CRM Greeters (29 Points)
+      </button>
+      <button class="rnr-tab-btn" data-rnr-role="manager">
+        <span>👔</span> CRM Manager (34 Points)
+      </button>
+      <button class="rnr-tab-btn" data-rnr-role="telecaller">
+        <span>📞</span> CRM Telecaller (15 Points)
+      </button>
+    </div>
+
+    <!-- RNR TABLE CARD -->
+    <div class="gov-card">
+      <div class="gov-card-header">
+        <h2 class="gov-card-title">
+          <span id="rnrCurrentRoleTitle">CRM Greeters — Roles &amp; Responsibilities (RNR)</span>
+          <span class="gov-badge gov-badge-gold" id="rnrCurrentRoleBadge">29 Points • C&amp;B Standard</span>
+        </h2>
+        <span class="gov-badge gov-badge-maroon" id="rnrRowCountBadge">29 of 29 Points</span>
+      </div>
+
+      <!-- FILTER CONTROLS -->
+      <div class="rnr-controls-row no-print">
+        <div class="rnr-search-wrap">
+          <input type="text" id="rnrSearchInput" class="gov-input" style="flex:1;" placeholder="🔍 Search roles, keywords, or Tamil terms...">
+          <select id="rnrAreaFilter" class="gov-select" style="min-width: 240px;">
+            <option value="ALL">All Responsible Areas</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- TABLE -->
+      <div class="gov-table-wrap">
+        <table class="gov-table">
+          <thead>
+            <tr>
+              <th style="width: 55px; text-align: center;">S.NO</th>
+              <th style="width: 220px;">Responsible Area / பகுதி</th>
+              <th>Roles &amp; Responsibilities / பணிகளும் பொறுப்புகளும்</th>
+              <th style="width: 180px;">Operational Remarks</th>
+            </tr>
+          </thead>
+          <tbody id="rnrTableBody">
+            <!-- Populated via rnr.js -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="govToast" class="gov-toast"></div>
+
+  <script src="rnr.js"></script>
+</body>
+</html>

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Suba Valli Vilas | CRM Team Training Kit &amp; Daily Briefing Guide</title>
+  <link rel="icon" type="image/png" href="svv-logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="governance-shared.css">
+  <style>
+    .training-flow-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .flow-card {
+      background: #FFFFFF;
+      border: 1px solid var(--svv-border-gold);
+      border-radius: 10px;
+      padding: 14px 16px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    }
+    .flow-min {
+      font-weight: 800;
+      color: var(--svv-maroon);
+      font-size: 1.15rem;
+      margin-bottom: 4px;
+    }
+    .flow-desc {
+      font-size: 0.85rem;
+      color: var(--svv-muted);
+    }
+    .quick-ref-card {
+      background: linear-gradient(135deg, #3F0202 0%, #580505 100%);
+      color: #FFFFFF;
+      border: 2px solid var(--svv-gold);
+      border-radius: 14px;
+      padding: 24px;
+      margin-top: 32px;
+    }
+    .quick-ref-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+    .ref-box {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(197, 160, 89, 0.4);
+      border-radius: 8px;
+      padding: 12px 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- UNIFIED TOP NAVIGATION -->
+  <header class="gov-top-bar">
+    <div class="gov-bar-inner">
+      <a href="crm-hub.html" class="gov-brand">
+        <div class="gov-cb-badge" title="Consulting & Beyond (C&B)">
+          <img src="cb-logo.png" alt="C&B Consulting & Beyond">
+        </div>
+        <div class="gov-logo-badge" title="Suba Valli Vilas Jewellery">
+          <img src="svv-logo.png" alt="Suba Valli Vilas">
+        </div>
+        <div>
+          <div class="gov-brand-title">SUBA VALLI VILAS</div>
+          <div class="gov-brand-sub">CRM GOVERNANCE &amp; MANAGEMENT SUITE</div>
+        </div>
+      </a>
+
+      <nav class="gov-nav-links">
+        <a href="index.html" class="gov-nav-link nav-home"><span>🏠</span> Main App</a>
+        <a href="crm-hub.html" class="gov-nav-link"><span>🏛️</span> Hub</a>
+        <a href="mis-report.html" class="gov-nav-link"><span>📊</span> MIS Report</a>
+        <a href="rnr.html" class="gov-nav-link"><span>📋</span> RNR</a>
+        <a href="raci.html" class="gov-nav-link"><span>🎯</span> RACI</a>
+        <a href="kpi.html" class="gov-nav-link"><span>📈</span> KPI &amp; Incentive</a>
+        <a href="training.html" class="gov-nav-link active"><span>🎓</span> Training Kit</a>
+      </nav>
+
+      <div class="gov-bar-actions">
+        <div class="gov-sync-badge" id="btnSyncGSheet" title="Click to refresh from Google Sheet">
+          <span class="gov-sync-dot"></span>
+          <span id="syncStatusText">GSheet Linked</span>
+        </div>
+        <button class="btn-gov btn-gov-gold no-print" onclick="window.print()">🖨️ Print / PDF</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="gov-main">
+    <div class="gov-hero">
+      <div>
+        <h1 class="gov-hero-title">CRM Team Training Kit &amp; Daily Briefing Guide</h1>
+        <p class="gov-hero-desc">Document Ref: TEM/102/CRM/004/HS/SEP-26 • Daily 10-Minute Morning Routine, SPARKLE, TAP, LEAD, CALM Frameworks &amp; Tracker</p>
+      </div>
+      <div class="gov-hero-actions no-print">
+        <button class="btn-gov btn-gov-primary" id="btnOpenAddLogModal">✍️ Log Today's Briefing</button>
+      </div>
+    </div>
+
+    <!-- SUGGESTED 10-MINUTE MORNING FLOW -->
+    <div class="gov-card" style="padding: 18px 22px; margin-bottom: 20px;">
+      <h3 style="font-size: 1rem; color: var(--svv-maroon); font-weight: 700; margin-bottom: 12px;">
+        ⏱️ Suggested Daily 10-Minute Morning Briefing Flow (பரிந்துரைக்கப்படும் 10 நிமிட வரிசை)
+      </h3>
+      <div class="training-flow-grid">
+        <div class="flow-card">
+          <div class="flow-min">2 Minutes</div>
+          <strong>Review Yesterday's Numbers</strong>
+          <div class="flow-desc">Footfall total, Peak hour, Feedback % collected, and Divert reasons.</div>
+        </div>
+        <div class="flow-card">
+          <div class="flow-min">5 Minutes</div>
+          <strong>Today's Topic Module</strong>
+          <div class="flow-desc">Read and discuss 1 module per day with the team in rotation.</div>
+        </div>
+        <div class="flow-card">
+          <div class="flow-min">2 Minutes</div>
+          <strong>Quick Scenario / Role-Play</strong>
+          <div class="flow-desc">2 staff simulate greeting, objection handling or divert conversation.</div>
+        </div>
+        <div class="flow-card">
+          <div class="flow-min">1 Minute</div>
+          <strong>Motivation &amp; Attendance</strong>
+          <div class="flow-desc">One inspiring thought, mark register attendance, and open the showroom.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 13 MODULES ACCORDION -->
+    <div class="gov-card">
+      <div class="gov-card-header">
+        <h2 class="gov-card-title">
+          <span>📚 13 Core Training Modules &amp; SOP Reference</span>
+          <span class="gov-badge gov-badge-gold">Daily 1 Module Rotation</span>
+        </h2>
+        <span class="gov-badge gov-badge-maroon">C&amp;B Certified SOP</span>
+      </div>
+
+      <div id="trainingModulesAccordion">
+        <!-- Loaded via training.js -->
+      </div>
+    </div>
+
+    <!-- DAILY BRIEFING TRACKER TABLE -->
+    <div class="gov-card" style="margin-top: 24px;">
+      <div class="gov-card-header">
+        <h2 class="gov-card-title">
+          <span>📋 Daily Briefing Tracker Register (தினசரி கூட்டப் பதிவேடு)</span>
+          <span class="gov-badge gov-badge-gold">Operational Compliance</span>
+        </h2>
+        <button class="btn-gov btn-gov-primary btn-sm no-print" onclick="document.getElementById('btnOpenAddLogModal').click()">
+          + Add Today's Entry
+        </button>
+      </div>
+
+      <div class="gov-table-wrap">
+        <table class="gov-table">
+          <thead>
+            <tr>
+              <th style="width: 100px; text-align: center;">Date / தேதி</th>
+              <th style="min-width: 150px;">Trainer / பயிற்றுவிப்பவர்</th>
+              <th style="min-width: 180px;">Topic Covered / தலைப்பு</th>
+              <th style="width: 80px; text-align: center;">Present</th>
+              <th style="min-width: 110px;">Absentees</th>
+              <th style="min-width: 200px;">Key Takeaway / முக்கிய கருத்து</th>
+              <th style="width: 90px; text-align: center;">Trainer Sig</th>
+              <th style="width: 90px; text-align: center;">PC Sig</th>
+              <th style="min-width: 150px;">Action Taken</th>
+            </tr>
+          </thead>
+          <tbody id="trackerTableBody">
+            <!-- Populated via training.js -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- QUICK REFERENCE CARD -->
+    <div class="quick-ref-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(197,160,89,0.4); padding-bottom:12px;">
+        <h2 style="font-family:var(--font-serif); color:#FFFDF9; font-size:1.3rem;">
+          ✨ Quick Reference Card (விரைவு குறிப்பு அட்டை)
+        </h2>
+        <span class="gov-badge gov-badge-gold">Keep at Reception / Counter</span>
+      </div>
+
+      <div class="quick-ref-grid">
+        <div class="ref-box">
+          <strong style="color:var(--svv-gold);">Welcome Line:</strong>
+          <p style="font-size:0.88rem; margin-top:4px;">"Vanakkam! Welcome to Suba Valli Vilas Jewellery. How may I help you today?"</p>
+          <p style="font-family:'Noto Sans Tamil', serif; font-size:0.8rem; color:#F5D089; margin-top:2px;">"வணக்கம்! சுப வள்ளி விலாஸ் ஜுவல்லரிக்கு நல்வரவு. நான் எப்படி உதவலாம்?"</p>
+        </div>
+
+        <div class="ref-box">
+          <strong style="color:var(--svv-gold);">Exit Line:</strong>
+          <p style="font-size:0.88rem; margin-top:4px;">"Thank you so much for visiting us — please do share your feedback and visit us again!"</p>
+          <p style="font-family:'Noto Sans Tamil', serif; font-size:0.8rem; color:#F5D089; margin-top:2px;">"எங்களைச் சந்தித்தமைக்கு நன்றி — உங்கள் கருத்தைப் பகிரவும், மீண்டும் வருகை தாருங்கள்!"</p>
+        </div>
+
+        <div class="ref-box">
+          <strong style="color:var(--svv-gold);">SPARKLE Formula:</strong>
+          <p style="font-size:0.82rem; margin-top:4px;">Smile • Present • Ask • Recommend • Keep engaged • Listen • End with thanks</p>
+        </div>
+
+        <div class="ref-box">
+          <strong style="color:var(--svv-gold);">TAP Feedback:</strong>
+          <p style="font-size:0.82rem; margin-top:4px;">Time it right • Ask politely • Provide &amp; thank</p>
+        </div>
+
+        <div class="ref-box">
+          <strong style="color:var(--svv-gold);">LEAD Divert:</strong>
+          <p style="font-size:0.82rem; margin-top:4px;">Listen • Explain alternatives • Assure follow-up • Document</p>
+        </div>
+
+        <div class="ref-box">
+          <strong style="color:var(--svv-gold);">CALM Difficult Cust:</strong>
+          <p style="font-size:0.82rem; margin-top:4px;">Compose • Acknowledge • Listen • Manage / Escalate</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ADD BRIEFING LOG MODAL -->
+  <div class="gov-modal-overlay" id="modalAddLog">
+    <div class="gov-modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <h3 style="font-family:var(--font-serif); color:var(--svv-maroon);">✍️ Log Daily Morning Briefing</h3>
+        <button type="button" class="btn-gov btn-gov-outline btn-sm" id="btnCloseModal">✕</button>
+      </div>
+      <form id="formAddLog">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+          <div>
+            <label style="font-size:0.82rem; font-weight:700;">Date:</label>
+            <input type="date" id="logDate" class="gov-input" style="width:100%;" required>
+          </div>
+          <div>
+            <label style="font-size:0.82rem; font-weight:700;">Trainer / Conducted By:</label>
+            <input type="text" id="logTrainer" class="gov-input" style="width:100%;" value="Selvi (CRM Manager)" required>
+          </div>
+        </div>
+
+        <div style="margin-bottom:12px;">
+          <label style="font-size:0.82rem; font-weight:700;">Module / Topic Covered:</label>
+          <select id="logTopic" class="gov-select" style="width:100%;">
+            <option value="Module 1: Personal Conduct & Grooming">Module 1: Personal Conduct & Grooming</option>
+            <option value="Module 2: Standing Position & Body Language">Module 2: Standing Position & Body Language</option>
+            <option value="Module 3: Welcoming Protocol & 10s Greet">Module 3: Welcoming Protocol & 10s Greet</option>
+            <option value="Module 4: Direction Protocol">Module 4: Direction Protocol</option>
+            <option value="Module 5: Customer Handling Scenarios">Module 5: Customer Handling Scenarios</option>
+            <option value="Module 6: Do's and Don'ts">Module 6: Do's and Don'ts</option>
+            <option value="Module 7: Daily Review (Footfall/Divert)">Module 7: Daily Review (Footfall/Divert)</option>
+            <option value="Module 8: Exit Words & Thank-You Note">Module 8: Exit Words & Thank-You Note</option>
+            <option value="Module 9: SPARKLE Engagement Framework">Module 9: SPARKLE Engagement Framework</option>
+            <option value="Module 10: TAP Feedback Framework">Module 10: TAP Feedback Framework</option>
+            <option value="Module 11: LEAD Divert Framework">Module 11: LEAD Divert Framework</option>
+            <option value="Module 12: CALM De-escalation Framework">Module 12: CALM De-escalation Framework</option>
+          </select>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+          <div>
+            <label style="font-size:0.82rem; font-weight:700;">Staff Present Count:</label>
+            <input type="number" id="logStaffCount" class="gov-input" style="width:100%;" value="5" min="1" max="10">
+          </div>
+          <div>
+            <label style="font-size:0.82rem; font-weight:700;">Absentees (if any):</label>
+            <input type="text" id="logAbsentees" class="gov-input" style="width:100%;" placeholder="e.g. None or Kaviya">
+          </div>
+        </div>
+
+        <div style="margin-bottom:12px;">
+          <label style="font-size:0.82rem; font-weight:700;">Key Takeaway Discussed:</label>
+          <textarea id="logTakeaway" class="gov-input" style="width:100%; height:60px;" placeholder="Summarize today's main coaching point..." required></textarea>
+        </div>
+
+        <div style="margin-bottom:16px;">
+          <label style="font-size:0.82rem; font-weight:700;">Action Taken / Floor Follow-Up:</label>
+          <input type="text" id="logAction" class="gov-input" style="width:100%;" placeholder="e.g. Monitored greeting during peak hours.">
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:10px;">
+          <button type="button" class="btn-gov btn-gov-outline" id="btnCancelModal">Cancel</button>
+          <button type="submit" class="btn-gov btn-gov-primary">💾 Save to Briefing Register</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="govToast" class="gov-toast"></div>
+
+  <script src="training.js"></script>
+</body>
+</html>

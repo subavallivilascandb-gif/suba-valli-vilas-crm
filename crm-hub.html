@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Suba Valli Vilas | CRM Governance &amp; Management Suite</title>
+  <link rel="icon" type="image/png" href="svv-logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="governance-shared.css">
+  <style>
+    .hub-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+      margin-top: 10px;
+    }
+    .hub-card {
+      background: #FFFFFF;
+      border: 1px solid var(--svv-border-gold);
+      border-radius: 14px;
+      padding: 24px;
+      box-shadow: 0 4px 14px rgba(88, 5, 5, 0.05);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .hub-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 25px rgba(88, 5, 5, 0.12);
+      border-color: var(--svv-gold);
+    }
+    .hub-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--svv-maroon), var(--svv-gold));
+    }
+    .hub-card-icon {
+      font-size: 2.2rem;
+      margin-bottom: 12px;
+    }
+    .hub-card-title {
+      font-family: var(--font-serif);
+      font-size: 1.25rem;
+      color: var(--svv-maroon);
+      margin-bottom: 6px;
+    }
+    .hub-card-desc {
+      font-size: 0.88rem;
+      color: var(--svv-muted);
+      line-height: 1.55;
+      margin-bottom: 18px;
+      flex: 1;
+    }
+    .hub-card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--svv-border);
+      padding-top: 14px;
+    }
+    .stats-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    .stat-box {
+      background: #FFFFFF;
+      border: 1px solid var(--svv-border);
+      border-radius: 10px;
+      padding: 16px 18px;
+    }
+    .stat-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--svv-muted);
+      text-transform: uppercase;
+    }
+    .stat-val {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--svv-maroon);
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- UNIFIED TOP NAVIGATION -->
+  <header class="gov-top-bar">
+    <div class="gov-bar-inner">
+      <a href="crm-hub.html" class="gov-brand">
+        <div class="gov-cb-badge" title="Consulting & Beyond (C&B)">
+          <img src="cb-logo.png" alt="C&B Consulting & Beyond">
+        </div>
+        <div class="gov-logo-badge" title="Suba Valli Vilas Jewellery">
+          <img src="svv-logo.png" alt="Suba Valli Vilas">
+        </div>
+        <div>
+          <div class="gov-brand-title">SUBA VALLI VILAS</div>
+          <div class="gov-brand-sub">CRM GOVERNANCE &amp; MANAGEMENT SUITE</div>
+        </div>
+      </a>
+
+      <nav class="gov-nav-links">
+        <a href="index.html" class="gov-nav-link nav-home"><span>🏠</span> Main App</a>
+        <a href="crm-hub.html" class="gov-nav-link active"><span>🏛️</span> Hub</a>
+        <a href="mis-report.html" class="gov-nav-link"><span>📊</span> MIS Report</a>
+        <a href="rnr.html" class="gov-nav-link"><span>📋</span> RNR</a>
+        <a href="raci.html" class="gov-nav-link"><span>🎯</span> RACI</a>
+        <a href="kpi.html" class="gov-nav-link"><span>📈</span> KPI &amp; Incentive</a>
+        <a href="training.html" class="gov-nav-link"><span>🎓</span> Training Kit</a>
+      </nav>
+
+      <div class="gov-bar-actions">
+        <div class="gov-sync-badge" onclick="alert('Google Sheet is actively connected!')">
+          <span class="gov-sync-dot"></span>
+          <span>GSheet Active</span>
+        </div>
+        <a href="index.html" class="btn-gov btn-gov-gold">🔙 Launch CRM Live Desk</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="gov-main">
+    <div class="gov-hero">
+      <div>
+        <h1 class="gov-hero-title">Executive Governance &amp; MIS Hub</h1>
+        <p class="gov-hero-desc">Suba Valli Vilas Jewellery — Certified by Consulting &amp; Beyond (C&amp;B) • Cuddalore Showroom</p>
+      </div>
+      <div class="gov-hero-actions">
+        <a href="mis-report.html" class="btn-gov btn-gov-primary">📊 View October MIS Report</a>
+      </div>
+    </div>
+
+    <!-- QUICK STATS -->
+    <div class="stats-strip">
+      <div class="stat-box">
+        <div class="stat-label">Store Health Score</div>
+        <div class="stat-val" style="color:#15803D;">88 / 100 🏆</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Customer Satisfaction (CSI)</div>
+        <div class="stat-val" style="color:#15803D;">88% 🟢</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Net Promoter Score (NPS)</div>
+        <div class="stat-val" style="color:#15803D;">94 🌟</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Showroom Divert Rate</div>
+        <div class="stat-val">0.14% <small style="font-size:0.8rem; color:#15803D;">(Limit &lt; 5%)</small></div>
+      </div>
+    </div>
+
+    <!-- 5 SEPARATE MODULE CARDS -->
+    <div class="hub-grid">
+      <!-- 1. MIS Report -->
+      <div class="hub-card">
+        <div>
+          <div class="hub-card-icon">📊</div>
+          <h2 class="hub-card-title">Monthly Review Meeting (MRM) / MIS Report</h2>
+          <p class="hub-card-desc">
+            Complete executive presentation deck with period filters (This Month, Last Month, Custom),
+            Customer Acquisition Channel ROI analysis, Town-wise geographic promotion targeting,
+            Conversion Funnel, CSI, NPS, Sentiments, and export to PDF and HTML format.
+          </p>
+        </div>
+        <div class="hub-card-footer">
+          <span class="gov-badge gov-badge-gold">C&amp;B Deck Architecture</span>
+          <a href="mis-report.html" class="btn-gov btn-gov-primary btn-sm">Open MIS Report ➔</a>
+        </div>
+      </div>
+
+      <!-- 2. RNR -->
+      <div class="hub-card">
+        <div>
+          <div class="hub-card-icon">📋</div>
+          <h2 class="hub-card-title">Roles &amp; Responsibilities (RNR)</h2>
+          <p class="hub-card-desc">
+            Official operational matrices with bilingual (English &amp; தமிழ்) guidelines for CRM Greeters (29 points across 15 areas),
+            CRM Manager (34 points across 16 areas), and Telecaller Desk (15 points).
+          </p>
+        </div>
+        <div class="hub-card-footer">
+          <span class="gov-badge gov-badge-maroon">29 + 34 + 15 Points</span>
+          <a href="rnr.html" class="btn-gov btn-gov-primary btn-sm">Explore RNR ➔</a>
+        </div>
+      </div>
+
+      <!-- 3. RACI -->
+      <div class="hub-card">
+        <div>
+          <div class="hub-card-icon">🎯</div>
+          <h2 class="hub-card-title">CRM Team RACI Matrix</h2>
+          <p class="hub-card-desc">
+            17 Major CRM Processes mapped with Responsible (R1, R2), Accountable (A), Consulted (C), and Informed (I) roles.
+            Interactive filtering by team member (Selvi, Ramya, Madhumitha, Praveen, Kaviya, Saranya, Store Manager, MD).
+          </p>
+        </div>
+        <div class="hub-card-footer">
+          <span class="gov-badge gov-badge-green">RACI/101 Document Ref</span>
+          <a href="raci.html" class="btn-gov btn-gov-primary btn-sm">View RACI Matrix ➔</a>
+        </div>
+      </div>
+
+      <!-- 4. KPI & Incentive -->
+      <div class="hub-card">
+        <div>
+          <div class="hub-card-icon">📈</div>
+          <h2 class="hub-card-title">KPI Scorecards &amp; Incentive Calculator</h2>
+          <p class="hub-card-desc">
+            Dynamic weightage inputs (CRM Manager gives for staff; Store Manager gives for CRM Manager).
+            Automatic formula scoring, performance rating bands, live monthly incentive calculation (e.g. ₹1000 base × 80% = ₹800), and one-click staff PDF generation.
+          </p>
+        </div>
+        <div class="hub-card-footer">
+          <span class="gov-badge gov-badge-gold">Incentive Formula Engine</span>
+          <a href="kpi.html" class="btn-gov btn-gov-primary btn-sm">Calculate KPI ➔</a>
+        </div>
+      </div>
+
+      <!-- 5. Training Kit -->
+      <div class="hub-card">
+        <div>
+          <div class="hub-card-icon">🎓</div>
+          <h2 class="hub-card-title">CRM Team Training Kit &amp; Daily Briefing</h2>
+          <p class="hub-card-desc">
+            Official 10-Minute Morning Routine with 13 core modules: Welcoming protocol, Direction,
+            6 customer handling scenarios, Do's &amp; Don'ts, SPARKLE, TAP, LEAD, CALM frameworks,
+            and interactive Daily Briefing Tracker Register table.
+          </p>
+        </div>
+        <div class="hub-card-footer">
+          <span class="gov-badge gov-badge-maroon">13 Modules + Register</span>
+          <a href="training.html" class="btn-gov btn-gov-primary btn-sm">Access Training ➔</a>
+        </div>
+      </div>
+
+      <!-- 6. Return to CRM App -->
+      <div class="hub-card" style="background:#FFFBF2;">
+        <div>
+          <div class="hub-card-icon">💎</div>
+          <h2 class="hub-card-title">Suba Valli Vilas CRM Operational Desk</h2>
+          <p class="hub-card-desc">
+            Return to the live showroom operations portal: Day End Report (DER), Hourly Footfall logging,
+            Real-time Customer Feedback &amp; QR Studio, Divert / GD Tracker, and Outbound Telecaller desk.
+          </p>
+        </div>
+        <div class="hub-card-footer">
+          <span class="gov-badge gov-badge-green">Zero Disruption Guarantee</span>
+          <a href="index.html" class="btn-gov btn-gov-gold btn-sm">Go to CRM Desk ➔</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer style="text-align:center; padding:24px; font-size:0.8rem; color:#64748B; border-top:1px solid #E8E2D7; margin-top:40px;">
+    Suba Valli Vilas Jewellery • Cuddalore Showroom • Consulting &amp; Beyond (C&amp;B) Operations Governance Suite © 2026
+  </footer>
+</body>
+</html>

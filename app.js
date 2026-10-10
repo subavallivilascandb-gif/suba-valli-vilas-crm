@@ -5322,14 +5322,22 @@
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(fullPayload)
-      }).then(r => r.json().catch(() => ({})))
-        .then(res => {
-          updateGSheetSyncTimestamp();
-          console.log(`⚡ [Cloud Gateway Direct Sync] Action: ${action}`, res);
-        }).catch(err => {
-          console.warn(`[Cloud Gateway Sync Error] Action ${action}:`, err);
-          sendDirectToGas(fullPayload);
-        });
+      }).then(async r => {
+        if (!r.ok) {
+          const errText = await r.text().catch(() => '');
+          throw new Error(`Worker returned HTTP ${r.status}: ${errText}`);
+        }
+        return r.json().catch(() => ({}));
+      }).then(res => {
+        if (res && res.status === 'ERROR') {
+          throw new Error(`Worker returned ERROR status: ${res.message || 'unknown'}`);
+        }
+        updateGSheetSyncTimestamp();
+        console.log(`⚡ [Cloud Gateway Direct Sync] Action: ${action}`, res);
+      }).catch(err => {
+        console.warn(`[Cloud Gateway Sync Error] Action ${action}:`, err);
+        sendDirectToGas(fullPayload);
+      });
     } else if (state.gsheetUrl) {
       sendDirectToGas(fullPayload);
     }

@@ -10,18 +10,23 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="governance-shared.css">
   <style>
-    /* Executive C&B Deck Styling */
+    /* ==========================================================================
+       SUBA VALLI VILAS - EXECUTIVE C&B MIS REPORT STYLESHEET
+       ========================================================================== */
+
+    /* Filter Controls Deck */
     .filter-deck-bar {
       background: #FFFFFF;
       border: 1px solid var(--svv-border-gold);
       border-radius: 12px;
       padding: 14px 20px;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 16px;
       flex-wrap: wrap;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
     }
     .filter-btn-group {
       display: inline-flex;
@@ -29,6 +34,7 @@
       padding: 3px;
       border-radius: 8px;
       border: 1px solid var(--svv-border-gold);
+      flex-wrap: wrap;
     }
     .filter-btn {
       border: none;
@@ -47,36 +53,85 @@
       box-shadow: 0 2px 6px rgba(88, 5, 5, 0.2);
     }
 
-    /* Page Canvas */
+    /* TOP EXECUTIVE KPI SUMMARY STRIP (User Requested) */
+    .top-kpi-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .top-kpi-card {
+      background: #FFFFFF;
+      border: 1px solid var(--svv-border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      border-top: 3.5px solid var(--svv-maroon);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+      position: relative;
+      transition: transform 0.15s ease;
+    }
+    .top-kpi-card:hover {
+      transform: translateY(-2px);
+    }
+    .top-kpi-card.kpi-gold { border-top-color: var(--svv-gold); }
+    .top-kpi-card.kpi-green { border-top-color: #15803D; }
+    .top-kpi-card.kpi-blue { border-top-color: #2563EB; }
+    .top-kpi-card.kpi-purple { border-top-color: #7C3AED; }
+    .top-kpi-card.kpi-amber { border-top-color: #D97706; }
+
+    .top-kpi-hdr {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+    .top-kpi-label {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--svv-muted);
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+    }
+    .top-kpi-icon {
+      font-size: 1.15rem;
+    }
+    .top-kpi-val {
+      font-size: 1.65rem;
+      font-weight: 800;
+      color: var(--svv-text);
+      line-height: 1.1;
+      margin: 4px 0 2px;
+    }
+    .top-kpi-sub {
+      font-size: 0.74rem;
+      color: var(--svv-muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Page Canvas for Print & Screen */
     .mis-page {
       background: #FFFFFF;
       border: 1px solid var(--svv-border);
       border-radius: 14px;
-      padding: 36px 40px;
+      padding: 34px 40px;
       margin-bottom: 28px;
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
       position: relative;
+      box-sizing: border-box;
+      break-inside: avoid;
     }
     .cover-page {
       background: linear-gradient(145deg, #1E293B 0%, #0F172A 100%);
       color: #FFFFFF;
       border: 2px solid var(--svv-gold);
       text-align: center;
-      padding: 80px 40px;
+      padding: 70px 40px;
     }
     .cover-card {
       max-width: 680px;
       margin: 0 auto;
-    }
-    .cover-crest img {
-      width: 72px;
-      height: 72px;
-      background: #FFFFFF;
-      border-radius: 14px;
-      padding: 6px;
-      border: 2px solid var(--svv-gold);
-      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
-      margin-bottom: 16px;
     }
     .cover-brand {
       font-family: var(--font-serif);
@@ -95,7 +150,7 @@
       width: 100px;
       height: 3px;
       background: linear-gradient(90deg, transparent, var(--svv-gold), transparent);
-      margin: 24px auto;
+      margin: 22px auto;
     }
     .cover-title {
       font-family: var(--font-serif);
@@ -121,7 +176,7 @@
       justify-content: space-between;
       border-bottom: 2px solid var(--svv-gold);
       padding-bottom: 10px;
-      margin-bottom: 22px;
+      margin-bottom: 20px;
     }
     .page-tag {
       font-size: 0.75rem;
@@ -131,7 +186,7 @@
     }
     .page-sec-title {
       font-family: var(--font-serif);
-      font-size: 1.45rem;
+      font-size: 1.4rem;
       color: var(--svv-maroon);
       margin: 0;
     }
@@ -141,17 +196,17 @@
       background: #FDFBF7;
       border: 1px solid var(--svv-border-gold);
       border-radius: 12px;
-      padding: 20px 24px;
+      padding: 18px 22px;
       display: flex;
       align-items: center;
-      gap: 24px;
-      margin-bottom: 22px;
+      gap: 22px;
+      margin-bottom: 20px;
     }
     .health-circle {
-      width: 80px;
-      height: 80px;
+      width: 78px;
+      height: 78px;
       border-radius: 50%;
-      border: 3px solid #15803D;
+      border: 3.5px solid #15803D;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -172,117 +227,83 @@
     }
     .health-head {
       font-family: var(--font-serif);
-      font-size: 1.3rem;
+      font-size: 1.25rem;
       color: var(--svv-maroon);
       margin-bottom: 4px;
     }
     .health-sub {
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       color: var(--svv-muted);
+      line-height: 1.5;
     }
 
-    /* Metric Grids */
-    .metric-grid-4 {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-      gap: 14px;
-      margin-bottom: 22px;
-    }
-    .metric-card {
+    /* Section Cards */
+    .section-card {
       background: #FFFFFF;
       border: 1px solid var(--svv-border);
       border-radius: 10px;
-      padding: 16px;
-      border-top: 3px solid var(--svv-maroon);
-      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+      padding: 18px 20px;
+      margin-bottom: 18px;
+      break-inside: avoid;
     }
-    .metric-card-green {
-      border-top-color: #15803D;
-    }
-    .metric-card-amber {
-      border-top-color: #D97706;
-    }
-    .metric-label {
-      font-size: 0.72rem;
-      font-weight: 800;
-      color: var(--svv-muted);
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-    }
-    .metric-val {
-      font-size: 1.7rem;
-      font-weight: 800;
-      color: var(--svv-text);
-      margin: 4px 0 2px;
-    }
-    .metric-hint {
-      font-size: 0.75rem;
-      color: var(--svv-muted);
-    }
-    .metric-badge {
-      font-size: 0.75rem;
-      font-weight: 700;
-      margin-top: 4px;
-    }
-    .badge-ok { color: #15803D; }
-    .badge-alert { color: #B91C1C; }
 
-    /* Wins / Attention */
-    .wins-attention-row {
+    /* Grid Layouts */
+    .grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 18px;
+      gap: 16px;
     }
-    .wins-box {
-      background: #F0FDF4;
-      border: 1px solid #86EFAC;
-      border-radius: 10px;
-      padding: 16px 20px;
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 14px;
     }
-    .wins-box h4 { color: #15803D; margin-bottom: 8px; font-size: 0.92rem; }
-    .wins-box ul { padding-left: 20px; font-size: 0.86rem; color: #166534; line-height: 1.6; }
+    @media (max-width: 768px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
 
-    .attention-box {
-      background: #FEF2F2;
-      border: 1px solid #FCA5A5;
-      border-radius: 10px;
-      padding: 16px 20px;
-    }
-    .attention-box h4 { color: #B91C1C; margin-bottom: 8px; font-size: 0.92rem; }
-    .attention-box ul { padding-left: 20px; font-size: 0.86rem; color: #991B1B; line-height: 1.6; }
-
-    /* Funnel */
+    /* Conversion Funnel */
     .funnel-container {
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      max-width: 600px;
-      margin: 0 auto 20px;
+      gap: 10px;
+      max-width: 620px;
+      margin: 0 auto 16px;
     }
     .funnel-step {
-      background: #F8FAFC;
-      border: 1.5px solid var(--svv-border);
+      background: #FDFBF7;
+      border: 1px solid var(--svv-border-gold);
       border-radius: 10px;
-      padding: 16px 20px;
+      padding: 14px 18px;
       display: flex;
       align-items: center;
-      gap: 18px;
+      gap: 14px;
     }
     .funnel-step.highlight-step {
-      background: #FFFDF9;
-      border-color: var(--svv-gold);
+      background: #F0FDF4;
+      border-color: #86EFAC;
     }
     .funnel-step-icon {
-      font-size: 2rem;
+      font-size: 1.8rem;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+      flex-shrink: 0;
     }
     .funnel-step-title {
-      font-size: 0.82rem;
-      font-weight: 700;
+      font-size: 0.8rem;
+      font-weight: 800;
       color: var(--svv-muted);
       text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
     .funnel-step-val {
-      font-size: 1.5rem;
+      font-size: 1.45rem;
       font-weight: 800;
       color: var(--svv-maroon);
     }
@@ -292,114 +313,376 @@
     }
     .funnel-arrow {
       text-align: center;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       font-weight: 700;
       color: var(--svv-gold-dark);
+      padding: 2px 0;
     }
     .funnel-alert-banner {
-      background: #FFFBEB;
-      border: 1px solid #FCD34D;
+      background: #FFFDF4;
+      border: 1px solid var(--svv-gold);
       border-radius: 8px;
-      padding: 12px 18px;
+      padding: 10px 16px;
       text-align: center;
-      font-size: 0.9rem;
-      color: #92400E;
-      margin-top: 14px;
+      font-size: 0.88rem;
+      color: var(--svv-maroon);
+      margin-bottom: 18px;
     }
 
-    /* Strategy box */
-    .strategic-box {
-      background: #FFFBF2;
-      border: 1px solid var(--svv-border-gold);
-      border-left: 5px solid var(--svv-gold);
+    /* HOURLY TRAFFIC HEATMAP */
+    .heatmap-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+      gap: 8px;
+      margin: 12px 0;
+    }
+    .heatmap-cell {
       border-radius: 8px;
-      padding: 14px 18px;
-      font-size: 0.92rem;
-      color: #451A03;
-      line-height: 1.6;
+      padding: 10px 6px;
+      text-align: center;
+      border: 1px solid #E2E8F0;
+      transition: transform 0.15s ease;
+    }
+    .heatmap-cell:hover {
+      transform: scale(1.04);
+    }
+    .heatmap-time {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: #475569;
+      margin-bottom: 4px;
+    }
+    .heatmap-count {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #0F172A;
+      line-height: 1;
+    }
+    .heatmap-share {
+      font-size: 0.65rem;
+      color: #64748B;
+      margin-top: 3px;
+    }
+    .heat-peak {
+      background: #FEF2F2 !important;
+      border-color: #F87171 !important;
+    }
+    .heat-peak .heatmap-count {
+      color: #B91C1C !important;
+    }
+    .heat-high {
+      background: #FFFBEB !important;
+      border-color: #FCD34D !important;
+    }
+    .heat-med {
+      background: #F0FDF4 !important;
+      border-color: #86EFAC !important;
+    }
+    .heat-low {
+      background: #F8FAFC !important;
+      border-color: #E2E8F0 !important;
     }
 
-    /* Daily bars */
-    .daily-bars-grid {
+    /* DAY OF WEEK BARS */
+    .dow-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      margin: 12px 0;
+    }
+    @media (max-width: 600px) {
+      .dow-grid { grid-template-columns: repeat(auto-fit, minmax(70px, 1fr)); }
+    }
+    .dow-col {
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      border-radius: 8px;
+      padding: 10px 6px;
+      text-align: center;
       display: flex;
       flex-direction: column;
-      gap: 8px;
-    }
-    .daily-bar-item {
-      display: flex;
       align-items: center;
-      gap: 12px;
-      font-size: 0.84rem;
+      justify-content: flex-end;
+      height: 140px;
     }
-    .daily-bar-label { width: 90px; font-weight: 600; color: #475569; }
-    .daily-bar-track { flex: 1; height: 10px; background: #F1F5F9; border-radius: 5px; overflow: hidden; }
-    .daily-bar-fill { height: 100%; background: linear-gradient(90deg, #580505 0%, #C5A059 100%); }
-    .daily-bar-val { width: 50px; text-align: right; font-weight: 700; color: #1E293B; }
+    .dow-col.dow-peak {
+      background: #FFFDF4;
+      border-color: var(--svv-gold);
+    }
+    .dow-bar-track {
+      width: 22px;
+      height: 70px;
+      background: #E2E8F0;
+      border-radius: 4px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      margin: 6px 0;
+      overflow: hidden;
+    }
+    .dow-bar-fill {
+      width: 100%;
+      background: linear-gradient(180deg, var(--svv-gold) 0%, var(--svv-maroon) 100%);
+      border-radius: 4px;
+      transition: height 0.3s ease;
+    }
+    .dow-day-name {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: #334155;
+    }
+    .dow-count {
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: var(--svv-maroon);
+    }
 
-    /* Sentiment Tiles */
+    /* HORIZONTAL DISTRIBUTION PROGRESS BARS */
+    .dist-row {
+      margin-bottom: 10px;
+    }
+    .dist-row-hdr {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-bottom: 3px;
+    }
+    .dist-track {
+      height: 8px;
+      background: #F1F5F9;
+      border-radius: 6px;
+      overflow: hidden;
+      display: flex;
+    }
+    .dist-fill {
+      height: 100%;
+      border-radius: 6px;
+      background: linear-gradient(90deg, var(--svv-maroon) 0%, var(--svv-gold) 100%);
+    }
+
+    /* STRATEGIC INSIGHT BOXES */
+    .strategic-box {
+      background: #FFFDF7;
+      border-left: 4px solid var(--svv-gold);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 0.88rem;
+      color: #334155;
+      line-height: 1.6;
+      margin-bottom: 14px;
+    }
+    .strategic-box strong {
+      color: var(--svv-maroon);
+    }
+
+    /* SENTIMENT TILES */
     .sentiment-cards-row {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
-      margin-bottom: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
     }
     .sentiment-tile {
-      padding: 16px;
       border-radius: 10px;
+      padding: 14px 16px;
       text-align: center;
     }
     .sentiment-green { background: #E8F8F0; border: 1px solid #86EFAC; color: #15803D; }
     .sentiment-neutral { background: #F8FAFC; border: 1px solid #CBD5E1; color: #334155; }
     .sentiment-red { background: #FEF2F2; border: 1px solid #FCA5A5; color: #B91C1C; }
-    .sentiment-tile-title { font-size: 0.75rem; font-weight: 800; }
-    .sentiment-tile-val { font-size: 2rem; font-weight: 800; margin: 4px 0; }
-    .sentiment-tile-sub { font-size: 0.78rem; opacity: 0.85; }
+    .sentiment-tile-title { font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; }
+    .sentiment-tile-val { font-size: 1.8rem; font-weight: 800; margin: 3px 0; }
+    .sentiment-tile-sub { font-size: 0.75rem; opacity: 0.85; }
 
-    .voice-card {
-      background: #FFFDF9;
-      border-left: 3px solid var(--svv-gold);
-      border-radius: 6px;
-      padding: 12px 16px;
+    /* VOICE OF CUSTOMER (ELABORATE CARDS) */
+    .voc-card {
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 10px;
+      padding: 14px 16px;
       margin-bottom: 12px;
-      font-size: 0.88rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.02);
+      break-inside: avoid;
     }
-    .voice-card p { margin: 4px 0 6px; font-style: italic; color: #334155; }
+    .voc-card.voc-bridal {
+      border-left: 4px solid var(--svv-gold);
+      background: #FFFDF9;
+    }
+    .voc-card.voc-staff {
+      border-left: 4px solid #15803D;
+      background: #F0FDF4;
+    }
+    .voc-card.voc-heritage {
+      border-left: 4px solid var(--svv-maroon);
+      background: #FDFBF7;
+    }
+    .voc-card.voc-concern {
+      border-left: 4px solid #DC2626;
+      background: #FEF2F2;
+    }
+    .voc-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .voc-user {
+      font-weight: 700;
+      font-size: 0.88rem;
+      color: #1E293B;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .voc-quote {
+      font-style: italic;
+      color: #334155;
+      font-size: 0.86rem;
+      line-height: 1.5;
+      margin: 6px 0 8px;
+    }
+    .voc-action-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: #F1F5F9;
+      color: #475569;
+    }
 
+    /* TABLES */
+    .mis-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      margin: 10px 0;
+    }
+    .mis-table th {
+      background: #F8FAFC;
+      color: var(--svv-maroon);
+      font-weight: 800;
+      padding: 10px 12px;
+      border-bottom: 2px solid var(--svv-gold);
+      text-align: left;
+    }
+    .mis-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #E2E8F0;
+      color: #334155;
+    }
+    .mis-table tr:hover {
+      background: #FFFDF9;
+    }
+
+    /* RECOVERY PIPELINE */
     .recovery-flow-card {
       background: #FAF8F5;
       border: 1px solid var(--svv-border-gold);
       border-radius: 10px;
-      padding: 20px;
+      padding: 18px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      max-width: 650px;
+      gap: 10px;
+      max-width: 620px;
       margin: 0 auto;
     }
     .recovery-step {
       background: #FFFFFF;
       border: 1px solid var(--svv-border);
       border-radius: 8px;
-      padding: 14px 18px;
+      padding: 12px 16px;
       text-align: center;
     }
 
-    /* Print styles */
+    /* WINS & ATTENTION */
+    .wins-attention-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 14px;
+    }
+    @media (max-width: 768px) {
+      .wins-attention-row { grid-template-columns: 1fr; }
+    }
+    .wins-box {
+      background: #F0FDF4;
+      border: 1px solid #86EFAC;
+      border-radius: 10px;
+      padding: 14px 18px;
+    }
+    .wins-box h4 { color: #15803D; margin-bottom: 6px; font-size: 0.9rem; }
+    .wins-box ul { padding-left: 18px; font-size: 0.84rem; color: #166534; line-height: 1.55; margin: 0; }
+
+    .attention-box {
+      background: #FEF2F2;
+      border: 1px solid #FCA5A5;
+      border-radius: 10px;
+      padding: 14px 18px;
+    }
+    .attention-box h4 { color: #B91C1C; margin-bottom: 6px; font-size: 0.9rem; }
+    .attention-box ul { padding-left: 18px; font-size: 0.84rem; color: #991B1B; line-height: 1.55; margin: 0; }
+
+    /* ==========================================================================
+       PRINT MEDIA QUERY (STRICT A4 ALIGNMENT - ZERO BLANK PAGES)
+       ========================================================================== */
+    @page {
+      size: A4 portrait;
+      margin: 10mm 12mm;
+    }
     @media print {
-      body { background: #FFFFFF !important; }
-      .gov-top-bar, .filter-deck-bar, .no-print { display: none !important; }
-      .gov-main { padding: 0 !important; max-width: 100% !important; }
+      body {
+        background: #FFFFFF !important;
+        color: #000000 !important;
+        font-size: 9.5pt !important;
+      }
+      .gov-top-bar, .filter-deck-bar, .no-print, button, input {
+        display: none !important;
+      }
+      .gov-main {
+        padding: 0 !important;
+        max-width: 100% !important;
+      }
+      .top-kpi-strip {
+        margin-bottom: 16px !important;
+        grid-template-columns: repeat(6, 1fr) !important;
+        gap: 6px !important;
+      }
+      .top-kpi-card {
+        padding: 8px 10px !important;
+        box-shadow: none !important;
+        border: 1px solid #CBD5E1 !important;
+      }
+      .top-kpi-val {
+        font-size: 1.25rem !important;
+      }
       .mis-page {
         border: none !important;
         box-shadow: none !important;
-        padding: 20mm 15mm !important;
+        padding: 10mm 8mm !important;
+        margin: 0 !important;
         page-break-after: always !important;
-        min-height: 98vh;
+        break-after: page !important;
+        min-height: auto !important;
+      }
+      .mis-page:last-child {
+        page-break-after: avoid !important;
+        break-after: avoid !important;
       }
       .cover-page {
         background: #1E293B !important;
         color: #FFFFFF !important;
-        -webkit-print-color-adjust: exact;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .section-card, .voc-card, .wins-box, .attention-box, .funnel-container {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
       }
     }
   </style>
@@ -474,9 +757,19 @@
       </div>
     </div>
 
+    <!-- TOP EXECUTIVE KPI SUMMARY STRIP (User Requested: Footfall, Bills, Conversion, Feedback, Diverts, Telecaller) -->
+    <div id="topKpiSummaryStrip" class="top-kpi-strip">
+      <!-- Rendered dynamically by mis-report.js -->
+    </div>
+
     <!-- DYNAMIC REPORT PAGES CONTAINER -->
     <div id="misReportContent">
       <!-- Rendered dynamically by mis-report.js -->
+      <div style="text-align:center; padding:60px 20px; color:#64748B;">
+        <div style="font-size:2rem; margin-bottom:12px;">📊</div>
+        <div style="font-size:1.1rem; font-weight:700; color:var(--svv-maroon);">Loading Suba Valli Vilas MRM Report...</div>
+        <p style="font-size:0.9rem; margin-top:6px;">Synchronizing with live Google Sheets database.</p>
+      </div>
     </div>
   </main>
 

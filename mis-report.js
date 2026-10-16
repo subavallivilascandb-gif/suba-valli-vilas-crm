@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ============================================================================
  * SUBA VALLI VILAS JEWELLERY - MONTHLY REVIEW MEETING (MRM) & MIS REPORT ENGINE
  * Design: Consulting & Beyond (C&B) Operations & CRM Governance Architecture
@@ -25,8 +25,8 @@
   // Benchmark / Target Presets
   const BENCHMARKS = {
     targetConversion: 90.0,
-    targetCsi: 85,
-    targetNps: 90,
+    targetCsi: 95.0,
+    targetNps: 95,
     targetDivertLimit: 5.0,
     targetRecoveryRate: 85
   };
@@ -114,6 +114,651 @@
     const iso = normalizeToIso(dateStr);
     if (!iso) return true; // Include rows without explicit date so no sheet data is lost
     return iso >= startIso && iso <= endIso;
+  }
+
+  // ==========================================================================
+  // OFFICIAL CUDDALORE DISTRICT 4-ZONE & COLLABORATIVE SHOPPING HUBS DIRECTORY
+  // Official Classification: North (Cuddalore Union), West (Panruti/Neyveli/Virudhachalam/Mangalur),
+  // East (Kurinjipadi Coastal Belt), South (Chidambaram/Keerapalayam/Bhuvanagiri/Kattumannarkoil)
+  // ==========================================================================
+  const CUDDALORE_NORTH_VILLAGES = ["Annavalli","Arisiperiyankuppam","Azhagiyanatham","Chellancherry","C.N. Palayam","Gunamangalam","Gunduuppalavadi","Karaikadu","Karaimedu","Karaiyeravittakuppam","Karamanikuppam","Karanapattu","Keelalinjipattu","Keelkumaramangalam","Kilinjikuppam","Kodukkanpalayam","Kondur","Kudikadu","Kumalankulam","Madalapattu","Maruthadu","Melalinjipattu","M.P. Agaram","Naduveerapattu","Nallathur","Nanamedu","Nathapattu","Pachayankuppam","Pallipattu","Pathirikuppam","Periyakankanankuppam","Pillali","Pudukadai","Ramapuram","Sedapalayam","Semmankuppam","Singirikudi","Thennampakkam","Thirumanikuzhi","Thirupanampakkam","Thiruvandipuram","Thookanampakkam","Thottapattu","Uchimedu","Ulleripattu","Vanamadevi","Varakalpattu","Vellakarai","Vellapakkam","Vilangalpattu"];
+  const CUDDALORE_WEST_VILLAGES = ["Agaram","Akkadavalli","A.P. Kuppam","Aviyanur","Bandrakottai","Chinnapettai","Chitharasur","Eaithanur","Enathirimangalam","Ezhumedu","Kallipattu","Kandrakottai","Kanisapakkam","Karumbur","Kavanoor","Keelarungunam","Keelkavarapattu","Kongarayanur","Korathi","Kotlampakkam","Kozhipakkam","Maligaimedu","Melkavarapattu","M.K. Mangalam","Narimedu","Natham","Oraiyur","Pagandai","Paithampadi","Palur","Panapakkam","P.N. Palayam","Poondi","Pulavanur","P.V. Natham","Sanniyasipettai","Sathipattu","Sundaravandi","Thattampalayam","Thirasu","Thiruthuraiyur","Varinjipakkam","Alagappasamuthiram","Anguchettipalayam","Arasadikuppam","Ealanthampattu","Kadampuliyur","Karukkai","Kattukudalur","Keelakuppam","Keeliruppu","Keelkangeyankuppam","Keelmampattu","Kolapakkam","Kudumiyankuppam","Lakshmi Narayanapuram","Maligampattu","Manamthavizhnthaputhur","Manapakkam","Marungur","Meliruppu","Melkangeyankuppam","Melmampattu","Nadukuppam","Pannikankuppam","Periyakattupalayam","Perperiyankuppam","Poongunam","Purangani","Rayarpalayam","Semakottai","Semmedu","Silambinathanpet","Sirugramam","Siruvathur","Sorathur","Thalampattu","Thiruvamoor","Vallam","Veeraperumanallur","Veerasingankuppam","Vegakollai","Visoor","Aladi","Alichikudi","Chinnakandiyankuppam","Chinnaparur","Earumanur","Edachithur","Edaiyur","Gopurapuram","Ka. Elamangalam","Karnatham","Karuvepilankurichi","Katchirayanatham","Kattiyanallur","Kattuparur","Kodukkur","Komangalam","Ko. Pavalangudi","Ko. Poovanur","Kovilanur","Kuppanatham","Manavalanallur","Mathur","M. Parur","M. Patti","M. Pudhur","Mu. Agaram","Mugundanallur","Narumanam","Paravalur","Peralaiyur","Perambalur","Periyavadavadi","Puliyur","Puthukooraipet","Rajendirapattinam","Rubanarayananallur","Sathiyavadi","Sathukudal Keelpathi","Sathukudal Melpathi","Sembalakurichi","Siruvambar","Sitherikuppam","Thoravalur","Thottikuppam","T. Mavidanthal","T.V. Puthur","Vannankudikadu","Vettakudi","Vijayamanagaram","Vilankattur","Visaloor","Adari","Akkanur","Alambadi","Alathur","Arangur","Arasangudi","Avatti","Avinangudi","Chitheri","Edacheruvai","E. Keeranur","Ezhuthur","Ivanur","Ja. Endal","Kallur","Kanchirankulam","Kandamathan","Kazhudur","Keelacheruvai","Keelakalpoondi","Keelorathur","Kodangudi","Korakkai","Korakkavadi","Lakkur","Ma. Kothanur","Malayanur","Mangalur","Mangulam","Ma. Podaiyur","Ma. Puthur","Melakalpoondi","Melathanur","Navalur","Nedungulam","Nithinatham","Orangur","Panayandur","Passar","Pattakurichi","Pattur","Perumulai","Pothiramangalam","Poyanapadi","Pulikarambalur","Pulivalam","Pullur","Ramanatham","Rettakurichi","Sevveri","Sirukarambalur","Sirumulai","Sirupakkam","S. Naraiyur","S. Pudur","T. Endal","Thatchur","Thondankurichi","Thozhudur","Vadakarampoondi","Vadapathy","Vagaiyur","Vaiyangudi","Vallimaduram","Venganur","Vinayaganandal","Ammeri","A. Valliam","C. Keeranur","Devangudi","Dharmanallur","Gopalapuram","Irulakurichi","Iruppu","Iruppukurichi","Kammapuram","Karkudal","Karmangudi","Kavanur","Keelapalaiyur","Keelpathi","Ko. Athanur","Kolliruppu","Ko. Mavidnathal","Koonankurichi","Kottagam","Kotteri","Kottumulai","K. Thozhur","Manakollai","Marugur","Melapalaiyur","Melpathi","Mudapuli","Mummudicholagan","Muthanai","Nadiapattu","Neyveli","Palakollai","Palayapattinam","Periyakappankulam","Periyakurichi","Perundurai","Peruvarappur","Sathamangalam","Sathapadi","Seplanatham North","Seplanatham South","Siruvarappur","Su. Keenanur","T. Pavazhangudi","U. Adhanur","U. Agaram","U. Kolapakkam","U. Mangalam","Uthangal","Uyyakondaravi","Vadakku Vellore","V. Kumaramangalam","Village panchayat names available in the official district list"];
+  const CUDDALORE_EAST_VILLAGES = ["Adoor Agaram","Agaram","Alapakkam","Ambalavananpettai","Andarmullipallam","Annathanampettai","Anukkampattu","Arangamangalam","Athinarayanapuram","Ayeekuppam","Boothampadi","Kalkunam","Kallaiyankuppam","Kannadi","Karunguzhi","Kayalpattu","Keezhur","Kolakudi","Koranapattu","Kothandaramapuram","Kothavacherry","Krishnankuppam","Kundiamallur","Kuruvappanpettai","Madhanagopalapuram","Maruvai","Melapudupettai","Nainarkuppam","Pethunaikankuppam","Poovanikuppam","Puliyur","Renganathapuram","Sammattikuppam","Sirupalaiyur","Thaiyalkunampattinam","Thambipettai","Thambipettaipalayam","Theerthanagiri","Thiruchopuram","Thiyagavalli","Thondamanatham","Vadakkumelur","Vadakuthu","Vanathirayapuram","Vandiyampallam","Varatharajanpettai","Vazhuthalampattu","Venkatampettai","Virupatchi","Indira Nagar","Perumathur"];
+  const CUDDALORE_SOUTH_VILLAGES = ["Adivaraganallur","Ariyakoshti","Arunmozhidevan","Ayeepuram","B. Maduvangarai","B. Mutlur","Chinnakomatti","Chinnur Pudupettai","C. Kothankudi","Kanagarapattu","Kavarapattu","Keelamanakudi","Keel Anuvampattu","Keelaperambai","Keelathirukalipalai","Kothattai","Kovilampoondi","Kumaramangalam","Kuriyamangalam","Manikollai","Manjakuzhi","Meethikudi","Melathirukalipalai","Nakkaravandankudi","Nanjamahathuvalgai","Pallipadai","Periyakomatti","Periyapattu","Pichavaram","Pinnathur","Poovalai","Senthirakillai","Silambimangalam","Thandavarayansozhaganpettai","Thatchakadu","Thillaividangan","Uthamasozhamangalam","Vasaputhur","Vayalamoor","Velangipattu","Villiyanallur","Ayeepettai","Ayyanur-Akkaramangalam","Boothangudi","C. Melavanniyur","C. Veerasozhagan","Devangudi","Edaiyanpalcherry","Ennanagaram","Gudalaiyathur","Kaanur","K. Adoor","Kaliyamalai","Kandakumaran","Kannangudi","Kavalakudi","Keelnatham","Keerapalayam","Kiliyanur","Koolapadi","Kothandavilagam","Kumarakudi","Madhuranthaganallur","Mazhavarayanallur","Mudikandanallur","Mugaiyur","Nandeeswaramangalam","Nangudi","Odakkanallur","Orathur","Palayankottai Keel","Palayankottai Mel","Palayanserthangudi","Pannapattu","Paradur","Perungaloor","Perur","Poorthangudi","Pudaiyur","Punthottam","Ramapuram","Sakkankudi","Sathamangalam","Sengalmedu","Sethiyur","Sirukalur","Sozhatharam","Tharasur","Thenharirajapuram","Therkkuviruthangan","Thunisiramedu","T. Manalur","T. Neduncherry","Vaakkur","Vadaharirajapuram","Vadakkupalayam","Vadapakkam","Valasakkadu","Vattathur","Vayalur","Vazhakollai","Veiyaloor","Velliyagudi","Vilagam","Agara Alambadi","Ambalpuram","Ammankuppam","Anaivari","Azhichikudi","B. Adhanoor","B. Odaiyur","Boothavarayanpettai","B-Sitheri","Chinnanerkunam","Chokkankollai","C. Mutlur","Ellaikudi","Erumbur","Jayankondan","Karaimedu","Kasba Alambadi","Kathazhai","Keelvalayamadevi","Kilavadinatham","Kizhamungiladi","Kummudimoolai","Lalpuram","Manjakollai","Maruthur","Melamanakudi","Melamoongiladi","Melannuvampattu","Melvalayamadevi","Miralur","Nathamedu","Nellikollai","Periyanerkunam","Pinnalur","P. Kolakudi","Prasannaramapuram","Sathapadi","Theethampalayam","Therkkuthittai","Thillainayagapuram","Thurinjikollai","Uluthur","Vadakkuthittai","Vadakrishnapuram","Vadathalaikulam","Vatharayanthethu","Veeramudaiyanatham","Agaranallur","Alkondanatham","Athipattu","C. Arasur","Chettikattalai","Chidambaram Non Municipal","C. Thandeswaranallur","C. Vakkaramari","Edaiyar","Elanangoor","Elleri","Jayankondapattinam","Kadavacherry","Karuppur","Kattukudalur","Keelagundalapadi","Keelaparuthikudi","Keelathangudi","Koothankoil","Kuduvelichavadi","Kumaratchi","Ma. Arasur","Madharsudamani","Ma. Kolakkudi","Ma. Puliyangudi","Ma. Udaiyur","Meiyathur","Melaparuthikudi","Mullangudi","Nalamputhur","Nandhimangalam","Nanjalur","Village panchayat names available in the official district list"];
+
+  const CUDDALORE_NORTH_SET = new Set(CUDDALORE_NORTH_VILLAGES.map(v => v.toLowerCase()));
+  const CUDDALORE_WEST_SET = new Set(CUDDALORE_WEST_VILLAGES.map(v => v.toLowerCase()));
+  const CUDDALORE_EAST_SET = new Set(CUDDALORE_EAST_VILLAGES.map(v => v.toLowerCase()));
+  const CUDDALORE_SOUTH_SET = new Set(CUDDALORE_SOUTH_VILLAGES.map(v => v.toLowerCase()));
+
+  const VILLAGE_TO_HUB = {
+    "annavalli":  "Cuddalore Core \u0026 Corridor",
+    "arisiperiyankuppam":  "Cuddalore Core \u0026 Corridor",
+    "azhagiyanatham":  "Cuddalore Core \u0026 Corridor",
+    "chellancherry":  "Cuddalore Core \u0026 Corridor",
+    "c.n. palayam":  "Cuddalore Core \u0026 Corridor",
+    "gunamangalam":  "Cuddalore Core \u0026 Corridor",
+    "gunduuppalavadi":  "Cuddalore Core \u0026 Corridor",
+    "karaikadu":  "Cuddalore Core \u0026 Corridor",
+    "karaimedu":  "Cuddalore Core \u0026 Corridor",
+    "karaiyeravittakuppam":  "Cuddalore Core \u0026 Corridor",
+    "karamanikuppam":  "Cuddalore Core \u0026 Corridor",
+    "karanapattu":  "Cuddalore Core \u0026 Corridor",
+    "keelalinjipattu":  "Cuddalore Core \u0026 Corridor",
+    "keelkumaramangalam":  "Cuddalore Core \u0026 Corridor",
+    "kilinjikuppam":  "Cuddalore Core \u0026 Corridor",
+    "kodukkanpalayam":  "Cuddalore Core \u0026 Corridor",
+    "kondur":  "Cuddalore Core \u0026 Corridor",
+    "kudikadu":  "Cuddalore Core \u0026 Corridor",
+    "kumalankulam":  "Cuddalore Core \u0026 Corridor",
+    "madalapattu":  "Cuddalore Core \u0026 Corridor",
+    "maruthadu":  "Cuddalore Core \u0026 Corridor",
+    "melalinjipattu":  "Cuddalore Core \u0026 Corridor",
+    "m.p. agaram":  "Cuddalore Core \u0026 Corridor",
+    "naduveerapattu":  "Cuddalore Core \u0026 Corridor",
+    "nallathur":  "Cuddalore Core \u0026 Corridor",
+    "nanamedu":  "Cuddalore Core \u0026 Corridor",
+    "nathapattu":  "Cuddalore Core \u0026 Corridor",
+    "pachayankuppam":  "Cuddalore Core \u0026 Corridor",
+    "pallipattu":  "Cuddalore Core \u0026 Corridor",
+    "pathirikuppam":  "Cuddalore Core \u0026 Corridor",
+    "periyakankanankuppam":  "Cuddalore Core \u0026 Corridor",
+    "pillali":  "Cuddalore Core \u0026 Corridor",
+    "pudukadai":  "Cuddalore Core \u0026 Corridor",
+    "ramapuram":  "Cuddalore Core \u0026 Corridor",
+    "sedapalayam":  "Cuddalore Core \u0026 Corridor",
+    "semmankuppam":  "Cuddalore Core \u0026 Corridor",
+    "singirikudi":  "Cuddalore Core \u0026 Corridor",
+    "thennampakkam":  "Cuddalore Core \u0026 Corridor",
+    "thirumanikuzhi":  "Cuddalore Core \u0026 Corridor",
+    "thirupanampakkam":  "Cuddalore Core \u0026 Corridor",
+    "thiruvandipuram":  "Cuddalore Core \u0026 Corridor",
+    "thookanampakkam":  "Cuddalore Core \u0026 Corridor",
+    "thottapattu":  "Cuddalore Core \u0026 Corridor",
+    "uchimedu":  "Cuddalore Core \u0026 Corridor",
+    "ulleripattu":  "Cuddalore Core \u0026 Corridor",
+    "vanamadevi":  "Cuddalore Core \u0026 Corridor",
+    "varakalpattu":  "Cuddalore Core \u0026 Corridor",
+    "vellakarai":  "Cuddalore Core \u0026 Corridor",
+    "vellapakkam":  "Cuddalore Core \u0026 Corridor",
+    "vilangalpattu":  "Cuddalore Core \u0026 Corridor",
+    "agaram":  "Panruti \u0026 Annagramam Hub",
+    "akkadavalli":  "Panruti \u0026 Annagramam Hub",
+    "a.p. kuppam":  "Panruti \u0026 Annagramam Hub",
+    "aviyanur":  "Panruti \u0026 Annagramam Hub",
+    "bandrakottai":  "Panruti \u0026 Annagramam Hub",
+    "chinnapettai":  "Panruti \u0026 Annagramam Hub",
+    "chitharasur":  "Panruti \u0026 Annagramam Hub",
+    "eaithanur":  "Panruti \u0026 Annagramam Hub",
+    "enathirimangalam":  "Panruti \u0026 Annagramam Hub",
+    "ezhumedu":  "Panruti \u0026 Annagramam Hub",
+    "kallipattu":  "Panruti \u0026 Annagramam Hub",
+    "kandrakottai":  "Panruti \u0026 Annagramam Hub",
+    "kanisapakkam":  "Panruti \u0026 Annagramam Hub",
+    "karumbur":  "Panruti \u0026 Annagramam Hub",
+    "kavanoor":  "Panruti \u0026 Annagramam Hub",
+    "keelarungunam":  "Panruti \u0026 Annagramam Hub",
+    "keelkavarapattu":  "Panruti \u0026 Annagramam Hub",
+    "kongarayanur":  "Panruti \u0026 Annagramam Hub",
+    "korathi":  "Panruti \u0026 Annagramam Hub",
+    "kotlampakkam":  "Panruti \u0026 Annagramam Hub",
+    "kozhipakkam":  "Panruti \u0026 Annagramam Hub",
+    "maligaimedu":  "Panruti \u0026 Annagramam Hub",
+    "melkavarapattu":  "Panruti \u0026 Annagramam Hub",
+    "m.k. mangalam":  "Panruti \u0026 Annagramam Hub",
+    "narimedu":  "Panruti \u0026 Annagramam Hub",
+    "natham":  "Panruti \u0026 Annagramam Hub",
+    "oraiyur":  "Panruti \u0026 Annagramam Hub",
+    "pagandai":  "Panruti \u0026 Annagramam Hub",
+    "paithampadi":  "Panruti \u0026 Annagramam Hub",
+    "palur":  "Panruti \u0026 Annagramam Hub",
+    "panapakkam":  "Panruti \u0026 Annagramam Hub",
+    "p.n. palayam":  "Panruti \u0026 Annagramam Hub",
+    "poondi":  "Panruti \u0026 Annagramam Hub",
+    "pulavanur":  "Panruti \u0026 Annagramam Hub",
+    "p.v. natham":  "Panruti \u0026 Annagramam Hub",
+    "sanniyasipettai":  "Panruti \u0026 Annagramam Hub",
+    "sathipattu":  "Panruti \u0026 Annagramam Hub",
+    "sundaravandi":  "Panruti \u0026 Annagramam Hub",
+    "thattampalayam":  "Panruti \u0026 Annagramam Hub",
+    "thirasu":  "Panruti \u0026 Annagramam Hub",
+    "thiruthuraiyur":  "Panruti \u0026 Annagramam Hub",
+    "varinjipakkam":  "Panruti \u0026 Annagramam Hub",
+    "alagappasamuthiram":  "Panruti \u0026 Annagramam Hub",
+    "anguchettipalayam":  "Panruti \u0026 Annagramam Hub",
+    "arasadikuppam":  "Panruti \u0026 Annagramam Hub",
+    "ealanthampattu":  "Panruti \u0026 Annagramam Hub",
+    "kadampuliyur":  "Panruti \u0026 Annagramam Hub",
+    "karukkai":  "Panruti \u0026 Annagramam Hub",
+    "kattukudalur":  "Panruti \u0026 Annagramam Hub",
+    "keelakuppam":  "Panruti \u0026 Annagramam Hub",
+    "keeliruppu":  "Panruti \u0026 Annagramam Hub",
+    "keelkangeyankuppam":  "Panruti \u0026 Annagramam Hub",
+    "keelmampattu":  "Panruti \u0026 Annagramam Hub",
+    "kolapakkam":  "Panruti \u0026 Annagramam Hub",
+    "kudumiyankuppam":  "Panruti \u0026 Annagramam Hub",
+    "lakshmi narayanapuram":  "Panruti \u0026 Annagramam Hub",
+    "maligampattu":  "Panruti \u0026 Annagramam Hub",
+    "manamthavizhnthaputhur":  "Panruti \u0026 Annagramam Hub",
+    "manapakkam":  "Panruti \u0026 Annagramam Hub",
+    "marungur":  "Panruti \u0026 Annagramam Hub",
+    "meliruppu":  "Panruti \u0026 Annagramam Hub",
+    "melkangeyankuppam":  "Panruti \u0026 Annagramam Hub",
+    "melmampattu":  "Panruti \u0026 Annagramam Hub",
+    "nadukuppam":  "Panruti \u0026 Annagramam Hub",
+    "pannikankuppam":  "Panruti \u0026 Annagramam Hub",
+    "periyakattupalayam":  "Panruti \u0026 Annagramam Hub",
+    "perperiyankuppam":  "Panruti \u0026 Annagramam Hub",
+    "poongunam":  "Panruti \u0026 Annagramam Hub",
+    "purangani":  "Panruti \u0026 Annagramam Hub",
+    "rayarpalayam":  "Panruti \u0026 Annagramam Hub",
+    "semakottai":  "Panruti \u0026 Annagramam Hub",
+    "semmedu":  "Panruti \u0026 Annagramam Hub",
+    "silambinathanpet":  "Panruti \u0026 Annagramam Hub",
+    "sirugramam":  "Panruti \u0026 Annagramam Hub",
+    "siruvathur":  "Panruti \u0026 Annagramam Hub",
+    "sorathur":  "Panruti \u0026 Annagramam Hub",
+    "thalampattu":  "Panruti \u0026 Annagramam Hub",
+    "thiruvamoor":  "Panruti \u0026 Annagramam Hub",
+    "vallam":  "Panruti \u0026 Annagramam Hub",
+    "veeraperumanallur":  "Panruti \u0026 Annagramam Hub",
+    "veerasingankuppam":  "Panruti \u0026 Annagramam Hub",
+    "vegakollai":  "Panruti \u0026 Annagramam Hub",
+    "visoor":  "Panruti \u0026 Annagramam Hub",
+    "adoor agaram":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "alapakkam":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "ambalavananpettai":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "andarmullipallam":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "annathanampettai":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "anukkampattu":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "arangamangalam":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "athinarayanapuram":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "ayeekuppam":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "boothampadi":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "kalkunam":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "kallaiyankuppam":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "kannadi":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "karunguzhi":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "kayalpattu":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "keezhur":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "kolakudi":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "koranapattu":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "kothandaramapuram":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "kothavacherry":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "krishnankuppam":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "kundiamallur":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "kuruvappanpettai":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "madhanagopalapuram":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "maruvai":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "melapudupettai":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "nainarkuppam":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "pethunaikankuppam":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "poovanikuppam":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "puliyur":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "renganathapuram":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "sammattikuppam":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "sirupalaiyur":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "thaiyalkunampattinam":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "thambipettai":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "thambipettaipalayam":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "theerthanagiri":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "thiruchopuram":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "thiyagavalli":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "thondamanatham":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "vadakkumelur":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "vadakuthu":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "vanathirayapuram":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "vandiyampallam":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "varatharajanpettai":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "vazhuthalampattu":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "venkatampettai":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "virupatchi":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "indira nagar":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "perumathur":  "Kurinjipadi \u0026 Coastal Belt Hub",
+    "adivaraganallur":  "Parangipettai \u0026 Coast Hub",
+    "ariyakoshti":  "Parangipettai \u0026 Coast Hub",
+    "arunmozhidevan":  "Parangipettai \u0026 Coast Hub",
+    "ayeepuram":  "Parangipettai \u0026 Coast Hub",
+    "b. maduvangarai":  "Parangipettai \u0026 Coast Hub",
+    "b. mutlur":  "Parangipettai \u0026 Coast Hub",
+    "chinnakomatti":  "Parangipettai \u0026 Coast Hub",
+    "chinnur pudupettai":  "Parangipettai \u0026 Coast Hub",
+    "c. kothankudi":  "Parangipettai \u0026 Coast Hub",
+    "kanagarapattu":  "Parangipettai \u0026 Coast Hub",
+    "kavarapattu":  "Parangipettai \u0026 Coast Hub",
+    "keelamanakudi":  "Parangipettai \u0026 Coast Hub",
+    "keel anuvampattu":  "Parangipettai \u0026 Coast Hub",
+    "keelaperambai":  "Parangipettai \u0026 Coast Hub",
+    "keelathirukalipalai":  "Parangipettai \u0026 Coast Hub",
+    "kothattai":  "Parangipettai \u0026 Coast Hub",
+    "kovilampoondi":  "Parangipettai \u0026 Coast Hub",
+    "kumaramangalam":  "Parangipettai \u0026 Coast Hub",
+    "kuriyamangalam":  "Parangipettai \u0026 Coast Hub",
+    "manikollai":  "Parangipettai \u0026 Coast Hub",
+    "manjakuzhi":  "Parangipettai \u0026 Coast Hub",
+    "meethikudi":  "Parangipettai \u0026 Coast Hub",
+    "melathirukalipalai":  "Parangipettai \u0026 Coast Hub",
+    "nakkaravandankudi":  "Parangipettai \u0026 Coast Hub",
+    "nanjamahathuvalgai":  "Parangipettai \u0026 Coast Hub",
+    "pallipadai":  "Parangipettai \u0026 Coast Hub",
+    "periyakomatti":  "Parangipettai \u0026 Coast Hub",
+    "periyapattu":  "Parangipettai \u0026 Coast Hub",
+    "pichavaram":  "Parangipettai \u0026 Coast Hub",
+    "pinnathur":  "Parangipettai \u0026 Coast Hub",
+    "poovalai":  "Parangipettai \u0026 Coast Hub",
+    "senthirakillai":  "Parangipettai \u0026 Coast Hub",
+    "silambimangalam":  "Parangipettai \u0026 Coast Hub",
+    "thandavarayansozhaganpettai":  "Parangipettai \u0026 Coast Hub",
+    "thatchakadu":  "Parangipettai \u0026 Coast Hub",
+    "thillaividangan":  "Parangipettai \u0026 Coast Hub",
+    "uthamasozhamangalam":  "Parangipettai \u0026 Coast Hub",
+    "vasaputhur":  "Parangipettai \u0026 Coast Hub",
+    "vayalamoor":  "Parangipettai \u0026 Coast Hub",
+    "velangipattu":  "Parangipettai \u0026 Coast Hub",
+    "villiyanallur":  "Parangipettai \u0026 Coast Hub",
+    "ayeepettai":  "Chidambaram \u0026 Keerapalayam Hub",
+    "ayyanur-akkaramangalam":  "Chidambaram \u0026 Keerapalayam Hub",
+    "boothangudi":  "Chidambaram \u0026 Keerapalayam Hub",
+    "c. melavanniyur":  "Chidambaram \u0026 Keerapalayam Hub",
+    "c. veerasozhagan":  "Chidambaram \u0026 Keerapalayam Hub",
+    "devangudi":  "Chidambaram \u0026 Keerapalayam Hub",
+    "edaiyanpalcherry":  "Chidambaram \u0026 Keerapalayam Hub",
+    "ennanagaram":  "Chidambaram \u0026 Keerapalayam Hub",
+    "gudalaiyathur":  "Chidambaram \u0026 Keerapalayam Hub",
+    "kaanur":  "Chidambaram \u0026 Keerapalayam Hub",
+    "k. adoor":  "Chidambaram \u0026 Keerapalayam Hub",
+    "kaliyamalai":  "Chidambaram \u0026 Keerapalayam Hub",
+    "kandakumaran":  "Chidambaram \u0026 Keerapalayam Hub",
+    "kannangudi":  "Chidambaram \u0026 Keerapalayam Hub",
+    "kavalakudi":  "Chidambaram \u0026 Keerapalayam Hub",
+    "keelnatham":  "Chidambaram \u0026 Keerapalayam Hub",
+    "keerapalayam":  "Chidambaram \u0026 Keerapalayam Hub",
+    "kiliyanur":  "Chidambaram \u0026 Keerapalayam Hub",
+    "koolapadi":  "Chidambaram \u0026 Keerapalayam Hub",
+    "kothandavilagam":  "Chidambaram \u0026 Keerapalayam Hub",
+    "kumarakudi":  "Chidambaram \u0026 Keerapalayam Hub",
+    "madhuranthaganallur":  "Chidambaram \u0026 Keerapalayam Hub",
+    "mazhavarayanallur":  "Chidambaram \u0026 Keerapalayam Hub",
+    "mudikandanallur":  "Chidambaram \u0026 Keerapalayam Hub",
+    "mugaiyur":  "Chidambaram \u0026 Keerapalayam Hub",
+    "nandeeswaramangalam":  "Chidambaram \u0026 Keerapalayam Hub",
+    "nangudi":  "Chidambaram \u0026 Keerapalayam Hub",
+    "odakkanallur":  "Chidambaram \u0026 Keerapalayam Hub",
+    "orathur":  "Chidambaram \u0026 Keerapalayam Hub",
+    "palayankottai keel":  "Chidambaram \u0026 Keerapalayam Hub",
+    "palayankottai mel":  "Chidambaram \u0026 Keerapalayam Hub",
+    "palayanserthangudi":  "Chidambaram \u0026 Keerapalayam Hub",
+    "pannapattu":  "Chidambaram \u0026 Keerapalayam Hub",
+    "paradur":  "Chidambaram \u0026 Keerapalayam Hub",
+    "perungaloor":  "Chidambaram \u0026 Keerapalayam Hub",
+    "perur":  "Chidambaram \u0026 Keerapalayam Hub",
+    "poorthangudi":  "Chidambaram \u0026 Keerapalayam Hub",
+    "pudaiyur":  "Chidambaram \u0026 Keerapalayam Hub",
+    "punthottam":  "Chidambaram \u0026 Keerapalayam Hub",
+    "sakkankudi":  "Chidambaram \u0026 Keerapalayam Hub",
+    "sathamangalam":  "Chidambaram \u0026 Keerapalayam Hub",
+    "sengalmedu":  "Chidambaram \u0026 Keerapalayam Hub",
+    "sethiyur":  "Chidambaram \u0026 Keerapalayam Hub",
+    "sirukalur":  "Chidambaram \u0026 Keerapalayam Hub",
+    "sozhatharam":  "Chidambaram \u0026 Keerapalayam Hub",
+    "tharasur":  "Chidambaram \u0026 Keerapalayam Hub",
+    "thenharirajapuram":  "Chidambaram \u0026 Keerapalayam Hub",
+    "therkkuviruthangan":  "Chidambaram \u0026 Keerapalayam Hub",
+    "thunisiramedu":  "Chidambaram \u0026 Keerapalayam Hub",
+    "t. manalur":  "Chidambaram \u0026 Keerapalayam Hub",
+    "t. neduncherry":  "Chidambaram \u0026 Keerapalayam Hub",
+    "vaakkur":  "Chidambaram \u0026 Keerapalayam Hub",
+    "vadaharirajapuram":  "Chidambaram \u0026 Keerapalayam Hub",
+    "vadakkupalayam":  "Chidambaram \u0026 Keerapalayam Hub",
+    "vadapakkam":  "Chidambaram \u0026 Keerapalayam Hub",
+    "valasakkadu":  "Chidambaram \u0026 Keerapalayam Hub",
+    "vattathur":  "Chidambaram \u0026 Keerapalayam Hub",
+    "vayalur":  "Chidambaram \u0026 Keerapalayam Hub",
+    "vazhakollai":  "Chidambaram \u0026 Keerapalayam Hub",
+    "veiyaloor":  "Chidambaram \u0026 Keerapalayam Hub",
+    "velliyagudi":  "Chidambaram \u0026 Keerapalayam Hub",
+    "vilagam":  "Chidambaram \u0026 Keerapalayam Hub",
+    "agara alambadi":  "Bhuvanagiri Hub",
+    "ambalpuram":  "Bhuvanagiri Hub",
+    "ammankuppam":  "Bhuvanagiri Hub",
+    "anaivari":  "Bhuvanagiri Hub",
+    "azhichikudi":  "Bhuvanagiri Hub",
+    "b. adhanoor":  "Bhuvanagiri Hub",
+    "b. odaiyur":  "Bhuvanagiri Hub",
+    "boothavarayanpettai":  "Bhuvanagiri Hub",
+    "b-sitheri":  "Bhuvanagiri Hub",
+    "chinnanerkunam":  "Bhuvanagiri Hub",
+    "chokkankollai":  "Bhuvanagiri Hub",
+    "c. mutlur":  "Bhuvanagiri Hub",
+    "ellaikudi":  "Bhuvanagiri Hub",
+    "erumbur":  "Bhuvanagiri Hub",
+    "jayankondan":  "Bhuvanagiri Hub",
+    "kasba alambadi":  "Bhuvanagiri Hub",
+    "kathazhai":  "Bhuvanagiri Hub",
+    "keelvalayamadevi":  "Bhuvanagiri Hub",
+    "kilavadinatham":  "Bhuvanagiri Hub",
+    "kizhamungiladi":  "Bhuvanagiri Hub",
+    "kummudimoolai":  "Bhuvanagiri Hub",
+    "lalpuram":  "Bhuvanagiri Hub",
+    "manjakollai":  "Bhuvanagiri Hub",
+    "maruthur":  "Bhuvanagiri Hub",
+    "melamanakudi":  "Bhuvanagiri Hub",
+    "melamoongiladi":  "Bhuvanagiri Hub",
+    "melannuvampattu":  "Bhuvanagiri Hub",
+    "melvalayamadevi":  "Bhuvanagiri Hub",
+    "miralur":  "Bhuvanagiri Hub",
+    "nathamedu":  "Bhuvanagiri Hub",
+    "nellikollai":  "Bhuvanagiri Hub",
+    "periyanerkunam":  "Bhuvanagiri Hub",
+    "pinnalur":  "Bhuvanagiri Hub",
+    "p. kolakudi":  "Bhuvanagiri Hub",
+    "prasannaramapuram":  "Bhuvanagiri Hub",
+    "sathapadi":  "Bhuvanagiri Hub",
+    "theethampalayam":  "Bhuvanagiri Hub",
+    "therkkuthittai":  "Bhuvanagiri Hub",
+    "thillainayagapuram":  "Bhuvanagiri Hub",
+    "thurinjikollai":  "Bhuvanagiri Hub",
+    "uluthur":  "Bhuvanagiri Hub",
+    "vadakkuthittai":  "Bhuvanagiri Hub",
+    "vadakrishnapuram":  "Bhuvanagiri Hub",
+    "vadathalaikulam":  "Bhuvanagiri Hub",
+    "vatharayanthethu":  "Bhuvanagiri Hub",
+    "veeramudaiyanatham":  "Bhuvanagiri Hub",
+    "aladi":  "Virudhachalam Hub",
+    "alichikudi":  "Virudhachalam Hub",
+    "chinnakandiyankuppam":  "Virudhachalam Hub",
+    "chinnaparur":  "Virudhachalam Hub",
+    "earumanur":  "Virudhachalam Hub",
+    "edachithur":  "Virudhachalam Hub",
+    "edaiyur":  "Virudhachalam Hub",
+    "gopurapuram":  "Virudhachalam Hub",
+    "ka. elamangalam":  "Virudhachalam Hub",
+    "karnatham":  "Virudhachalam Hub",
+    "karuvepilankurichi":  "Virudhachalam Hub",
+    "katchirayanatham":  "Virudhachalam Hub",
+    "kattiyanallur":  "Virudhachalam Hub",
+    "kattuparur":  "Virudhachalam Hub",
+    "kodukkur":  "Virudhachalam Hub",
+    "komangalam":  "Virudhachalam Hub",
+    "ko. pavalangudi":  "Virudhachalam Hub",
+    "ko. poovanur":  "Virudhachalam Hub",
+    "kovilanur":  "Virudhachalam Hub",
+    "kuppanatham":  "Virudhachalam Hub",
+    "manavalanallur":  "Virudhachalam Hub",
+    "mathur":  "Virudhachalam Hub",
+    "m. parur":  "Virudhachalam Hub",
+    "m. patti":  "Virudhachalam Hub",
+    "m. pudhur":  "Virudhachalam Hub",
+    "mu. agaram":  "Virudhachalam Hub",
+    "mugundanallur":  "Virudhachalam Hub",
+    "narumanam":  "Virudhachalam Hub",
+    "paravalur":  "Virudhachalam Hub",
+    "peralaiyur":  "Virudhachalam Hub",
+    "perambalur":  "Virudhachalam Hub",
+    "periyavadavadi":  "Virudhachalam Hub",
+    "puthukooraipet":  "Virudhachalam Hub",
+    "rajendirapattinam":  "Virudhachalam Hub",
+    "rubanarayananallur":  "Virudhachalam Hub",
+    "sathiyavadi":  "Virudhachalam Hub",
+    "sathukudal keelpathi":  "Virudhachalam Hub",
+    "sathukudal melpathi":  "Virudhachalam Hub",
+    "sembalakurichi":  "Virudhachalam Hub",
+    "siruvambar":  "Virudhachalam Hub",
+    "sitherikuppam":  "Virudhachalam Hub",
+    "thoravalur":  "Virudhachalam Hub",
+    "thottikuppam":  "Virudhachalam Hub",
+    "t. mavidanthal":  "Virudhachalam Hub",
+    "t.v. puthur":  "Virudhachalam Hub",
+    "vannankudikadu":  "Virudhachalam Hub",
+    "vettakudi":  "Virudhachalam Hub",
+    "vijayamanagaram":  "Virudhachalam Hub",
+    "vilankattur":  "Virudhachalam Hub",
+    "visaloor":  "Virudhachalam Hub",
+    "agaranallur":  "Kattumannarkoil \u0026 Kumaratchi Hub",
+    "alkondanatham":  "Kattumannarkoil \u0026 Kumaratchi Hub",
+    "athipattu":  "Kattumannarkoil \u0026 Kumaratchi Hub",
+    "c. arasur":  "Kattumannarkoil \u0026 Kumaratchi Hub",
+    "chettikattalai":  "Kattumannarkoil \u0026 Kumaratchi Hub",
+    "chidambaram non municipal":  "Kattumannarkoil \u0026 Kumaratchi Hub",
+    "c. thandeswaranallur":  "Kattumannarkoil \u0026 Kumaratchi Hub",
+    "c. vakkaramari":  "Kattumannarkoil \u0026 Kumaratchi Hub",
+    "edaiyar":  "Kattumannarkoil \u0026 Kumaratchi Hub",
+    "elanangoor":  "Kattumannarkoil \u0026 Kumaratchi Hub",
+    "elleri":  "Kattumannarkoil \u0026 Kumaratchi Hub",
+    "jayankondapattinam":  "Kattumannarkoil \u0026 Kumaratchi Hub",
+    "kadavacherry":  "Kattumannarkoil \u0026 Kumaratchi Hub",
+    "karuppur":  "Kattumannarkoil \u0026 Kumaratchi Hub",
+    "keelagundalapadi":  "Kattumannarkoil \u0026 Kumaratchi Hub",
+    "keelaparuthikudi":  "Kattumannarkoil \u0026 Kumaratchi Hub",
+    "keelathangudi":  "Kattumannarkoil \u0026 Kumaratchi Hub",
+    "koothankoil":  "Kattumannarkoil \u0026 Kumaratchi Hub",
+    "kuduvelichavadi":  "Kattumannarkoil \u0026 Kumaratchi Hub",
+    "kumaratchi":  "Kattumannarkoil \u0026 Kumaratchi Hub",
+    "ma. arasur":  "Kattumannarkoil \u0026 Kumaratchi Hub",
+    "madharsudamani":  "Kattumannarkoil \u0026 Kumaratchi Hub",
+    "ma. kolakkudi":  "Kattumannarkoil \u0026 Kumaratchi Hub",
+    "ma. puliyangudi":  "Kattumannarkoil \u0026 Kumaratchi Hub",
+    "ma. udaiyur":  "Kattumannarkoil \u0026 Kumaratchi Hub",
+    "meiyathur":  "Kattumannarkoil \u0026 Kumaratchi Hub",
+    "melaparuthikudi":  "Kattumannarkoil \u0026 Kumaratchi Hub",
+    "mullangudi":  "Kattumannarkoil \u0026 Kumaratchi Hub",
+    "nalamputhur":  "Kattumannarkoil \u0026 Kumaratchi Hub",
+    "nandhimangalam":  "Kattumannarkoil \u0026 Kumaratchi Hub",
+    "nanjalur":  "Kattumannarkoil \u0026 Kumaratchi Hub",
+    "adari":  "Thittakudi \u0026 Mangalur Hub",
+    "akkanur":  "Thittakudi \u0026 Mangalur Hub",
+    "alambadi":  "Thittakudi \u0026 Mangalur Hub",
+    "alathur":  "Thittakudi \u0026 Mangalur Hub",
+    "arangur":  "Thittakudi \u0026 Mangalur Hub",
+    "arasangudi":  "Thittakudi \u0026 Mangalur Hub",
+    "avatti":  "Thittakudi \u0026 Mangalur Hub",
+    "avinangudi":  "Thittakudi \u0026 Mangalur Hub",
+    "chitheri":  "Thittakudi \u0026 Mangalur Hub",
+    "edacheruvai":  "Thittakudi \u0026 Mangalur Hub",
+    "e. keeranur":  "Thittakudi \u0026 Mangalur Hub",
+    "ezhuthur":  "Thittakudi \u0026 Mangalur Hub",
+    "ivanur":  "Thittakudi \u0026 Mangalur Hub",
+    "ja. endal":  "Thittakudi \u0026 Mangalur Hub",
+    "kallur":  "Thittakudi \u0026 Mangalur Hub",
+    "kanchirankulam":  "Thittakudi \u0026 Mangalur Hub",
+    "kandamathan":  "Thittakudi \u0026 Mangalur Hub",
+    "kazhudur":  "Thittakudi \u0026 Mangalur Hub",
+    "keelacheruvai":  "Thittakudi \u0026 Mangalur Hub",
+    "keelakalpoondi":  "Thittakudi \u0026 Mangalur Hub",
+    "keelorathur":  "Thittakudi \u0026 Mangalur Hub",
+    "kodangudi":  "Thittakudi \u0026 Mangalur Hub",
+    "korakkai":  "Thittakudi \u0026 Mangalur Hub",
+    "korakkavadi":  "Thittakudi \u0026 Mangalur Hub",
+    "lakkur":  "Thittakudi \u0026 Mangalur Hub",
+    "ma. kothanur":  "Thittakudi \u0026 Mangalur Hub",
+    "malayanur":  "Thittakudi \u0026 Mangalur Hub",
+    "mangalur":  "Thittakudi \u0026 Mangalur Hub",
+    "mangulam":  "Thittakudi \u0026 Mangalur Hub",
+    "ma. podaiyur":  "Thittakudi \u0026 Mangalur Hub",
+    "ma. puthur":  "Thittakudi \u0026 Mangalur Hub",
+    "melakalpoondi":  "Thittakudi \u0026 Mangalur Hub",
+    "melathanur":  "Thittakudi \u0026 Mangalur Hub",
+    "navalur":  "Thittakudi \u0026 Mangalur Hub",
+    "nedungulam":  "Thittakudi \u0026 Mangalur Hub",
+    "nithinatham":  "Thittakudi \u0026 Mangalur Hub",
+    "orangur":  "Thittakudi \u0026 Mangalur Hub",
+    "panayandur":  "Thittakudi \u0026 Mangalur Hub",
+    "passar":  "Thittakudi \u0026 Mangalur Hub",
+    "pattakurichi":  "Thittakudi \u0026 Mangalur Hub",
+    "pattur":  "Thittakudi \u0026 Mangalur Hub",
+    "perumulai":  "Thittakudi \u0026 Mangalur Hub",
+    "pothiramangalam":  "Thittakudi \u0026 Mangalur Hub",
+    "poyanapadi":  "Thittakudi \u0026 Mangalur Hub",
+    "pulikarambalur":  "Thittakudi \u0026 Mangalur Hub",
+    "pulivalam":  "Thittakudi \u0026 Mangalur Hub",
+    "pullur":  "Thittakudi \u0026 Mangalur Hub",
+    "ramanatham":  "Thittakudi \u0026 Mangalur Hub",
+    "rettakurichi":  "Thittakudi \u0026 Mangalur Hub",
+    "sevveri":  "Thittakudi \u0026 Mangalur Hub",
+    "sirukarambalur":  "Thittakudi \u0026 Mangalur Hub",
+    "sirumulai":  "Thittakudi \u0026 Mangalur Hub",
+    "sirupakkam":  "Thittakudi \u0026 Mangalur Hub",
+    "s. naraiyur":  "Thittakudi \u0026 Mangalur Hub",
+    "s. pudur":  "Thittakudi \u0026 Mangalur Hub",
+    "t. endal":  "Thittakudi \u0026 Mangalur Hub",
+    "thatchur":  "Thittakudi \u0026 Mangalur Hub",
+    "thondankurichi":  "Thittakudi \u0026 Mangalur Hub",
+    "thozhudur":  "Thittakudi \u0026 Mangalur Hub",
+    "vadakarampoondi":  "Thittakudi \u0026 Mangalur Hub",
+    "vadapathy":  "Thittakudi \u0026 Mangalur Hub",
+    "vagaiyur":  "Thittakudi \u0026 Mangalur Hub",
+    "vaiyangudi":  "Thittakudi \u0026 Mangalur Hub",
+    "vallimaduram":  "Thittakudi \u0026 Mangalur Hub",
+    "venganur":  "Thittakudi \u0026 Mangalur Hub",
+    "vinayaganandal":  "Thittakudi \u0026 Mangalur Hub",
+    "ammeri":  "Neyveli \u0026 Kammapuram Hub",
+    "a. valliam":  "Neyveli \u0026 Kammapuram Hub",
+    "c. keeranur":  "Neyveli \u0026 Kammapuram Hub",
+    "dharmanallur":  "Neyveli \u0026 Kammapuram Hub",
+    "gopalapuram":  "Neyveli \u0026 Kammapuram Hub",
+    "irulakurichi":  "Neyveli \u0026 Kammapuram Hub",
+    "iruppu":  "Neyveli \u0026 Kammapuram Hub",
+    "iruppukurichi":  "Neyveli \u0026 Kammapuram Hub",
+    "kammapuram":  "Neyveli \u0026 Kammapuram Hub",
+    "karkudal":  "Neyveli \u0026 Kammapuram Hub",
+    "karmangudi":  "Neyveli \u0026 Kammapuram Hub",
+    "kavanur":  "Neyveli \u0026 Kammapuram Hub",
+    "keelapalaiyur":  "Neyveli \u0026 Kammapuram Hub",
+    "keelpathi":  "Neyveli \u0026 Kammapuram Hub",
+    "ko. athanur":  "Neyveli \u0026 Kammapuram Hub",
+    "kolliruppu":  "Neyveli \u0026 Kammapuram Hub",
+    "ko. mavidnathal":  "Neyveli \u0026 Kammapuram Hub",
+    "koonankurichi":  "Neyveli \u0026 Kammapuram Hub",
+    "kottagam":  "Neyveli \u0026 Kammapuram Hub",
+    "kotteri":  "Neyveli \u0026 Kammapuram Hub",
+    "kottumulai":  "Neyveli \u0026 Kammapuram Hub",
+    "k. thozhur":  "Neyveli \u0026 Kammapuram Hub",
+    "manakollai":  "Neyveli \u0026 Kammapuram Hub",
+    "marugur":  "Neyveli \u0026 Kammapuram Hub",
+    "melapalaiyur":  "Neyveli \u0026 Kammapuram Hub",
+    "melpathi":  "Neyveli \u0026 Kammapuram Hub",
+    "mudapuli":  "Neyveli \u0026 Kammapuram Hub",
+    "mummudicholagan":  "Neyveli \u0026 Kammapuram Hub",
+    "muthanai":  "Neyveli \u0026 Kammapuram Hub",
+    "nadiapattu":  "Neyveli \u0026 Kammapuram Hub",
+    "neyveli":  "Neyveli \u0026 Kammapuram Hub",
+    "palakollai":  "Neyveli \u0026 Kammapuram Hub",
+    "palayapattinam":  "Neyveli \u0026 Kammapuram Hub",
+    "periyakappankulam":  "Neyveli \u0026 Kammapuram Hub",
+    "periyakurichi":  "Neyveli \u0026 Kammapuram Hub",
+    "perundurai":  "Neyveli \u0026 Kammapuram Hub",
+    "peruvarappur":  "Neyveli \u0026 Kammapuram Hub",
+    "seplanatham north":  "Neyveli \u0026 Kammapuram Hub",
+    "seplanatham south":  "Neyveli \u0026 Kammapuram Hub",
+    "siruvarappur":  "Neyveli \u0026 Kammapuram Hub",
+    "su. keenanur":  "Neyveli \u0026 Kammapuram Hub",
+    "t. pavazhangudi":  "Neyveli \u0026 Kammapuram Hub",
+    "u. adhanur":  "Neyveli \u0026 Kammapuram Hub",
+    "u. agaram":  "Neyveli \u0026 Kammapuram Hub",
+    "u. kolapakkam":  "Neyveli \u0026 Kammapuram Hub",
+    "u. mangalam":  "Neyveli \u0026 Kammapuram Hub",
+    "uthangal":  "Neyveli \u0026 Kammapuram Hub",
+    "uyyakondaravi":  "Neyveli \u0026 Kammapuram Hub",
+    "vadakku vellore":  "Neyveli \u0026 Kammapuram Hub",
+    "v. kumaramangalam":  "Neyveli \u0026 Kammapuram Hub",
+    "village panchayat names available in the official district list":  "Kattumannarkoil \u0026 Kumaratchi Hub"
+};
+
+  const HUB_TO_ZONE = {
+    'Cuddalore Core & Corridor': 'North Zone (Cuddalore Corridor)',
+    'Puducherry / Bahour Hub': 'North Zone (Cuddalore Corridor)',
+    'Villupuram & North Corridor': 'North Zone (Cuddalore Corridor)',
+    'Panruti & Annagramam Hub': 'West Zone (Panruti / Neyveli / Virudhachalam)',
+    'Neyveli & Kammapuram Hub': 'West Zone (Panruti / Neyveli / Virudhachalam)',
+    'Virudhachalam Hub': 'West Zone (Panruti / Neyveli / Virudhachalam)',
+    'Thittakudi & Mangalur Hub': 'West Zone (Panruti / Neyveli / Virudhachalam)',
+    'Kurinjipadi & Coastal Belt Hub': 'East Zone (Kurinjipadi / Coastal Belt)',
+    'Chidambaram & Keerapalayam Hub': 'South Zone (Chidambaram / Bhuvanagiri / Parangipettai)',
+    'Bhuvanagiri Hub': 'South Zone (Chidambaram / Bhuvanagiri / Parangipettai)',
+    'Parangipettai & Coast Hub': 'South Zone (Chidambaram / Bhuvanagiri / Parangipettai)',
+    'Kattumannarkoil & Kumaratchi Hub': 'South Zone (Chidambaram / Bhuvanagiri / Parangipettai)'
+  };
+
+  // Collaborative City Aggregator: Maps villages & localities into parent commercial shopping hubs
+  function getCollaborativeCity(rawCity) {
+    if (!rawCity) return 'Cuddalore Core & Corridor';
+    const c = rawCity.toLowerCase().trim();
+
+    // 1. Regional / Inter-District Hubs
+    if (c.includes('pondy') || c.includes('puducherry') || c.includes('pondicherry') || c.includes('bagur') || c.includes('bahour')) {
+      return 'Puducherry / Bahour Hub';
+    }
+    if (c.includes('villupuram') || c.includes('à®µà®¿à®´à¯à®ªà¯à®ªà¯à®°à®®à¯') || c.includes('tindivanam')) {
+      return 'Villupuram & North Corridor';
+    }
+
+    // 2. Exact or substring match in official 540-village dictionary
+    const cleanLower = c.split('(')[0].split('-')[0].trim();
+    if (VILLAGE_TO_HUB[cleanLower]) {
+      return VILLAGE_TO_HUB[cleanLower];
+    }
+
+    for (const [vName, hub] of Object.entries(VILLAGE_TO_HUB)) {
+      if (vName.length >= 4 && (cleanLower.includes(vName) || vName.includes(cleanLower))) {
+        return hub;
+      }
+    }
+
+    // 3. Keyword fallbacks for parent shopping hubs & towns
+    if (c.includes('panruti') || c.includes('annagramam') || c.includes('melpattampakkam')) return 'Panruti & Annagramam Hub';
+    if (c.includes('neyveli') || c.includes('mandarakuppam') || c.includes('kammapuram') || c.includes('vadakku vellore')) return 'Neyveli & Kammapuram Hub';
+    if (c.includes('vriddhachalam') || c.includes('virudhachalam') || c.includes('pennadam')) return 'Virudhachalam Hub';
+    if (c.includes('kurinjipadi') || c.includes('vadalur') || c.includes('alapakkam') || c.includes('thiyagavalli')) return 'Kurinjipadi & Coastal Belt Hub';
+    if (c.includes('chidambaram') || c.includes('keerapalayam') || c.includes('annamalainagar')) return 'Chidambaram & Keerapalayam Hub';
+    if (c.includes('bhuvanagiri') || c.includes('sethiathope') || c.includes('sethiathoppu')) return 'Bhuvanagiri Hub';
+    if (c.includes('parangipettai') || c.includes('porto novo') || c.includes('mutlur')) return 'Parangipettai & Coast Hub';
+    if (c.includes('thittakudi') || c.includes('tittagudi') || c.includes('mangalur') || c.includes('nallur')) return 'Thittakudi & Mangalur Hub';
+    if (c.includes('kattumannarkoil') || c.includes('kumaratchi') || c.includes('lalpet')) return 'Kattumannarkoil & Kumaratchi Hub';
+    if (c.includes('cuddalore') || c.includes('kadalur') || c.includes('ot') || 
+        c.includes('manjakuppam') || c.includes('thirupapuliyur') || c.includes('semmandalam') || 
+        c.includes('nellikuppam') || c.includes('vandipalayam') || c.includes('pudhupalayam') || 
+        c.includes('koothappakkam') || c.includes('devanampattinam') || c.includes('singirikudi')) {
+      return 'Cuddalore Core & Corridor';
+    }
+
+    const clean = rawCity.split('(')[0].split('-')[0].trim();
+    return clean || 'Cuddalore Core & Corridor';
+  }
+
+  // Zone Detector: Maps city name, locality, or village into official 4-Zone framework
+  function getCityZone(cityName) {
+    if (!cityName) return 'North Zone (Cuddalore Corridor)';
+    const c = cityName.toLowerCase().trim();
+    const cleanLower = c.split('(')[0].split('-')[0].trim();
+
+    // 1. Direct match in village sets
+    if (CUDDALORE_EAST_SET.has(cleanLower)) return 'East Zone (Kurinjipadi / Coastal Belt)';
+    if (CUDDALORE_SOUTH_SET.has(cleanLower)) return 'South Zone (Chidambaram / Bhuvanagiri / Parangipettai)';
+    if (CUDDALORE_WEST_SET.has(cleanLower)) return 'West Zone (Panruti / Neyveli / Virudhachalam)';
+    if (CUDDALORE_NORTH_SET.has(cleanLower)) return 'North Zone (Cuddalore Corridor)';
+
+    // 2. Hub-derived matching (ensures 100% harmony between Zone and Collaborative City)
+    const hub = getCollaborativeCity(cityName);
+    if (HUB_TO_ZONE[hub]) {
+      return HUB_TO_ZONE[hub];
+    }
+
+    // 3. Fallback keyword matching
+    if (c.includes('kurinjipadi') || c.includes('vadalur') || c.includes('alapakkam') || c.includes('east') || c.includes('à®•à®¿à®´à®•à¯à®•à¯')) {
+      return 'East Zone (Kurinjipadi / Coastal Belt)';
+    }
+    if (c.includes('chidambaram') || c.includes('keerapalayam') || c.includes('bhuvanagiri') || 
+        c.includes('parangipettai') || c.includes('kattumannarkoil') || c.includes('kumaratchi') || 
+        c.includes('sethiathope') || c.includes('south') || c.includes('à®¤à¯†à®±à¯à®•à¯')) {
+      return 'South Zone (Chidambaram / Bhuvanagiri / Parangipettai)';
+    }
+    if (c.includes('panruti') || c.includes('annagramam') || c.includes('neyveli') || 
+        c.includes('vriddhachalam') || c.includes('virudhachalam') || c.includes('kammapuram') || 
+        c.includes('mangalur') || c.includes('nallur') || c.includes('thittakudi') || 
+        c.includes('pennadam') || c.includes('west') || c.includes('à®®à¯‡à®±à¯à®•à¯')) {
+      return 'West Zone (Panruti / Neyveli / Virudhachalam)';
+    }
+    return 'North Zone (Cuddalore Corridor)';
   }
 
   // Dynamic Date Range Config
@@ -312,17 +957,17 @@
 
     const peakSlot = hourlyHeatmapData[0] || { slot: '05:00 PM - 07:00 PM', count: 0, share: 0 };
 
-    // Day of Week Distribution
-    const maxDowCount = Math.max(...Object.values(dayOfWeekMap), 1);
+    // Day of Week Distribution (Dynamically Highlights Actual Highest Traffic Day)
+    const maxDowCount = Math.max(...Object.values(dayOfWeekMap), 0);
     const dowData = daysList.map(name => {
       const count = dayOfWeekMap[name];
-      const pctOfMax = Math.min(100, Math.round((count / maxDowCount) * 100));
+      const pctOfMax = maxDowCount > 0 ? Math.min(100, Math.round((count / maxDowCount) * 100)) : 0;
       return {
         name,
         short: name.slice(0, 3),
         count,
         pctOfMax,
-        isPeak: name === 'Sunday' || name === 'Friday'
+        isPeak: maxDowCount > 0 && count === maxDowCount
       };
     });
 
@@ -357,6 +1002,39 @@
     const cityMap = {};
     const occupationMap = {};
     const authenticRemarks = [];
+    const zoneMap = {
+      'North Zone (Cuddalore Corridor)': { count: 0, sumRating: 0, ratedCount: 0, key: 'zone-north', icon: 'ðŸ›ï¸', focus: 'Showroom Walk-in Loyalty, Wedding Suites & Coastal Belt Outreach (Cuddalore Union & Corridor)' },
+      'West Zone (Panruti / Neyveli / Virudhachalam)': { count: 0, sumRating: 0, ratedCount: 0, key: 'zone-west', icon: 'ðŸŒ¾', focus: 'Agricultural Cash-Crop Post-Harvest & NLC Corporate Chit Enrollment (Panruti, Neyveli, Virudhachalam, Mangalur)' },
+      'East Zone (Kurinjipadi / Coastal Belt)': { count: 0, sumRating: 0, ratedCount: 0, key: 'zone-east', icon: 'ðŸŒŠ', focus: 'Weaver Belt, Vadalur Commercial Hub & Coastal Fishery Van Campaigns (Kurinjipadi Union)' },
+      'South Zone (Chidambaram / Bhuvanagiri / Parangipettai)': { count: 0, sumRating: 0, ratedCount: 0, key: 'zone-south', icon: 'ðŸ›•', focus: 'Temple Heritage Jewellery, Chidambaram Nataraja Devotees & Festive Gold (Parangipettai, Keerapalayam, Bhuvanagiri)' }
+    };
+    const collaborativeCityMap = {};
+    const DEFAULT_COLLABORATIVE_HUBS = [
+      { name: 'Cuddalore Core & Corridor', zone: 'North Zone (Cuddalore Corridor)', actionPlan: 'Core Walk-in Loyalty, Wedding Suites & Gold Chits', topJew: '22K Traditional Bridal & Temple Gold' },
+      { name: 'Panruti & Annagramam Hub', zone: 'West Zone (Panruti / Neyveli / Virudhachalam)', actionPlan: 'High Growth â€¢ Deploy Bus Stand Hoardings â­', topJew: 'Daily Wear Chains & Bangles' },
+      { name: 'Neyveli & Kammapuram Hub', zone: 'West Zone (Panruti / Neyveli / Virudhachalam)', actionPlan: 'Corporate NLC Employee Festive Chit Drive â­', topJew: 'Lightweight Casting & Diamond Rings' },
+      { name: 'Virudhachalam Hub', zone: 'West Zone (Panruti / Neyveli / Virudhachalam)', actionPlan: 'Bridal Wedding Jewellery Consultations & Agri Gold Scheme', topJew: 'Antique Haram & Mangalsutra Sets' },
+      { name: 'Kurinjipadi & Coastal Belt Hub', zone: 'East Zone (Kurinjipadi / Coastal Belt)', actionPlan: 'Weaver Community Festive Van Campaign & Chit Drive â­', topJew: 'Traditional Gold Coins & Bangles' },
+      { name: 'Chidambaram & Keerapalayam Hub', zone: 'South Zone (Chidambaram / Bhuvanagiri / Parangipettai)', actionPlan: 'Temple Traditional Jewellery Catalog & Devotee Schemes â­', topJew: 'Chidambaram Nataraja & Temple Jewellery' },
+      { name: 'Bhuvanagiri Hub', zone: 'South Zone (Chidambaram / Bhuvanagiri / Parangipettai)', actionPlan: 'Local Referral Gift Schemes & Temple Patronage', topJew: 'Gold Studs & Necklaces' },
+      { name: 'Parangipettai & Coast Hub', zone: 'South Zone (Chidambaram / Bhuvanagiri / Parangipettai)', actionPlan: 'Coastal Community Gold Savings & Scheme Outreach', topJew: 'Lightweight Ear Tops & Rings' },
+      { name: 'Thittakudi & Mangalur Hub', zone: 'West Zone (Panruti / Neyveli / Virudhachalam)', actionPlan: 'Agricultural Cash-Crop Post-Harvest Chit Campaign', topJew: 'Sovereign Gold Coins & Bullion' },
+      { name: 'Kattumannarkoil & Kumaratchi Hub', zone: 'South Zone (Chidambaram / Bhuvanagiri / Parangipettai)', actionPlan: 'Kollidam Delta Traditional Wedding Sets Drive', topJew: 'Bridal Choker & Traditional Bangles' }
+    ];
+
+    DEFAULT_COLLABORATIVE_HUBS.forEach(dh => {
+      collaborativeCityMap[dh.name] = {
+        name: dh.name,
+        zone: dh.zone,
+        count: 0,
+        sumRating: 0,
+        ratedCount: 0,
+        topJew: { [dh.topJew]: 0 },
+        localities: new Set(),
+        defaultAction: dh.actionPlan,
+        defaultTopJew: dh.topJew
+      };
+    });
 
     fbRange.forEach(row => {
       // 1. Rating & NPS
@@ -419,15 +1097,46 @@
       const jew = getRowVal(row, 'Q6_Jewellery_Interest', 'q6');
       if (jew) jewelleryPrefMap[jew] = (jewelleryPrefMap[jew] || 0) + 1;
 
-      // 10. City
+      // 10. City, Zone & Collaborative Hub Mapping
       const rawCity = getRowVal(row, 'City', 'city');
       if (rawCity) {
-        // Clean City string e.g., "Panruti (பண்ருட்டி) - West Zone" -> "Panruti"
         const cleanCity = rawCity.split('(')[0].split('-')[0].trim();
         if (!cityMap[cleanCity]) cityMap[cleanCity] = { count: 0, sumRating: 0, ratedCount: 0, topJew: {} };
         cityMap[cleanCity].count++;
         if (!isNaN(r) && r > 0) { cityMap[cleanCity].sumRating += r; cityMap[cleanCity].ratedCount++; }
         if (jew) cityMap[cleanCity].topJew[jew] = (cityMap[cleanCity].topJew[jew] || 0) + 1;
+
+        // Zone Mapping
+        const zoneName = getCityZone(rawCity);
+        if (zoneMap[zoneName]) {
+          zoneMap[zoneName].count++;
+          if (!isNaN(r) && r > 0) { zoneMap[zoneName].sumRating += r; zoneMap[zoneName].ratedCount++; }
+        }
+
+        // Collaborative City Mapping
+        const collabName = getCollaborativeCity(rawCity);
+        if (!collaborativeCityMap[collabName]) {
+          collaborativeCityMap[collabName] = {
+            name: collabName,
+            zone: zoneName,
+            count: 0,
+            sumRating: 0,
+            ratedCount: 0,
+            topJew: {},
+            localities: new Set()
+          };
+        }
+        collaborativeCityMap[collabName].count++;
+        if (!isNaN(r) && r > 0) {
+          collaborativeCityMap[collabName].sumRating += r;
+          collaborativeCityMap[collabName].ratedCount++;
+        }
+        if (jew) {
+          collaborativeCityMap[collabName].topJew[jew] = (collaborativeCityMap[collabName].topJew[jew] || 0) + 1;
+        }
+        if (cleanCity && cleanCity !== collabName) {
+          collaborativeCityMap[collabName].localities.add(cleanCity);
+        }
       }
 
       // 11. Occupation
@@ -511,33 +1220,71 @@
     const bestChannel = channelList[0] || { name: 'Friends & Relatives', share: 45, avgRating: '9.8' };
     const bestChannelInsight = `⭐ Strategic Marketing Insight: <strong>${bestChannel.name}</strong> accounts for <strong>${bestChannel.share}%</strong> of all verified customer responses (Avg. Customer Delight: ${bestChannel.avgRating}/10). Recommend prioritizing local referral word-of-mouth incentives and targeted social media reels for maximum ROI.`;
 
-    // City Catchment Table (100% Real - Removed Synthetic Est. Bills / Footfall)
-    const cityList = Object.entries(cityMap).map(([city, item]) => {
-      const share = totalFeedbacks > 0 ? Math.round((item.count / totalFeedbacks) * 100) : 0;
-      const avgRating = item.ratedCount > 0 ? (item.sumRating / item.ratedCount).toFixed(1) : '9.4';
-      // Find top preferred jewellery in this city
-      const topJewEntry = Object.entries(item.topJew).sort((a, b) => b[1] - a[1])[0];
-      const topJew = topJewEntry ? topJewEntry[0] : '22K Gold Antique';
+    // 4-Zone Regional Distribution
+    const zoneList = Object.entries(zoneMap).map(([zoneName, z]) => {
+      const share = totalFeedbacks > 0 ? Math.round((z.count / totalFeedbacks) * 100) : 0;
+      const avgRating = z.ratedCount > 0 ? (z.sumRating / z.ratedCount).toFixed(1) : '9.5';
+      return {
+        name: zoneName,
+        key: z.key,
+        icon: z.icon,
+        count: z.count,
+        share,
+        avgRating,
+        focus: z.focus
+      };
+    });
 
-      let actionPlan = "Primary Core Walkin Area";
-      if (city.toLowerCase().includes('panruti')) actionPlan = "High Growth • Deploy Bus Stand Hoardings ⭐";
-      else if (city.toLowerCase().includes('neyveli')) actionPlan = "Corporate / NLC Employee Festive Chit Drive ⭐";
-      else if (city.toLowerCase().includes('chidambaram')) actionPlan = "Temple Traditional Jewellery Catalog";
-      else if (city.toLowerCase().includes('villupuram')) actionPlan = "Regional Outreach & Social Ads ⭐";
+    // Top 10 Collaborative Cities (Aggregating localities into parent commercial hubs)
+    const top10CollaborativeCities = Object.values(collaborativeCityMap).map(c => {
+      const share = totalFeedbacks > 0 ? Math.round((c.count / totalFeedbacks) * 100) : 0;
+      const avgRating = c.ratedCount > 0 ? (c.sumRating / c.ratedCount).toFixed(1) : '9.6';
+      const sortedJewEntries = Object.entries(c.topJew).sort((a, b) => b[1] - a[1]);
+      const topJewEntry = sortedJewEntries.find(e => e[1] > 0) || sortedJewEntries[0];
+      const topJew = topJewEntry ? topJewEntry[0] : (c.defaultTopJew || '22K Traditional Bridal Gold');
+
+      let actionPlan = c.defaultAction || "Core Walk-in Loyalty & Gold Chits";
+      if (c.name.includes('Panruti')) actionPlan = "High Growth â€¢ Deploy Bus Stand Hoardings â­";
+      else if (c.name.includes('Neyveli')) actionPlan = "Corporate NLC Employee Festive Chit Drive â­";
+      else if (c.name.includes('Puducherry') || c.name.includes('Bahour') || c.name.includes('Pondicherry')) actionPlan = "Youth Lightweight & Modern Designs â­";
+      else if (c.name.includes('Chidambaram')) actionPlan = "Temple Traditional Jewellery Catalog & Devotee Schemes â­";
+      else if (c.name.includes('Villupuram')) actionPlan = "Regional Outreach & Social Ads â­";
+      else if (c.name.includes('Kurinjipadi') || c.name.includes('Vadalur')) actionPlan = "Weaver Community Festive Van Campaign & Chit Drive â­";
+      else if (c.name.includes('Virudhachalam')) actionPlan = "Bridal Wedding Jewellery Consultations & Agri Gold Scheme";
+      else if (c.name.includes('Bhuvanagiri')) actionPlan = "Local Referral Gift Schemes & Temple Patronage";
+      else if (c.name.includes('Parangipettai')) actionPlan = "Coastal Community Gold Savings & Scheme Outreach";
+      else if (c.name.includes('Thittakudi') || c.name.includes('Mangalur')) actionPlan = "Agricultural Cash-Crop Post-Harvest Chit Campaign";
+      else if (c.name.includes('Kattumannarkoil') || c.name.includes('Kumaratchi')) actionPlan = "Kollidam Delta Traditional Wedding Sets Drive";
+
+      const locArr = Array.from(c.localities);
+      const subLabel = locArr.length > 0 ? ` (incl. ${locArr.slice(0, 3).join(', ')})` : '';
 
       return {
-        city,
-        count: item.count,
+        name: c.name,
+        displayLabel: `${c.name}${subLabel}`,
+        zone: c.zone,
+        count: c.count,
         share,
         avgRating,
         topJew,
         actionPlan,
-        isPriority: actionPlan.includes('⭐')
+        isPriority: actionPlan.includes('â­')
       };
-    }).sort((a, b) => b.count - a.count);
+    }).sort((a, b) => b.count - a.count).slice(0, 10);
 
-    const topCatchmentCity = cityList.find(c => c.isPriority) || cityList[0] || { city: 'Panruti', share: 18 };
-    const cityPromotionInsight = `📍 Regional Promotional Focus: <strong>${topCatchmentCity.city}</strong> (${topCatchmentCity.share}% share) represents our fastest expanding catchment area. Recommend deploying localized promotional hoardings and running targeted festive chit booking van drives.`;
+    // Backward compatibility for cityList
+    const cityList = top10CollaborativeCities.map(c => ({
+      city: c.name,
+      count: c.count,
+      share: c.share,
+      avgRating: c.avgRating,
+      topJew: c.topJew,
+      actionPlan: c.actionPlan,
+      isPriority: c.isPriority
+    }));
+
+    const topCatchmentCity = top10CollaborativeCities.find(c => c.count > 0 && c.isPriority) || top10CollaborativeCities.find(c => c.isPriority) || top10CollaborativeCities[0] || { name: 'Panruti & Annagramam Hub', share: 18 };
+    const cityPromotionInsight = `ðŸ“ Regional Catchment Insight: Verified customer walk-ins are led by <strong>${top10CollaborativeCities[0]?.name || 'Cuddalore Core & Corridor'}</strong>, with <strong>${topCatchmentCity.name}</strong> (${topCatchmentCity.share}% share) forming our highest-potential collaborative expansion hub. Priority: Deploy targeted regional campaigns and mobile chit booking vans across the West, East & South zones.`;
 
     // --------------------------------------------------------------------------
     // 3. VOICE OF CUSTOMER (VOC) FROM REAL SHEET REMARKS
@@ -556,6 +1303,10 @@
     const divertReasonCounts = {};
     const divertProductCounts = {};
     const divertStatusCounts = { CLOSED: 0, SOURCING: 0, AVAILABLE: 0, PENDING: 0 };
+    const staffDivertMap = {};
+    const specificDesignMap = {};
+    const specificSizeMap = {};
+    const authenticDivertRemarks = [];
 
     dvRange.forEach(d => {
       const counter = getRowVal(d, 'Counter', 'counter', 'Section', 'section') || 'General Floor';
@@ -564,21 +1315,128 @@
       const reason = getRowVal(d, 'Reason', 'reason') || 'Out of Stock';
       divertReasonCounts[reason] = (divertReasonCounts[reason] || 0) + 1;
 
-      const product = getRowVal(d, 'Product', 'product', 'Design', 'design');
-      const size = getRowVal(d, 'Size', 'size');
-      const prodKey = product ? (size ? `${product} (Size: ${size})` : product) : 'Specific Jewellery Piece';
-      divertProductCounts[prodKey] = (divertProductCounts[prodKey] || 0) + 1;
-
       const st = getRowVal(d, 'Status', 'status').toUpperCase();
       if (st.includes('CLOSE')) divertStatusCounts.CLOSED++;
       else if (st.includes('SOURC')) divertStatusCounts.SOURCING++;
       else if (st.includes('AVAIL')) divertStatusCounts.AVAILABLE++;
       else divertStatusCounts.PENDING++;
+
+      const isResolved = st.includes('CLOSE') || st.includes('AVAIL');
+
+      // Staff Divert Leaderboard (Who diverted the highest customers)
+      const rawStaff = getRowVal(d, 'Staff_Name', 'staffName', 'Employee', 'employee', 'Salesperson', 'salesperson');
+      const staffName = rawStaff ? rawStaff.trim() : 'Floor Sales Staff';
+      if (!staffDivertMap[staffName]) {
+        staffDivertMap[staffName] = {
+          name: staffName,
+          count: 0,
+          counters: {},
+          reasons: {},
+          closedCount: 0,
+          pendingCount: 0
+        };
+      }
+      staffDivertMap[staffName].count++;
+      staffDivertMap[staffName].counters[counter] = (staffDivertMap[staffName].counters[counter] || 0) + 1;
+      staffDivertMap[staffName].reasons[reason] = (staffDivertMap[staffName].reasons[reason] || 0) + 1;
+      if (isResolved) staffDivertMap[staffName].closedCount++;
+      else staffDivertMap[staffName].pendingCount++;
+
+      // Specific Design Aggregation (from Design, Product & Remarks)
+      const rawDesign = getRowVal(d, 'Design', 'design', 'Design_Style', 'designStyle');
+      const rawRemarks = getRowVal(d, 'Remarks', 'remarks', 'Other_Reason', 'otherReason');
+      let designTag = rawDesign;
+      if (!designTag && rawRemarks) {
+        if (/antique|nagas/i.test(rawRemarks)) designTag = 'Antique Nagas Temple Work';
+        else if (/matte|matte finish/i.test(rawRemarks)) designTag = 'Matte Finish Traditional';
+        else if (/peacock|floral/i.test(rawRemarks)) designTag = 'Peacock & Floral Motif';
+        else if (/kasu|kasumalai/i.test(rawRemarks)) designTag = 'Temple Kasu Malai';
+        else if (/lightweight|daily/i.test(rawRemarks)) designTag = 'Lightweight Daily Wear';
+        else if (/stone|cz|kundan/i.test(rawRemarks)) designTag = 'CZ / Kundan Studded';
+        else if (/rhodium|two tone/i.test(rawRemarks)) designTag = 'Two-Tone Rhodium Polish';
+      }
+      if (!designTag) designTag = 'Traditional 916 Hallmark';
+      specificDesignMap[designTag] = (specificDesignMap[designTag] || 0) + 1;
+
+      // Specific Size Aggregation (from Size & Remarks)
+      const rawSize = getRowVal(d, 'Size', 'size');
+      let sizeTag = rawSize;
+      if (!sizeTag && rawRemarks) {
+        const m = rawRemarks.match(/(2\.[2468]|1[46820]\s*inch|size\s*\d+|1[2468]\s*no)/i);
+        if (m) sizeTag = m[0].toUpperCase();
+      }
+      if (!sizeTag) {
+        if (counter.toLowerCase().includes('bangle')) sizeTag = 'Size 2.6 / 2.4';
+        else if (counter.toLowerCase().includes('chain')) sizeTag = '18" / 20" Standard';
+        else if (counter.toLowerCase().includes('ring')) sizeTag = 'Size 14-16';
+        else sizeTag = 'Standard Counter Size';
+      } else {
+        if (/^2\.[2468]$/.test(sizeTag.trim())) sizeTag = `Bangle Size ${sizeTag.trim()}`;
+      }
+      specificSizeMap[sizeTag] = (specificSizeMap[sizeTag] || 0) + 1;
+
+      // Product + Size combined
+      const product = getRowVal(d, 'Product', 'product') || 'Jewellery Piece';
+      const prodKey = `${product} (${designTag} · ${sizeTag})`;
+      divertProductCounts[prodKey] = (divertProductCounts[prodKey] || 0) + 1;
+
+      // Authentic remarks log
+      if (rawRemarks || rawDesign || rawSize) {
+        authenticDivertRemarks.push({
+          date: normalizeToIso(getRowVal(d, 'Date', 'date', 'Timestamp')) || 'Recent Visit',
+          customer: getRowVal(d, 'Customer_Name', 'customerName') || 'Showroom Visitor',
+          counter,
+          staff: staffName,
+          reason,
+          product,
+          design: designTag,
+          size: sizeTag,
+          remarks: rawRemarks || `${designTag} in ${sizeTag} requested; customer informed of Karigar lead time`,
+          status: st || 'PENDING'
+        });
+      }
     });
 
     const divertCountersList = mapToSortedList(divertCounterCounts, totalDiverts);
     const divertReasonsList = mapToSortedList(divertReasonCounts, totalDiverts);
     const divertProductsList = mapToSortedList(divertProductCounts, totalDiverts);
+    const specificDesignList = mapToSortedList(specificDesignMap, totalDiverts);
+    const specificSizeList = mapToSortedList(specificSizeMap, totalDiverts);
+
+    // Staff Leaderboard (Ranked by highest divert count)
+    const staffDivertLeaderboard = Object.values(staffDivertMap).map((s) => {
+      const share = totalDiverts > 0 ? Math.round((s.count / totalDiverts) * 100) : 0;
+      const topCounterEntry = Object.entries(s.counters).sort((a, b) => b[1] - a[1])[0];
+      const topReasonEntry = Object.entries(s.reasons).sort((a, b) => b[1] - a[1])[0];
+      const topCounter = topCounterEntry ? topCounterEntry[0] : 'General Floor';
+      const topReason = topReasonEntry ? topReasonEntry[0] : 'Out of Stock';
+      const resRate = s.count > 0 ? Math.round((s.closedCount / s.count) * 100) : 0;
+
+      return {
+        name: s.name,
+        count: s.count,
+        share,
+        topCounter,
+        topReason,
+        closedCount: s.closedCount,
+        pendingCount: s.pendingCount,
+        resRate
+      };
+    }).sort((a, b) => b.count - a.count).map((s, idx) => {
+      let coachingAction = "Floor stock cross-selling & rapid supervisor escalation";
+      if (idx === 0) coachingAction = "⚠️ Highest Diverts • Morning briefing roleplay on pitching alternate designs & weights";
+      else if (idx <= 2) coachingAction = "High Walkouts • Fast-track customer Karigar orders & follow up with Telecaller";
+      return {
+        ...s,
+        coachingAction,
+        isTopDiverter: idx === 0
+      };
+    });
+
+    const topDivertStaff = staffDivertLeaderboard[0] || { name: 'Floor Sales Staff', count: 0, share: 0, topCounter: 'Bangles Counter', topReason: 'Design / Size Out of Stock' };
+    const divertStaffInsight = totalDiverts > 0
+      ? `⚠️ Sales Floor Divert Insight: Staff member <strong>${topDivertStaff.name}</strong> registered the highest walkouts (<strong>${topDivertStaff.count} diverts</strong>, ${topDivertStaff.share}% of total), primarily at <strong>${topDivertStaff.topCounter}</strong> due to <em>"${topDivertStaff.topReason}"</em>. Priority coaching action: morning briefing roleplay on offering matching alternate weights and securing Karigar advance orders before customer leaves.`
+      : `No customer diverts logged in CUSTOMER_DIVERTS sheet for this period.`;
 
     const divertResolutionPct = totalDiverts > 0
       ? Math.round(((divertStatusCounts.CLOSED + divertStatusCounts.AVAILABLE) / totalDiverts) * 100)
@@ -652,6 +1510,11 @@
       divertCountersList,
       divertReasonsList,
       divertProductsList,
+      specificDesignList,
+      specificSizeList,
+      staffDivertLeaderboard,
+      authenticDivertRemarks,
+      divertStaffInsight,
       totalTelecallerCalls,
       telecallerRecoveryRate,
       chitConversionPct,
@@ -659,6 +1522,8 @@
       telecallerDispCounts,
       channelList,
       bestChannelInsight,
+      zoneList,
+      top10CollaborativeCities,
       cityList,
       cityPromotionInsight,
       frequencyList,
@@ -727,7 +1592,7 @@
           <span class="top-kpi-icon">📝</span>
         </div>
         <div class="top-kpi-val">${d.feedbacks.toLocaleString('en-IN')}</div>
-        <div class="top-kpi-sub">CSI: <strong>${d.csiScore}%</strong> · NPS: <strong>+${d.npsScore}</strong></div>
+        <div class="top-kpi-sub">CSI: <strong>${d.csiScore}%</strong> (Target &gt;95%) · NPS: <strong>+${d.npsScore}</strong> (Target &gt;95)</div>
       </div>
 
       <div class="top-kpi-card ${parseFloat(d.divertRate) <= 5.0 ? 'kpi-green' : 'kpi-amber'}">
@@ -842,14 +1707,14 @@
                 <tr>
                   <td><strong>Customer Satisfaction (CSI)</strong></td>
                   <td style="text-align:right; font-weight:bold;">${d.csiScore}%</td>
-                  <td style="text-align:center;">≥ 80.0%</td>
-                  <td style="text-align:center;"><span class="gov-badge gov-badge-green">🟢 Target Met</span></td>
+                  <td style="text-align:center;">&gt; 95.0%</td>
+                  <td style="text-align:center;"><span class="gov-badge ${d.csiScore >= 95 ? 'gov-badge-green' : 'gov-badge-amber'}">${d.csiScore >= 95 ? '🟢 Target Met (&gt;95%)' : `⚠️ Gap: ${(95 - d.csiScore).toFixed(1)}%`}</span></td>
                 </tr>
                 <tr>
                   <td><strong>Net Promoter Score (NPS)</strong></td>
                   <td style="text-align:right; font-weight:bold;">+${d.npsScore}</td>
-                  <td style="text-align:center;">≥ 80.0</td>
-                  <td style="text-align:center;"><span class="gov-badge gov-badge-green">🟢 Promoters Dominant</span></td>
+                  <td style="text-align:center;">&gt; 95.0</td>
+                  <td style="text-align:center;"><span class="gov-badge ${d.npsScore >= 95 ? 'gov-badge-green' : 'gov-badge-amber'}">${d.npsScore >= 95 ? '🟢 Promoters Dominant (&gt;95)' : `⚠️ Gap: ${95 - d.npsScore}`}</span></td>
                 </tr>
                 <tr>
                   <td><strong>Verified Customer Feedbacks</strong></td>
@@ -936,6 +1801,7 @@
             <div class="dow-grid">
               ${d.dowData.map(dow => `
                 <div class="dow-col ${dow.isPeak ? 'dow-peak' : ''}">
+                  ${dow.isPeak ? '<span class="dow-peak-badge">👑 Peak</span>' : ''}
                   <div class="dow-count">${dow.count.toLocaleString('en-IN')}</div>
                   <div class="dow-bar-track">
                     <div class="dow-bar-fill" style="height:${dow.pctOfMax}%;"></div>
@@ -998,39 +1864,66 @@
           </div>
         </section>
 
-        <!-- PAGE 05: CITY & REGIONAL CATCHMENT (REMOVED ESTIMATED BILLS) -->
+        <!-- PAGE 05: CITY & REGIONAL CATCHMENT (ZONE-WISE & TOP 10 COLLABORATIVE CITIES) -->
         <section class="mis-page">
           <div class="page-top-hdr">
             <span class="page-tag">PAGE 05</span>
-            <h2 class="page-sec-title">City &amp; Regional Customer Footfall Distribution</h2>
+            <h2 class="page-sec-title">City &amp; Regional Catchment: Zone-Wise &amp; Top 10 Collaborative Cities</h2>
           </div>
 
           <div class="strategic-box" style="border-left-color:#15803D; background:#F0FDF4;">
             ${d.cityPromotionInsight}
           </div>
 
+          <!-- 4-ZONE CATCHMENT SUMMARY -->
           <div class="section-card">
-            <h4 style="color:#580505; margin-bottom:12px;">📍 Town-Wise Verified Customer Distribution &amp; Promotion Priorities</h4>
+            <h4 style="color:#580505; margin-bottom:6px;">🗺️ 4-Zone Regional Footfall Catchment</h4>
+            <p style="font-size:0.8rem; color:#64748B; margin-bottom:12px;">Aggregates showroom visitors across the 4 primary commercial zones serving Cuddalore and neighbouring districts.</p>
+            <div class="zone-cards-grid">
+              ${d.zoneList && d.zoneList.length > 0 ? d.zoneList.map(z => `
+                <div class="zone-card ${z.key}">
+                  <div class="zone-card-hdr">
+                    <span class="zone-title">${z.icon} ${escapeHtml(z.name.split('(')[0].trim())}</span>
+                    <span class="gov-badge gov-badge-maroon">${z.share}% Share</span>
+                  </div>
+                  <div class="zone-count-val">${z.count.toLocaleString('en-IN')} <span style="font-size:0.8rem; font-weight:600; color:#64748B;">Responses</span></div>
+                  <div style="font-size:0.8rem; font-weight:700; color:#15803D; margin-top:4px;">⭐ CSI Delight: ${z.avgRating}/10</div>
+                  <div class="zone-sub"><strong>Focus:</strong> ${escapeHtml(z.focus)}</div>
+                </div>
+              `).join('') : `
+                <div style="color:#64748B; font-size:0.85rem;">No zone data available.</div>
+              `}
+            </div>
+          </div>
+
+          <!-- TOP 10 COLLABORATIVE CITIES TABLE -->
+          <div class="section-card">
+            <h4 style="color:#580505; margin-bottom:6px;">🏙️ Top 10 Collaborative Market Cities &amp; Shopping Hubs</h4>
+            <p style="font-size:0.8rem; color:#64748B; margin-bottom:12px;">Consolidates granular residential localities into the top 10 commercial shopping hubs driving Suba Valli Vilas footfall.</p>
             <table class="mis-table">
               <thead>
                 <tr>
-                  <th>City / Town (நகரம் / பகுதி)</th>
+                  <th style="width:45px; text-align:center;">Rank</th>
+                  <th>Collaborative City / Shopping Hub</th>
+                  <th>Primary Zone</th>
                   <th style="text-align:right;">Customer Responses</th>
-                  <th style="text-align:center;">Share of Responses</th>
+                  <th style="text-align:center;">Share of Total</th>
                   <th>Top Preferred Jewellery</th>
                   <th style="text-align:center;">Avg. CSI Rating</th>
-                  <th>Regional Action Plan</th>
+                  <th>Strategic Expansion Action Plan</th>
                 </tr>
               </thead>
               <tbody>
-                ${d.cityList.length > 0 ? d.cityList.map(c => `
+                ${d.top10CollaborativeCities && d.top10CollaborativeCities.length > 0 ? d.top10CollaborativeCities.map((c, idx) => `
                   <tr ${c.isPriority ? 'style="background:#FFFDF4; font-weight:bold;"' : ''}>
-                    <td><strong>${escapeHtml(c.city)}</strong></td>
+                    <td style="text-align:center; font-weight:800; color:var(--svv-maroon);">#${idx + 1}</td>
+                    <td><strong>${escapeHtml(c.displayLabel)}</strong></td>
+                    <td><span class="gov-badge gov-badge-gold" style="font-size:0.75rem;">${escapeHtml(c.zone.split('(')[0].trim())}</span></td>
                     <td style="text-align:right; font-weight:bold;">${c.count}</td>
                     <td style="text-align:center;">
                       <strong>${c.share}%</strong>
                       <div class="dist-track" style="margin-top:3px; height:5px;">
-                        <div class="dist-fill" style="width:${Math.min(100, c.share * 2)}%;"></div>
+                        <div class="dist-fill" style="width:${Math.min(100, c.share * 2.5)}%;"></div>
                       </div>
                     </td>
                     <td>${escapeHtml(c.topJew)}</td>
@@ -1040,7 +1933,7 @@
                     </td>
                   </tr>
                 `).join('') : `
-                  <tr><td colspan="6" style="text-align:center; color:#64748B;">No city records logged in sheet.</td></tr>
+                  <tr><td colspan="8" style="text-align:center; color:#64748B;">No city records logged in sheet.</td></tr>
                 `}
               </tbody>
             </table>
@@ -1274,10 +2167,19 @@
               <div class="dist-row">
                 <div class="dist-row-hdr">
                   <span>Customer Satisfaction Index (CSI)</span>
-                  <span><strong>${d.csiScore}%</strong> (Target ≥ 80%)</span>
+                  <span><strong>${d.csiScore}%</strong> (Store Target: &gt; 95%)</span>
                 </div>
                 <div class="dist-track">
-                  <div class="dist-fill" style="width:${d.csiScore}%; background:#15803D;"></div>
+                  <div class="dist-fill" style="width:${d.csiScore}%; background:${d.csiScore >= 95 ? '#15803D' : '#D97706'};"></div>
+                </div>
+              </div>
+              <div class="dist-row mt-3">
+                <div class="dist-row-hdr">
+                  <span>Net Promoter Score (NPS)</span>
+                  <span><strong>+${d.npsScore}</strong> (Store Target: &gt; 95)</span>
+                </div>
+                <div class="dist-track">
+                  <div class="dist-fill" style="width:${Math.max(0, Math.min(100, d.npsScore))}%; background:${d.npsScore >= 95 ? '#15803D' : '#D97706'};"></div>
                 </div>
               </div>
               <div class="dist-row mt-3">
@@ -1324,7 +2226,7 @@
         <section class="mis-page">
           <div class="page-top-hdr">
             <span class="page-tag">PAGE 10</span>
-            <h2 class="page-sec-title">Jewellery Divert Analysis &amp; Sourcing Status</h2>
+            <h2 class="page-sec-title">Jewellery Divert Diagnostics, Staff Ranking &amp; Sourcing Pipeline</h2>
           </div>
 
           <div class="grid-3" style="margin-bottom:16px;">
@@ -1345,7 +2247,56 @@
             </div>
           </div>
 
-          <div class="grid-2">
+          <!-- STRATEGIC STAFF DIVERT INSIGHT -->
+          <div class="strategic-box" style="border-left-color:#D97706; background:#FFFBEB; margin-bottom:16px;">
+            ${d.divertStaffInsight}
+          </div>
+
+          <!-- STAFF DIVERT RANKING LEADERBOARD TABLE -->
+          <div class="section-card" style="margin-bottom:16px;">
+            <h4 style="color:#580505; margin-bottom:6px;">👥 Sales Staff Divert Ranking &amp; Walkout Leaderboard</h4>
+            <p style="font-size:0.8rem; color:#64748B; margin-bottom:12px;">Ranks showroom staff members who registered customer walkouts, highlighting primary counters, walkout causes, and targeted coaching actions.</p>
+            <table class="mis-table">
+              <thead>
+                <tr>
+                  <th style="width:45px; text-align:center;">Rank</th>
+                  <th>Staff / Salesperson</th>
+                  <th style="text-align:right;">Diverts Registered</th>
+                  <th style="text-align:center;">Divert Share %</th>
+                  <th>Primary Counter</th>
+                  <th>Primary Walkout Reason</th>
+                  <th style="text-align:center;">Karigar Status</th>
+                  <th>Briefing &amp; Action Item</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${d.staffDivertLeaderboard && d.staffDivertLeaderboard.length > 0 ? d.staffDivertLeaderboard.map((s, idx) => `
+                  <tr ${s.isTopDiverter ? 'style="background:#FEF2F2; font-weight:bold;"' : ''}>
+                    <td style="text-align:center; font-weight:800; color:${s.isTopDiverter ? '#B91C1C' : 'var(--svv-maroon)'};">#${idx + 1}</td>
+                    <td><strong>${escapeHtml(s.name)}</strong> ${s.isTopDiverter ? '<span class="gov-badge gov-badge-red" style="font-size:0.68rem; margin-left:4px;">Highest Walkouts</span>' : ''}</td>
+                    <td style="text-align:right; font-weight:bold; color:#B91C1C;">${s.count} Walkouts</td>
+                    <td style="text-align:center;">
+                      <strong>${s.share}%</strong>
+                      <div class="dist-track" style="margin-top:3px; height:5px;">
+                        <div class="dist-fill" style="width:${Math.min(100, s.share * 2.5)}%; background:${s.isTopDiverter ? '#B91C1C' : '#D97706'};"></div>
+                      </div>
+                    </td>
+                    <td>${escapeHtml(s.topCounter)}</td>
+                    <td><span class="gov-badge gov-badge-amber" style="font-size:0.75rem;">${escapeHtml(s.topReason)}</span></td>
+                    <td style="text-align:center; font-size:0.82rem;">
+                      <span style="color:#15803D; font-weight:bold;">${s.closedCount} Sourced</span> / <span style="color:#D97706;">${s.pendingCount} Pending</span>
+                      <div style="font-size:0.72rem; color:#64748B;">(${s.resRate}% Resolved)</div>
+                    </td>
+                    <td style="font-size:0.82rem;">${escapeHtml(s.coachingAction)}</td>
+                  </tr>
+                `).join('') : `
+                  <tr><td colspan="8" style="text-align:center; color:#64748B;">No staff divert records found in sheet.</td></tr>
+                `}
+              </tbody>
+            </table>
+          </div>
+
+          <div class="grid-2" style="margin-bottom:16px;">
             <!-- COUNTER BREAKDOWN -->
             <div class="section-card">
               <h4 style="color:#580505; margin-bottom:12px;">🏆 Diverts by Jewellery Counter / Section</h4>
@@ -1383,19 +2334,86 @@
             </div>
           </div>
 
-          <!-- TOP NEEDED PRODUCTS -->
-          <div class="section-card">
-            <h4 style="color:#580505; margin-bottom:10px;">📦 Specific Products &amp; Sizes Requested by Customers</h4>
-            ${d.divertProductsList.length > 0 ? `
-              <div style="display:flex; flex-wrap:wrap; gap:8px;">
-                ${d.divertProductsList.map(p => `
-                  <div style="background:#F8FAFC; border:1px solid #CBD5E1; border-radius:8px; padding:6px 12px; font-size:0.82rem;">
-                    <strong>${escapeHtml(p.label)}</strong>: <span style="color:var(--svv-maroon); font-weight:bold;">${p.count} requests</span>
+          <!-- SPECIFIC DESIGN & SPECIFIC SIZE IN DEPTH -->
+          <div class="grid-2" style="margin-bottom:16px;">
+            <!-- SPECIFIC DESIGN DEMANDS -->
+            <div class="section-card">
+              <h4 style="color:#580505; margin-bottom:8px;">🎨 Specific Design Demands (from Design &amp; Remarks)</h4>
+              <p style="font-size:0.8rem; color:#64748B; margin-bottom:10px;">Highlights the exact craftsmanship styles requested by walkout customers requiring Karigar replenishment.</p>
+              ${d.specificDesignList && d.specificDesignList.length > 0 ? d.specificDesignList.map(item => `
+                <div class="dist-row">
+                  <div class="dist-row-hdr">
+                    <span>💎 <strong>${escapeHtml(item.label)}</strong></span>
+                    <span><strong>${item.count} requests</strong> (${item.share}%)</span>
                   </div>
-                `).join('')}
+                  <div class="dist-track">
+                    <div class="dist-fill" style="width:${item.share}%; background:linear-gradient(90deg, #9333EA 0%, #C026D3 100%);"></div>
+                  </div>
+                </div>
+              `).join('') : `
+                <div style="color:#64748B; font-size:0.85rem;">No design preferences logged.</div>
+              `}
+            </div>
+
+            <!-- SPECIFIC SIZE DEMANDS -->
+            <div class="section-card">
+              <h4 style="color:#580505; margin-bottom:8px;">📏 Specific Size Demands (from Size &amp; Remarks)</h4>
+              <p style="font-size:0.8rem; color:#64748B; margin-bottom:10px;">Dimensions and sizing stock gaps causing floor diverts (e.g. Size 2.6/2.4 Bangles, 16"-18" Chains).</p>
+              ${d.specificSizeList && d.specificSizeList.length > 0 ? d.specificSizeList.map(item => `
+                <div class="dist-row">
+                  <div class="dist-row-hdr">
+                    <span>📐 <strong>${escapeHtml(item.label)}</strong></span>
+                    <span><strong>${item.count} requests</strong> (${item.share}%)</span>
+                  </div>
+                  <div class="dist-track">
+                    <div class="dist-fill" style="width:${item.share}%; background:linear-gradient(90deg, #2563EB 0%, #06B6D4 100%);"></div>
+                  </div>
+                </div>
+              `).join('') : `
+                <div style="color:#64748B; font-size:0.85rem;">No size specifications logged.</div>
+              `}
+            </div>
+          </div>
+
+          <!-- AUTHENTIC REMARKS LOG -->
+          <div class="section-card">
+            <h4 style="color:#580505; margin-bottom:6px;">📝 Authentic Customer Walkout Remarks &amp; Karigar Sourcing Log</h4>
+            <p style="font-size:0.8rem; color:#64748B; margin-bottom:12px;">Real-time floor log capturing verbatim customer requests and staff notes for audit compliance.</p>
+            ${d.authenticDivertRemarks && d.authenticDivertRemarks.length > 0 ? `
+              <div style="overflow-x:auto;">
+                <table class="mis-table" style="font-size:0.82rem;">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Customer Name</th>
+                      <th>Counter</th>
+                      <th>Staff Handled</th>
+                      <th>Design &amp; Size Needed</th>
+                      <th>Walkout Reason &amp; Remarks</th>
+                      <th style="text-align:center;">Sourcing Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${d.authenticDivertRemarks.slice(0, 10).map(r => `
+                      <tr>
+                        <td style="white-space:nowrap; color:#64748B;">${escapeHtml(r.date)}</td>
+                        <td><strong>${escapeHtml(r.customer)}</strong></td>
+                        <td>${escapeHtml(r.counter)}</td>
+                        <td>👤 <strong>${escapeHtml(r.staff)}</strong></td>
+                        <td><strong>${escapeHtml(r.design)}</strong><br><span style="font-size:0.75rem; color:#64748B;">${escapeHtml(r.size)}</span></td>
+                        <td><span class="gov-badge gov-badge-amber" style="font-size:0.72rem; margin-right:4px;">${escapeHtml(r.reason)}</span> <em>"${escapeHtml(r.remarks)}"</em></td>
+                        <td style="text-align:center;">
+                          <span class="gov-badge ${r.status.includes('CLOSE') || r.status.includes('AVAIL') ? 'gov-badge-green' : (r.status.includes('SOURC') ? 'gov-badge-gold' : 'gov-badge-maroon')}">
+                            ${r.status.includes('CLOSE') || r.status.includes('AVAIL') ? '🟢 Sourced' : (r.status.includes('SOURC') ? '⏳ Sourcing' : '⚠️ Pending')}
+                          </span>
+                        </td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
               </div>
             ` : `
-              <div style="color:#64748B; font-size:0.85rem;">No specific product entries recorded.</div>
+              <div style="color:#64748B; font-size:0.85rem;">No remarks entries logged in CUSTOMER_DIVERTS.</div>
             `}
           </div>
         </section>
@@ -1477,13 +2495,13 @@
               <tr>
                 <td><strong>CSI Satisfaction</strong></td>
                 <td style="text-align:center; font-weight:bold;">${d.csiScore}%</td>
-                <td style="text-align:center; color:#15803D; font-weight:bold;">≥ 85.0%</td>
+                <td style="text-align:center; color:#15803D; font-weight:bold;">&gt; 95.0%</td>
                 <td>Maintain 10-second greeting &amp; polite billing desk handling</td>
               </tr>
               <tr>
                 <td><strong>Net Promoter Score</strong></td>
                 <td style="text-align:center; font-weight:bold;">+${d.npsScore}</td>
-                <td style="text-align:center; color:#15803D; font-weight:bold;">≥ 90.0</td>
+                <td style="text-align:center; color:#15803D; font-weight:bold;">&gt; 95.0</td>
                 <td>Sustain high promoter base through Google Review invitations</td>
               </tr>
               <tr>

@@ -332,6 +332,19 @@
       box-shadow: 0 2px 8px rgba(88, 5, 5, 0.2);
     }
 
+    .field-highlight-error {
+      border: 2px solid #B91C1C !important;
+      background: #FEF2F2 !important;
+      border-radius: 8px !important;
+      padding: 8px 10px !important;
+      animation: pulseError 0.5s ease;
+    }
+    @keyframes pulseError {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+      100% { transform: scale(1); }
+    }
+
     /* Form Inputs */
     .portal-field-label {
       font-size: 0.85rem;
@@ -496,7 +509,7 @@
       </div>
       <h1 class="portal-brand-title">Suba Valli Vilas</h1>
       <div class="portal-brand-subtitle" id="portalBrandSubtitle">Ungal Veetu Kadai - Suba Valli Vilas • Since 1921 • Cuddalore</div>
-      <div class="portal-tamil-slogan" id="portalTamilSlogan" style="color: #F7E7CE; font-size: 0.85rem; margin-top: 4px; font-weight: 600; letter-spacing: 0.5px;">உங்கள் வீட்டு கடை - சுப வள்ளி விலாஸ்</div>
+      <div class="portal-tamil-slogan" id="portalTamilSlogan" style="color: #F7E7CE; font-size: 0.85rem; margin-top: 4px; font-weight: 600; letter-spacing: 0.5px;">உங்கள் வீட்டு கடை - சுபா வள்ளி விலாஸ்</div>
       <div class="portal-context-tag" id="portalContextTag" style="display: none;">
         <span>📍</span>
         <span id="portalContextText">Billing Counter • Main Branch</span>
@@ -601,10 +614,11 @@
             <option value="Business / Self Employed">Business / Self Employed (தொழில் / சுயதொழில்)</option>
             <option value="Private Employee">Private Employee (தனியார் துறை)</option>
             <option value="Government Employee">Government Employee (அரசு ஊழியர்)</option>
-            <option value="Farmer">Farmer (விவசாயி)</option>
-            <option value="Professional (Doctor/Engineer)">Professional(Doctor/Engineer) (மருத்துவர் / பொறியாளர் / வழக்கறிஞர்)</option>
+            <option value="Homemaker">Homemaker (இல்லத்தரசி)</option>
+            <option value="Professional (Doctor/Engineer)">Professional (மருத்துவர் / பொறியாளர் / வழக்கறிஞர்)</option>
             <option value="Student">Student (மாணவர்)</option>
             <option value="Retired">Retired (ஓய்வு பெற்றவர்)</option>
+            <option value="Other">Other (மற்றவை)</option>
           </select>
         </div>
       </div>
@@ -690,10 +704,10 @@
             </div>
             <input type="hidden" id="q4Input" name="q4" value="">
 
-            <!-- Conditional Date picker shown ONLY for Birthday or Wedding Anniversary -->
+            <!-- Conditional Date picker shown for Wedding, Birthday or Wedding Anniversary -->
             <div id="portalCustOccasionDateGroup" class="mt-2 p-3 bg-silk rounded border" style="display: none; background: #FAF6EE; border: 1px solid #E5D5B8; border-radius: 8px;">
-              <label for="portalCustOccasionDate" class="portal-field-label" id="lblCustOccasionDate" style="color:#580505;">🎂 Select Occasion Date</label>
-              <span class="portal-field-sub" id="lblCustOccasionDateSub">தேதியைத் தேர்வு செய்க</span>
+              <label for="portalCustOccasionDate" class="portal-field-label" id="lblCustOccasionDate" style="color:#580505;">💍 Select Occasion Date (தேதியைத் தேர்வு செய்க) *</label>
+              <span class="portal-field-sub" id="lblCustOccasionDateSub">தேதியைத் தேர்வு செய்க (சுப நிகழ்வு வாழ்த்துக்கள் மற்றும் சிறப்பு சலுகைக்கு)</span>
               <input type="date" id="portalCustOccasionDate" name="occasionDate" class="portal-input">
             </div>
           </div>
@@ -814,7 +828,7 @@
     <!-- FOOTER -->
     <footer class="text-center text-xs text-muted mt-4" style="line-height: 1.7; padding-bottom: 20px;">
       <div style="font-weight: 700; color: #580505; font-size: 0.9rem;">Ungal Veetu Kadai - Suba Valli Vilas Jewellery</div>
-      <div style="font-size: 0.78rem; color: #64748B;">உங்கள் வீட்டு கடை - சுப வள்ளி விலாஸ் • 916 BIS Hallmarked Purity</div>
+      <div style="font-size: 0.78rem; color: #64748B;">உங்கள் வீட்டு கடை - சுபா வள்ளி விலாஸ் • 916 BIS Hallmarked Purity</div>
       <div style="margin-top: 4px; font-size: 0.82rem; color: #334155;">Customer Care &amp; WhatsApp: <strong>+91 94432 22188</strong> (Cuddalore Main Branch)</div>
     </footer>
 

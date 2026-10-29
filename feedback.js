@@ -61,7 +61,7 @@
       q_type: 'single_choice',
       options_en: ['Everything is Excellent', 'Faster Billing', 'More Lightweight Designs', 'More Antique Pieces', 'Parking Facility'],
       options_ta: ['Everything is Excellent (அனைத்தும் நன்று)', 'Faster Billing (விரைவான பில்லிங்)', 'More Lightweight Designs (எடை குறைந்த நகைகள்)', 'More Antique Pieces (ஆண்டிக் நகைகள்)', 'Parking Facility (வாகன நிறுத்தம்)'],
-      is_mandatory: false,
+      is_mandatory: true,
       is_active: true
     },
     {
@@ -613,12 +613,12 @@
           ` : ''}
 
           ${isQ4 ? `
-            <div id="portalCustOccasionDateGroup" class="mt-2 p-3 bg-silk rounded border" style="display: ${(currentSelectedVal === 'Birthday' || currentSelectedVal === 'Wedding Anniversary') ? 'block' : 'none'}; background: #FAF6EE; border: 1px solid #E5D5B8; border-radius: 8px;">
+            <div id="portalCustOccasionDateGroup" class="mt-2 p-3 bg-silk rounded border" style="display: ${(currentSelectedVal && (currentSelectedVal.toLowerCase().includes('wedding') || currentSelectedVal.toLowerCase().includes('bridal') || currentSelectedVal.toLowerCase().includes('birthday') || currentSelectedVal.toLowerCase().includes('anniversary'))) ? 'block' : 'none'}; background: #FAF6EE; border: 1px solid #E5D5B8; border-radius: 8px;">
               <label for="portalCustOccasionDate" class="portal-field-label" id="lblCustOccasionDate" style="color:#580505;">
-                ${currentSelectedVal === 'Wedding Anniversary' ? '💍 Select Wedding Anniversary Date (திருமண நாள் தேதி)' : '🎂 Select Birthday Date (பிறந்தநாள் தேதி)'}
+                ${(currentSelectedVal && currentSelectedVal.toLowerCase().includes('anniversary')) ? '💍 Select Wedding Anniversary Date (திருமண நாள் தேதி) *' : ((currentSelectedVal && (currentSelectedVal.toLowerCase().includes('wedding') || currentSelectedVal.toLowerCase().includes('bridal'))) ? '💍 Select Wedding Date (திருமண தேதி) *' : '🎂 Select Birthday Date (பிறந்தநாள் தேதி) *')}
               </label>
               <span class="portal-field-sub" id="lblCustOccasionDateSub">
-                ${currentSelectedVal === 'Wedding Anniversary' ? 'Capture wedding anniversary for couple blessings & special discount' : 'Capture customer birthday for birthday gift voucher & wishes'}
+                ${(currentSelectedVal && currentSelectedVal.toLowerCase().includes('birthday')) ? 'Capture customer birthday for birthday gift voucher & wishes' : 'Capture wedding date for couple blessings & special discount'}
               </span>
               <input type="date" id="portalCustOccasionDate" name="occasionDate" class="portal-input">
             </div>
@@ -845,6 +845,13 @@
           if (targetInput) {
             targetInput.value = val;
           }
+
+          // Clear any error highlight on this question
+          const formGroup = chip.closest('.form-group') || chip.closest('.dynamic-portal-q');
+          if (formGroup) {
+            formGroup.classList.remove('field-highlight-error');
+            formGroup.style.boxShadow = '';
+          }
           // If this chip defines a numerical score (e.g. Recommendation question), map to rating
           const score = chip.getAttribute('data-score') ||
             (val.toLowerCase().includes('definitely') ? '10' : (val.toLowerCase().includes('sure') ? '7' : (val.toLowerCase().includes('not') || val.toLowerCase().includes('no') ? '3' : null)));
@@ -875,25 +882,33 @@
             }
           }
 
-          // If Q4 occasion question, show date ONLY for Birthday or Wedding Anniversary
+          // If Q4 occasion question, show date for Wedding, Birthday, or Wedding Anniversary
           if (targetId === 'q4Input') {
             const dateGroup = document.getElementById('portalCustOccasionDateGroup');
             const dateLabel = document.getElementById('lblCustOccasionDate');
             const dateSub = document.getElementById('lblCustOccasionDateSub');
             if (dateGroup) {
               const lowerVal = (val || '').toLowerCase();
-              if (lowerVal.includes('birthday') || val === 'Birthday') {
+              if (lowerVal.includes('wedding') || lowerVal.includes('bridal')) {
                 dateGroup.style.display = 'block';
-                if (dateLabel) dateLabel.innerHTML = '🎂 Select Birthday Date (பிறந்தநாள் தேதியைத் தேர்வு செய்க)';
-                if (dateSub) dateSub.textContent = 'Capture customer birthday for special gifts & wishes';
-              } else if (lowerVal.includes('anniversary') || val === 'Wedding Anniversary') {
+                if (dateLabel) dateLabel.innerHTML = '💍 Select Wedding Date (திருமண தேதியைத் தேர்வு செய்க) *';
+                if (dateSub) dateSub.textContent = 'Capture wedding date for special blessings & gift voucher (திருமண நாள் வாழ்த்துக்கள் மற்றும் சிறப்பு சலுகைக்கு)';
+              } else if (lowerVal.includes('anniversary')) {
                 dateGroup.style.display = 'block';
-                if (dateLabel) dateLabel.innerHTML = '💍 Select Wedding Anniversary Date (திருமண நாள் தேதியைத் தேர்வு செய்க)';
-                if (dateSub) dateSub.textContent = 'Capture wedding anniversary for couple blessings & special discount';
+                if (dateLabel) dateLabel.innerHTML = '💍 Select Wedding Anniversary Date (திருமண நாள் தேதியைத் தேர்வு செய்க) *';
+                if (dateSub) dateSub.textContent = 'Capture wedding anniversary for couple blessings & special discount (திருமண நாள் வாழ்த்துக்கள் மற்றும் சிறப்பு சலுகைக்கு)';
+              } else if (lowerVal.includes('birthday')) {
+                dateGroup.style.display = 'block';
+                if (dateLabel) dateLabel.innerHTML = '🎂 Select Birthday Date (பிறந்தநாள் தேதியைத் தேர்வு செய்க) *';
+                if (dateSub) dateSub.textContent = 'Capture customer birthday for special gifts & wishes (பிறந்தநாள் வாழ்த்துக்கள் மற்றும் பரிசு கூப்பனுக்கு)';
               } else {
                 dateGroup.style.display = 'none';
                 const dateInp = document.getElementById('portalCustOccasionDate');
-                if (dateInp) dateInp.value = '';
+                if (dateInp) {
+                  dateInp.value = '';
+                  dateInp.style.border = '';
+                  dateInp.style.boxShadow = '';
+                }
               }
             }
           }
@@ -909,20 +924,100 @@
     dom.form.addEventListener('submit', async (e) => {
       e.preventDefault();
       if (state.isSubmitting) return;
+      const lang = state.currentLang || 'en';
+      const isTa = lang === 'ta';
 
       const name = (dom.custName?.value || '').trim();
       const mobile = (dom.custMobile?.value || '').trim();
 
       if (!name) {
-        alert('Please enter your full name.');
+        alert(isTa ? 'தயவுசெய்து உங்கள் முழு பெயரை உள்ளிடவும்.' : 'Please enter your full name.');
         dom.custName?.focus();
         return;
       }
 
       if (!mobile || !/^\d{10}$/.test(mobile.replace(/\D/g, ''))) {
-        alert('Please provide a valid 10-digit mobile number.');
+        alert(isTa ? 'தயவுசெய்து சரியான 10 இலக்க மொபைல் எண்ணை உள்ளிடவும்.' : 'Please provide a valid 10-digit mobile number.');
         dom.custMobile?.focus();
         return;
+      }
+
+      // Check all active questions from Sheet / Config that are mandatory
+      const activeList = (state.questionsConfig && state.questionsConfig.length > 0)
+        ? state.questionsConfig.filter(q => q.is_active !== false)
+        : DEFAULT_QUESTIONS;
+
+      for (const q of activeList) {
+        if (!q.is_mandatory) continue;
+        const qId = q.q_id;
+        let answeredVal = '';
+
+        if (qId === 'Q7') {
+          answeredVal = (document.getElementById('npsChoiceInput')?.value || document.getElementById('q7Input')?.value || '').trim();
+        } else if (qId === 'Q8') {
+          answeredVal = (document.getElementById('overallShoppingExpInput')?.value || document.getElementById('q8Input')?.value || '').trim();
+        } else {
+          const inp = document.getElementById(`${qId.toLowerCase()}Input`);
+          answeredVal = (inp?.value || '').trim();
+        }
+
+        if (!answeredVal) {
+          const qText = isTa ? (q.q_text_ta || q.q_text_en) : (q.q_text_en || q.q_text_ta);
+          alert(isTa ? `தயவுசெய்து கட்டாய கேள்விக்கு பதிலளிக்கவும்:\n"${qText}"` : `Please answer mandatory question:\n"${qText}"`);
+
+          const qEl = document.querySelector(`[data-qid="${qId}"]`) || document.getElementById(`${qId.toLowerCase()}ChipsGroup`);
+          if (qEl) {
+            qEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            qEl.classList.add('field-highlight-error');
+            setTimeout(() => {
+              qEl.classList.remove('field-highlight-error');
+            }, 3000);
+          }
+          return;
+        }
+
+        // Special Occasion Date Check for Q4 (Wedding, Birthday, Anniversary)
+        if (qId === 'Q4') {
+          const lowerVal = answeredVal.toLowerCase();
+          if (lowerVal.includes('wedding') || lowerVal.includes('bridal') || lowerVal.includes('birthday') || lowerVal.includes('anniversary')) {
+            const dateInp = document.getElementById('portalCustOccasionDate');
+            const occDate = (dateInp?.value || '').trim();
+            if (!occDate) {
+              let occNameEn = 'Wedding / Birthday';
+              let occNameTa = 'திருமணம் / பிறந்தநாள்';
+              if (lowerVal.includes('birthday')) {
+                occNameEn = 'Birthday';
+                occNameTa = 'பிறந்தநாள்';
+              } else if (lowerVal.includes('anniversary')) {
+                occNameEn = 'Wedding Anniversary';
+                occNameTa = 'திருமண நாள்';
+              } else if (lowerVal.includes('wedding') || lowerVal.includes('bridal')) {
+                occNameEn = 'Wedding';
+                occNameTa = 'திருமணம்';
+              }
+
+              alert(isTa 
+                ? `தயவுசெய்து உங்கள் ${occNameTa} தேதியைத் தேர்வு செய்யவும்.` 
+                : `Please select the date for your ${occNameEn}.`);
+
+              const dateGroup = document.getElementById('portalCustOccasionDateGroup');
+              if (dateGroup) {
+                dateGroup.style.display = 'block';
+                dateGroup.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }
+              if (dateInp) {
+                dateInp.focus();
+                dateInp.style.border = '2px solid #B91C1C';
+                dateInp.style.boxShadow = '0 0 0 4px rgba(185, 28, 28, 0.25)';
+                setTimeout(() => {
+                  dateInp.style.border = '';
+                  dateInp.style.boxShadow = '';
+                }, 3000);
+              }
+              return;
+            }
+          }
+        }
       }
 
       state.isSubmitting = true;
@@ -935,20 +1030,21 @@
       const isoDate = now.toISOString().split('T')[0];
       const feedbackId = `SVV-QR-${now.getTime().toString().slice(-6)}`;
 
-      const q0 = document.getElementById('q0Input')?.value || 'Regular Customer';
-      const q1 = document.getElementById('q1Input')?.value || '';
-      const q2 = document.getElementById('q2Input')?.value || '';
-      const q3 = document.getElementById('q3Input')?.value || 'Everything is Excellent';
-      const q4 = document.getElementById('q4Input')?.value || '';
-      const occasionDate = document.getElementById('portalCustOccasionDate')?.value || '';
-      const q5 = document.getElementById('q5Input')?.value || '';
+      const q0 = (document.getElementById('q0Input')?.value || '').trim();
+      const q1 = (document.getElementById('q1Input')?.value || '').trim();
+      const q2 = (document.getElementById('q2Input')?.value || '').trim();
+      const q3 = (document.getElementById('q3Input')?.value || '').trim();
+      const q4 = (document.getElementById('q4Input')?.value || '').trim();
+      const occasionDate = (document.getElementById('portalCustOccasionDate')?.value || '').trim();
+      const q5 = (document.getElementById('q5Input')?.value || '').trim();
       let q6Answer = (document.getElementById('q6Input')?.value || '').trim();
-      const npsChoice = document.getElementById('npsChoiceInput')?.value || document.getElementById('q7Input')?.value || (dom.npsInput?.value && parseInt(dom.npsInput.value) >= 9 ? 'Yes, definitely' : (dom.npsInput?.value && parseInt(dom.npsInput.value) <= 6 ? 'No, Not recommended' : (dom.npsInput?.value ? 'Not sure' : '')));
+      const npsChoice = (document.getElementById('npsChoiceInput')?.value || document.getElementById('q7Input')?.value || '').trim();
+      const overallExp = (document.getElementById('overallShoppingExpInput')?.value || document.getElementById('q8Input')?.value || '').trim();
 
-      const finalQ1 = q1 || 'Friends & Relatives';
-      const finalQ2 = q2 || 'Design Collections & Variety';
-      const finalQ4 = q4 || 'General Walk-in';
-      const finalQ5 = q5 || 'Yes - Already Enrolled';
+      const finalQ1 = q1;
+      const finalQ2 = q2;
+      const finalQ4 = q4;
+      const finalQ5 = q5;
 
       // If Q6 was not clicked, default to 22K Gold Antique so submission never gets stuck
       if (!q6Answer) {
@@ -957,7 +1053,6 @@
         if (q6Inp) q6Inp.value = q6Answer;
       }
 
-      const overallExp = (document.getElementById('overallShoppingExpInput')?.value || document.getElementById('q8Input')?.value || '').trim();
       let derivedMood = state.mood || 'Appreciation';
       if (overallExp === 'Excellent' || overallExp === 'Good') {
         derivedMood = 'Appreciation';

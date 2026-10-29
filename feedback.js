@@ -537,9 +537,9 @@
       const inputId = `${qId.toLowerCase()}Input`;
       let currentSelectedVal = '';
       if (isQ7) {
-        currentSelectedVal = document.getElementById('npsChoiceInput')?.value || document.getElementById('q7Input')?.value || 'Yes, definitely';
+        currentSelectedVal = document.getElementById('npsChoiceInput')?.value || document.getElementById('q7Input')?.value || '';
       } else if (isQ8) {
-        currentSelectedVal = document.getElementById('overallShoppingExpInput')?.value || document.getElementById('q8Input')?.value || 'Excellent';
+        currentSelectedVal = document.getElementById('overallShoppingExpInput')?.value || document.getElementById('q8Input')?.value || '';
       } else {
         const existingInput = document.getElementById(inputId);
         currentSelectedVal = existingInput ? existingInput.value : '';
@@ -604,12 +604,12 @@
           <input type="hidden" id="${escapeHtml(inputId)}" name="${escapeHtml(qId.toLowerCase())}" value="${escapeHtml(currentSelectedVal)}">
           
           ${isQ7 ? `
-            <input type="hidden" id="npsRatingInput" name="rating" value="${escapeHtml(currentSelectedVal === 'Not sure' ? '7' : (currentSelectedVal === 'No, Not recommended' ? '3' : '10'))}">
-            <input type="hidden" id="npsChoiceInput" name="recommendationChoice" value="${escapeHtml(currentSelectedVal || 'Yes, definitely')}">
+            <input type="hidden" id="npsRatingInput" name="rating" value="${escapeHtml(currentSelectedVal === 'Not sure' ? '7' : (currentSelectedVal === 'No, Not recommended' ? '3' : (currentSelectedVal === 'Yes, definitely' ? '10' : '')))}">
+            <input type="hidden" id="npsChoiceInput" name="recommendationChoice" value="${escapeHtml(currentSelectedVal || '')}">
           ` : ''}
 
           ${isQ8 ? `
-            <input type="hidden" id="overallShoppingExpInput" name="overallShoppingExperience" value="${escapeHtml(currentSelectedVal || 'Excellent')}">
+            <input type="hidden" id="overallShoppingExpInput" name="overallShoppingExperience" value="${escapeHtml(currentSelectedVal || '')}">
           ` : ''}
 
           ${isQ4 ? `
@@ -943,7 +943,7 @@
       const occasionDate = document.getElementById('portalCustOccasionDate')?.value || '';
       const q5 = document.getElementById('q5Input')?.value || '';
       let q6Answer = (document.getElementById('q6Input')?.value || '').trim();
-      const npsChoice = document.getElementById('npsChoiceInput')?.value || document.getElementById('q7Input')?.value || (parseInt(dom.npsInput?.value) >= 9 ? 'Yes, definitely' : (parseInt(dom.npsInput?.value) <= 6 ? 'No, Not recommended' : 'Not sure'));
+      const npsChoice = document.getElementById('npsChoiceInput')?.value || document.getElementById('q7Input')?.value || (dom.npsInput?.value && parseInt(dom.npsInput.value) >= 9 ? 'Yes, definitely' : (dom.npsInput?.value && parseInt(dom.npsInput.value) <= 6 ? 'No, Not recommended' : (dom.npsInput?.value ? 'Not sure' : '')));
 
       const finalQ1 = q1 || 'Friends & Relatives';
       const finalQ2 = q2 || 'Design Collections & Variety';
@@ -957,7 +957,7 @@
         if (q6Inp) q6Inp.value = q6Answer;
       }
 
-      const overallExp = (document.getElementById('overallShoppingExpInput')?.value || document.getElementById('q8Input')?.value || (state.mood === 'Appreciation' ? 'Excellent' : (state.mood === 'Concern' ? 'Need Improvement' : 'Good'))).trim();
+      const overallExp = (document.getElementById('overallShoppingExpInput')?.value || document.getElementById('q8Input')?.value || '').trim();
       let derivedMood = state.mood || 'Appreciation';
       if (overallExp === 'Excellent' || overallExp === 'Good') {
         derivedMood = 'Appreciation';
@@ -967,7 +967,7 @@
         derivedMood = 'Concern';
       }
 
-      const calcRating = npsChoice === 'Yes, definitely' ? 10 : (npsChoice === 'Not sure' ? 7 : (overallExp === 'Excellent' ? 10 : (overallExp === 'Good' ? 8 : (overallExp === 'Average' ? 6 : 4))));
+      const calcRating = npsChoice === 'Yes, definitely' ? 10 : (npsChoice === 'Not sure' ? 7 : (npsChoice === 'No, Not recommended' ? 3 : (overallExp === 'Excellent' ? 10 : (overallExp === 'Good' ? 8 : (overallExp === 'Average' ? 6 : (overallExp === 'Need Improvement' ? 4 : (state.rating || 10)))))));
       const invoiceVal = dom.metaInvoice?.value || 'QR-WALKIN';
 
       const newRecord = {

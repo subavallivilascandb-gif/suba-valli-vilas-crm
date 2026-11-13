@@ -447,7 +447,130 @@
     `).join('');
   }
 
-  function handleAddLog(e) {
+  // JSONP Fallback for Google Apps Script Web App redirects
+  function fetchJsonP(url, timeoutMs = 8000) {
+    return new Promise((resolve, reject) => {
+      const cbName = 'svv_trn_cb_' + Math.random().toString(36).substring(2, 9);
+      const script = document.createElement('script');
+      let settled = false;
+
+      const cleanup = () => {
+        try { script.remove(); } catch(e) {}
+        try { delete window[cbName]; } catch(e) {}
+      };
+
+      const timer = setTimeout(() => {
+        if (!settled) {
+          settled = true;
+          cleanup();
+          reject(new Error('JSONP timeout after ' + timeoutMs + 'ms'));
+        }
+      }, timeoutMs);
+
+      window[cbName] = (data) => {
+        if (!settled) {
+          settled = true;
+          clearTimeout(timer);
+          cleanup();
+          resolve(data);
+        }
+      };
+
+      const sep = url.includes('?') ? '&' : '?';
+      script.src = `${url}${sep}callback=${cbName}`;
+      script.onerror = () => {
+        if (!settled) {
+          settled = true;
+          clearTimeout(timer);
+          cleanup();
+          reject(new Error('JSONP script load error'));
+        }
+      };
+      document.head.appendChild(script);
+    });
+  }
+
+  // Smart fetch: tries CORS fetch first, falls back to JSONP automatically
+  async function smartFetch(url) {
+    try {
+      const res = await fetch(url, {
+        method: 'GET',
+        mode: 'cors',
+        redirect: 'follow',
+        headers: { 'Accept': 'application/json' }
+      });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return await res.json();
+    } catch (corsErr) {
+      console.log('[SVV Training] CORS fetch failed, trying JSONP:', corsErr.message);
+      return await fetchJsonP(url);
+    }
+  }
+
+  // Map Google Sheet rows to trackerRows
+  function applyTrainingLogsFromSheet(sheetRows) {
+    if (!Array.isArray(sheetRows) || sheetRows.length === 0) return 0;
+
+    const mapped = sheetRows.map(r => ({
+      date: r.Date || r.date || '',
+      trainer: r.Trainer_Name || r.trainer || 'Selvi (CRM Manager)',
+      topic: r.Topic_Covered || r.Topic_Module || r.topic || 'Morning Routine',
+      staffCount: parseInt(r.Staff_Count_Attended || r.Staff_Count || r.staffCount) || 5,
+      absentees: r.Absentees || r.absentees || 'None',
+      keyTakeaway: r.Key_Takeaways_Roleplay || r.Key_Takeaways || r.keyTakeaway || '',
+      trainerSig: r.Trainer_Signature || r.trainerSig || 'Selvi',
+      pcSig: r.Manager_Approval_Status || r.PC_Signature || r.pcSig || 'Approved',
+      actionTaken: r.Action_Items_Followup || r.Action_Taken || r.actionTaken || 'Follow-up on floor.'
+    })).filter(r => r.date);
+
+    if (mapped.length > 0) {
+      trackerRows = mapped;
+      try { localStorage.setItem('svv_training_tracker', JSON.stringify(trackerRows)); } catch (_) {}
+      renderTrackerTable();
+    }
+    return mapped.length;
+  }
+
+  // Direct Google Sheets Visualization API reader (Zero intermediate setup)
+  async function fetchGoogleSheetGviz(sheetId, sheetName) {
+    try {
+      const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}&t=${Date.now()}`;
+      const res = await fetch(url);
+      if (!res.ok) return null;
+      const text = await res.text();
+      const start = text.indexOf('{');
+      const end = text.lastIndexOf('}');
+      if (start === -1 || end === -1) return null;
+      const raw = JSON.parse(text.substring(start, end + 1));
+      if (!raw.table || !raw.table.cols || !raw.table.rows) return null;
+      const headers = raw.table.cols.map(c => (c.label || c.id || '').trim());
+      return raw.table.rows.map(r => {
+        const obj = {};
+        headers.forEach((h, idx) => {
+          if (h && r.c && r.c[idx]) {
+            obj[h] = r.c[idx].f !== undefined ? r.c[idx].f : (r.c[idx].v !== undefined ? r.c[idx].v : '');
+          }
+        });
+        return obj;
+      });
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function loadCachedTrainingLogs() {
+    try {
+      const cloudCached = localStorage.getItem('svv_last_cloud_data');
+      if (cloudCached) {
+        const parsedCloud = JSON.parse(cloudCached);
+        if (parsedCloud && Array.isArray(parsedCloud.training) && parsedCloud.training.length > 0) {
+          applyTrainingLogsFromSheet(parsedCloud.training);
+        }
+      }
+    } catch (_) {}
+  }
+
+  async function handleAddLog(e) {
     e.preventDefault();
 
     const newEntry = {
@@ -458,7 +581,7 @@
       absentees: dom.logAbsentees.value.trim() || "None",
       keyTakeaway: dom.logTakeaway.value.trim() || "Briefing conducted successfully.",
       trainerSig: "Selvi",
-      pcSig: "Verified",
+      pcSig: "Approved",
       actionTaken: dom.logAction.value.trim() || "Follow-up on floor."
     };
 
@@ -469,7 +592,41 @@
     closeModal();
     showToast("✅ Daily briefing recorded and saved to training register!");
 
-    syncWithGoogleSheet();
+    // Push to Cloudflare Worker & Google Sheet
+    const workerUrl = (localStorage.getItem('svv_cf_worker_url') || 'https://svv-crm-gateway.subavallivilas-candb.workers.dev').trim();
+    const gsheetUrl = (localStorage.getItem('svv_gsheet_url') || 'https://script.google.com/macros/s/AKfycbxScZV2koc5d68t1F9851fRi-H_60r3UJe_GwilkdDFR-2K-710v2IdB1PiHpUUztJEiA/exec').trim();
+
+    const pushPayload = {
+      action: 'SAVE_TRAINING_LOG',
+      log: newEntry,
+      timestamp: new Date().toISOString()
+    };
+
+    if (workerUrl) {
+      try {
+        await fetch(`${workerUrl.replace(/\/+$/, '')}/api/push`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(pushPayload)
+        });
+        showToast("☁️ Pushed daily briefing to Cloud Database!");
+      } catch (err) {
+        console.warn('[Training Push Worker]', err.message);
+      }
+    }
+
+    if (gsheetUrl) {
+      try {
+        await fetch(gsheetUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(pushPayload)
+        });
+      } catch (err) {
+        console.warn('[Training Push GAS]', err.message);
+      }
+    }
   }
 
   function openModal() {
@@ -483,20 +640,96 @@
     if (dom.modalAddLog) dom.modalAddLog.classList.remove('active');
   }
 
-  function syncWithGoogleSheet() {
-    const gsheetUrl = localStorage.getItem('svv_gsheet_url') || 'https://script.google.com/macros/s/AKfycbxScZV2koc5d68t1F9851fRi-H_60r3UJe_GwilkdDFR-2K-710v2IdB1PiHpUUztJEiA/exec';
-    if (dom.syncStatusText) dom.syncStatusText.textContent = "Syncing with GSheet...";
+  // Dynamic Google Sheet & Cloudflare Gateway Integration with Real-Time Auto-Sync
+  let lastTrainingHash = '';
+  function computeHash(data) {
+    return JSON.stringify(data || '').length + '_' + JSON.stringify(data || '').slice(0, 50);
+  }
 
-    fetch(`${gsheetUrl}?action=PING`)
-      .then(res => res.json())
-      .then(() => {
-        if (dom.syncStatusText) dom.syncStatusText.textContent = "Synced with GSheet";
-        showToast("✅ Training Kit & Daily Briefing tracker synced with Google Sheet!");
-      })
-      .catch(() => {
-        if (dom.syncStatusText) dom.syncStatusText.textContent = "Cached (Offline)";
-        showToast("ℹ️ Training logs persisted to local browser storage.");
-      });
+  async function syncWithGoogleSheet(isAutoSync = false) {
+    const workerUrl = (localStorage.getItem('svv_cf_worker_url') || 'https://svv-crm-gateway.subavallivilas-candb.workers.dev').trim();
+    const gsheetUrl = (localStorage.getItem('svv_gsheet_url') || 'https://script.google.com/macros/s/AKfycbxScZV2koc5d68t1F9851fRi-H_60r3UJe_GwilkdDFR-2K-710v2IdB1PiHpUUztJEiA/exec').trim();
+    const sheetId = (localStorage.getItem('svv_gsheet_id') || '1KIaNXXZvjMVFbdQVI0KAmH7lS4Xm_jLsD3I5wzUyJ9U').trim();
+
+    if (!isAutoSync) {
+      if (dom.syncStatusText) dom.syncStatusText.textContent = "Syncing with GSheet...";
+      showToast("Connecting to Suba Valli Vilas Google Sheet...");
+    }
+
+    let fetchedData = null;
+
+    // Step 1: Direct Google Sheet Gviz API fetch
+    if (sheetId) {
+      try {
+        let gvizRows = await fetchGoogleSheetGviz(sheetId, 'TRAINING_TRACKER');
+        if (!gvizRows || gvizRows.length === 0) {
+          gvizRows = await fetchGoogleSheetGviz(sheetId, 'TRAINING_LOGS');
+        }
+        if (Array.isArray(gvizRows) && gvizRows.length > 0) {
+          fetchedData = gvizRows;
+        }
+      } catch (_) {}
+    }
+
+    // Step 2: Try Cloudflare Worker Gateway pull
+    if (!fetchedData && workerUrl) {
+      try {
+        const pullUrl = `${workerUrl.replace(/\/+$/, '')}/api/training`;
+        const res = await fetch(pullUrl, { method: 'GET', headers: { 'Accept': 'application/json' } });
+        if (res.ok) {
+          const cloud = await res.json();
+          if (Array.isArray(cloud) && cloud.length > 0) {
+            fetchedData = cloud;
+          } else if (cloud && Array.isArray(cloud.training) && cloud.training.length > 0) {
+            fetchedData = cloud.training;
+          }
+        }
+      } catch (workerErr) {
+        console.warn('[SVV Training Gateway Pull]', workerErr.message);
+      }
+    }
+
+    // Step 3: Try Google Apps Script direct pull fallback
+    if (!fetchedData && gsheetUrl) {
+      try {
+        const targetUrl = `${gsheetUrl}${gsheetUrl.includes('?') ? '&' : '?'}action=GET_TRAINING`;
+        const resp = await smartFetch(targetUrl);
+        if (resp && resp.status === 'SUCCESS' && Array.isArray(resp.data) && resp.data.length > 0) {
+          fetchedData = resp.data;
+        } else if (Array.isArray(resp) && resp.length > 0) {
+          fetchedData = resp;
+        }
+      } catch (gasErr) {
+        console.warn('[SVV Training Direct Pull]', gasErr.message);
+      }
+    }
+
+    if (fetchedData && fetchedData.length > 0) {
+      const newHash = computeHash(fetchedData);
+      const hasChanged = (newHash !== lastTrainingHash);
+      lastTrainingHash = newHash;
+
+      const count = applyTrainingLogsFromSheet(fetchedData);
+      if (dom.syncStatusText) dom.syncStatusText.textContent = "🟢 Live (Auto-Synced)";
+      if (!isAutoSync) {
+        showToast(`✅ Training register synchronized with Google Sheet (${count} entries)!`);
+      } else if (hasChanged) {
+        showToast(`🟢 Sheet Update Applied: Training register refreshed live (${count} entries)!`);
+      }
+    } else {
+      loadCachedTrainingLogs();
+      if (dom.syncStatusText) dom.syncStatusText.textContent = "Cached (Offline)";
+      if (!isAutoSync) showToast("ℹ️ Loaded training logs from local browser storage.");
+    }
+  }
+
+  function startAutoSyncPolling() {
+    window.addEventListener('focus', () => {
+      syncWithGoogleSheet(true);
+    });
+    setInterval(() => {
+      syncWithGoogleSheet(true);
+    }, 30000);
   }
 
   function escapeHtml(str) {
@@ -511,6 +744,7 @@
 
   function init() {
     initTrackerState();
+    loadCachedTrainingLogs();
     renderModules();
     renderTrackerTable();
 
@@ -518,9 +752,9 @@
     if (dom.btnCloseModal) dom.btnCloseModal.addEventListener('click', closeModal);
     if (dom.btnCancelModal) dom.btnCancelModal.addEventListener('click', closeModal);
     if (dom.formAddLog) dom.formAddLog.addEventListener('submit', handleAddLog);
-    if (dom.btnSyncGSheet) dom.btnSyncGSheet.addEventListener('click', syncWithGoogleSheet);
-
-    setTimeout(syncWithGoogleSheet, 800);
+    if (dom.btnSyncGSheet) dom.btnSyncGSheet.addEventListener('click', () => syncWithGoogleSheet(false));
+    setTimeout(() => syncWithGoogleSheet(true), 800);
+    startAutoSyncPolling();
   }
 
   if (document.readyState === 'loading') {

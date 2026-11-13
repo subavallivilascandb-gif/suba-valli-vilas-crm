@@ -9,8 +9,8 @@
 (function () {
   'use strict';
 
-  // Master KPI Templates
-  const KPI_CONFIG = {
+  // Master KPI Templates (Syncs live from Google Sheet)
+  let KPI_CONFIG = {
     greeter: [
       {
         id: "GR_01",
@@ -797,31 +797,245 @@
     if (dom.incentiveFormulaNote) dom.incentiveFormulaNote.textContent = `Base ₹${baseIncentivePool} × (${roundedScore.toFixed(1)}% ÷ 100) = ₹${earnedIncentive}`;
   }
 
-  function saveKpis() {
-    localStorage.setItem('svv_staff_kpis', JSON.stringify(staffKpis));
-    localStorage.setItem('svv_base_incentive', baseIncentivePool.toString());
+  // JSONP Fallback for Google Apps Script Web App redirects
+  function fetchJsonP(url, timeoutMs = 8000) {
+    return new Promise((resolve, reject) => {
+      const cbName = 'svv_kpi_cb_' + Math.random().toString(36).substring(2, 9);
+      const script = document.createElement('script');
+      let settled = false;
 
-    const staff = STAFF_ROSTER.find(s => s.id === currentStaffId);
-    showToast(`💾 Saved custom weightages and actuals for ${staff?.name || 'staff'}!`);
+      const cleanup = () => {
+        try { script.remove(); } catch(e) {}
+        try { delete window[cbName]; } catch(e) {}
+      };
 
-    // Sync to Google Sheet
-    syncWithGoogleSheet();
+      const timer = setTimeout(() => {
+        if (!settled) {
+          settled = true;
+          cleanup();
+          reject(new Error('JSONP timeout after ' + timeoutMs + 'ms'));
+        }
+      }, timeoutMs);
+
+      window[cbName] = (data) => {
+        if (!settled) {
+          settled = true;
+          clearTimeout(timer);
+          cleanup();
+          resolve(data);
+        }
+      };
+
+      const sep = url.includes('?') ? '&' : '?';
+      script.src = `${url}${sep}callback=${cbName}`;
+      script.onerror = () => {
+        if (!settled) {
+          settled = true;
+          clearTimeout(timer);
+          cleanup();
+          reject(new Error('JSONP script load error'));
+        }
+      };
+      document.head.appendChild(script);
+    });
   }
 
-  function syncWithGoogleSheet() {
-    const gsheetUrl = localStorage.getItem('svv_gsheet_url') || 'https://script.google.com/macros/s/AKfycbxScZV2koc5d68t1F9851fRi-H_60r3UJe_GwilkdDFR-2K-710v2IdB1PiHpUUztJEiA/exec';
-    if (dom.syncStatusText) dom.syncStatusText.textContent = "Syncing with GSheet...";
-
-    fetch(`${gsheetUrl}?action=PING`)
-      .then(res => res.json())
-      .then(() => {
-        if (dom.syncStatusText) dom.syncStatusText.textContent = "Synced with GSheet";
-        showToast("✅ KPI scorecards and incentive data synchronized with Google Sheet!");
-      })
-      .catch(() => {
-        if (dom.syncStatusText) dom.syncStatusText.textContent = "Offline (Cached)";
-        showToast("ℹ️ Scorecards persisted to local storage.");
+  // Smart fetch: tries CORS fetch first, falls back to JSONP automatically
+  async function smartFetch(url) {
+    try {
+      const res = await fetch(url, {
+        method: 'GET',
+        mode: 'cors',
+        redirect: 'follow',
+        headers: { 'Accept': 'application/json' }
       });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return await res.json();
+    } catch (corsErr) {
+      console.log('[SVV KPI] CORS fetch failed, trying JSONP:', corsErr.message);
+      return await fetchJsonP(url);
+    }
+  }
+
+  // Map Google Sheet rows to KPI_CONFIG and staff templates
+  function applyKpisFromSheet(sheetRows) {
+    if (!Array.isArray(sheetRows) || sheetRows.length === 0) return 0;
+    const grouped = { greeter: [], manager: [], telecaller: [] };
+
+    sheetRows.forEach(row => {
+      const cat = String(row.Role_Category || row.role_category || row.category || '').toLowerCase().trim();
+      const targetCat = cat.includes('greet') ? 'greeter' :
+                        cat.includes('manag') ? 'manager' :
+                        cat.includes('tele')  ? 'telecaller' : '';
+      if (!targetCat) return;
+
+      grouped[targetCat].push({
+        id: row.KPI_ID || row.KPI_Code || row.kpi_id || row.id || `KPI_${grouped[targetCat].length + 1}`,
+        areaEn: row.Area_English || row.Focus_Area || row.areaEn || row.Area || '',
+        areaTa: row.Area_Tamil || row.areaTa || '',
+        kpiEn: row.KPI_English || row.KPI_Name_English || row.kpiEn || row.kpi || '',
+        kpiTa: row.KPI_Tamil || row.KPI_Name_Tamil || row.kpiTa || '',
+        formulaEn: row.Formula_English || row.Measurement_Formula || row.formulaEn || '',
+        formulaTa: row.Formula_Tamil || row.formulaTa || '',
+        targetVal: parseFloat(row.Target_Value || row.targetVal) || 100,
+        targetDisplay: row.Target_Display || row.targetDisplay || '100%',
+        unit: row.Unit || row.unit || '%',
+        weightage: parseFloat(row.Weightage_Pct || row.Default_Weightage_Pct || row.Weightage || row.weightage) || 5,
+        actual: parseFloat(row.Actual || row.actual) || 90
+      });
+    });
+
+    let count = 0;
+    ['greeter', 'manager', 'telecaller'].forEach(role => {
+      if (grouped[role].length > 0) {
+        KPI_CONFIG[role] = grouped[role];
+        count += grouped[role].length;
+
+        // Refresh staff list for this role type if not yet customized
+        STAFF_ROSTER.filter(s => s.roleType === role).forEach(s => {
+          if (!staffKpis[s.id] || !localStorage.getItem('svv_staff_kpis')) {
+            staffKpis[s.id] = JSON.parse(JSON.stringify(grouped[role]));
+          }
+        });
+      }
+    });
+
+    if (count > 0) {
+      renderTable();
+      renderStaffInfo();
+    }
+    return count;
+  }
+
+  // Direct Google Sheets Visualization API reader (Zero intermediate setup)
+  async function fetchGoogleSheetGviz(sheetId, sheetName) {
+    try {
+      const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}&t=${Date.now()}`;
+      const res = await fetch(url);
+      if (!res.ok) return null;
+      const text = await res.text();
+      const start = text.indexOf('{');
+      const end = text.lastIndexOf('}');
+      if (start === -1 || end === -1) return null;
+      const raw = JSON.parse(text.substring(start, end + 1));
+      if (!raw.table || !raw.table.cols || !raw.table.rows) return null;
+      const headers = raw.table.cols.map(c => (c.label || c.id || '').trim());
+      return raw.table.rows.map(r => {
+        const obj = {};
+        headers.forEach((h, idx) => {
+          if (h && r.c && r.c[idx]) {
+            obj[h] = r.c[idx].f !== undefined ? r.c[idx].f : (r.c[idx].v !== undefined ? r.c[idx].v : '');
+          }
+        });
+        return obj;
+      });
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function loadCachedKpis() {
+    try {
+      const cloudCached = localStorage.getItem('svv_last_cloud_data');
+      if (cloudCached) {
+        const parsedCloud = JSON.parse(cloudCached);
+        if (parsedCloud && Array.isArray(parsedCloud.kpi) && parsedCloud.kpi.length > 0) {
+          applyKpisFromSheet(parsedCloud.kpi);
+        }
+      }
+    } catch (_) {}
+  }
+
+  // Dynamic Google Sheet & Cloudflare Gateway Integration with Real-Time Auto-Sync
+  let lastKpiHash = '';
+  function computeHash(data) {
+    return JSON.stringify(data || '').length + '_' + JSON.stringify(data || '').slice(0, 50);
+  }
+
+  async function syncWithGoogleSheet(isAutoSync = false) {
+    const workerUrl = (localStorage.getItem('svv_cf_worker_url') || 'https://svv-crm-gateway.subavallivilas-candb.workers.dev').trim();
+    const gsheetUrl = (localStorage.getItem('svv_gsheet_url') || 'https://script.google.com/macros/s/AKfycbxScZV2koc5d68t1F9851fRi-H_60r3UJe_GwilkdDFR-2K-710v2IdB1PiHpUUztJEiA/exec').trim();
+    const sheetId = (localStorage.getItem('svv_gsheet_id') || '1KIaNXXZvjMVFbdQVI0KAmH7lS4Xm_jLsD3I5wzUyJ9U').trim();
+
+    if (!isAutoSync) {
+      if (dom.syncStatusText) dom.syncStatusText.textContent = "Syncing with GSheet...";
+      showToast("Connecting to Suba Valli Vilas Google Sheet...");
+    }
+
+    let fetchedData = null;
+
+    // Step 1: Direct Google Sheet Gviz API fetch
+    if (sheetId) {
+      try {
+        let gvizRows = await fetchGoogleSheetGviz(sheetId, 'KPI_POINTS_MASTER');
+        if (!gvizRows || gvizRows.length === 0) {
+          gvizRows = await fetchGoogleSheetGviz(sheetId, 'KPI_MASTER');
+        }
+        if (Array.isArray(gvizRows) && gvizRows.length > 0) {
+          fetchedData = gvizRows;
+        }
+      } catch (_) {}
+    }
+
+    // Step 2: Try Cloudflare Worker Gateway pull
+    if (!fetchedData && workerUrl) {
+      try {
+        const pullUrl = `${workerUrl.replace(/\/+$/, '')}/api/kpi`;
+        const res = await fetch(pullUrl, { method: 'GET', headers: { 'Accept': 'application/json' } });
+        if (res.ok) {
+          const cloud = await res.json();
+          if (Array.isArray(cloud) && cloud.length > 0) {
+            fetchedData = cloud;
+          } else if (cloud && Array.isArray(cloud.kpi) && cloud.kpi.length > 0) {
+            fetchedData = cloud.kpi;
+          }
+        }
+      } catch (workerErr) {
+        console.warn('[SVV KPI Gateway Pull]', workerErr.message);
+      }
+    }
+
+    // Step 3: Try Google Apps Script direct pull fallback
+    if (!fetchedData && gsheetUrl) {
+      try {
+        const targetUrl = `${gsheetUrl}${gsheetUrl.includes('?') ? '&' : '?'}action=GET_KPI`;
+        const resp = await smartFetch(targetUrl);
+        if (resp && resp.status === 'SUCCESS' && Array.isArray(resp.data) && resp.data.length > 0) {
+          fetchedData = resp.data;
+        } else if (Array.isArray(resp) && resp.length > 0) {
+          fetchedData = resp;
+        }
+      } catch (gasErr) {
+        console.warn('[SVV KPI Direct Pull]', gasErr.message);
+      }
+    }
+
+    if (fetchedData && fetchedData.length > 0) {
+      const newHash = computeHash(fetchedData);
+      const hasChanged = (newHash !== lastKpiHash);
+      lastKpiHash = newHash;
+
+      const count = applyKpisFromSheet(fetchedData);
+      if (dom.syncStatusText) dom.syncStatusText.textContent = "🟢 Live (Auto-Synced)";
+      if (!isAutoSync) {
+        showToast(`✅ KPI templates synchronized with Google Sheet (${count} metrics)!`);
+      } else if (hasChanged) {
+        showToast(`🟢 Sheet Update Applied: KPI metrics refreshed live (${count} metrics)!`);
+      }
+    } else {
+      loadCachedKpis();
+      if (dom.syncStatusText) dom.syncStatusText.textContent = "Offline (Cached)";
+      if (!isAutoSync) showToast("ℹ️ Loaded KPI scorecards from local storage cache.");
+    }
+  }
+
+  function startAutoSyncPolling() {
+    window.addEventListener('focus', () => {
+      syncWithGoogleSheet(true);
+    });
+    setInterval(() => {
+      syncWithGoogleSheet(true);
+    }, 30000);
   }
 
   // Generate & Print luxury staff PDF scorecard
@@ -996,6 +1210,7 @@
 
   function init() {
     initState();
+    loadCachedKpis();
 
     // Populate staff dropdown
     if (dom.staffSelect) {
@@ -1034,6 +1249,7 @@
     renderStaffInfo();
     renderTable();
     setTimeout(syncWithGoogleSheet, 800);
+    startAutoSyncPolling();
   }
 
   if (document.readyState === 'loading') {

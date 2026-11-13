@@ -9,8 +9,8 @@
 (function () {
   'use strict';
 
-  // Master RNR Data - Exact transcription from official SVV & C&B documents
-  const RNR_DATA = {
+  // Master RNR Data - Official SVV & C&B documents (Syncs live from Google Sheet)
+  let RNR_DATA = {
     greeter: [
       {
         sno: 1,
@@ -770,26 +770,243 @@
       .replace(/'/g, '&#39;');
   }
 
-  // Google Sheet Integration
-  function syncWithGoogleSheet() {
-    const gsheetUrl = localStorage.getItem('svv_gsheet_url') || 'https://script.google.com/macros/s/AKfycbxScZV2koc5d68t1F9851fRi-H_60r3UJe_GwilkdDFR-2K-710v2IdB1PiHpUUztJEiA/exec';
-    
-    if (dom.syncStatusText) dom.syncStatusText.textContent = "Syncing with GSheet...";
-    showToast("Connecting to Suba Valli Vilas Google Sheet...");
+  // JSONP Fallback for Google Apps Script Web App redirects
+  function fetchJsonP(url, timeoutMs = 8000) {
+    return new Promise((resolve, reject) => {
+      const cbName = 'svv_rnr_cb_' + Math.random().toString(36).substring(2, 9);
+      const script = document.createElement('script');
+      let settled = false;
 
-    // Store in localStorage for instant offline access
-    localStorage.setItem('svv_rnr_data', JSON.stringify(RNR_DATA));
+      const cleanup = () => {
+        try { script.remove(); } catch(e) {}
+        try { delete window[cbName]; } catch(e) {}
+      };
 
-    fetch(`${gsheetUrl}?action=PING`)
-      .then(res => res.json())
-      .then(data => {
-        if (dom.syncStatusText) dom.syncStatusText.textContent = "Connected to GSheet";
-        showToast("✅ RNR points verified and synchronized with Google Sheet!");
-      })
-      .catch(err => {
-        if (dom.syncStatusText) dom.syncStatusText.textContent = "Offline (Cached)";
-        showToast("ℹ️ Loaded official RNR points from local storage cache.");
+      const timer = setTimeout(() => {
+        if (!settled) {
+          settled = true;
+          cleanup();
+          reject(new Error('JSONP timeout after ' + timeoutMs + 'ms'));
+        }
+      }, timeoutMs);
+
+      window[cbName] = (data) => {
+        if (!settled) {
+          settled = true;
+          clearTimeout(timer);
+          cleanup();
+          resolve(data);
+        }
+      };
+
+      const sep = url.includes('?') ? '&' : '?';
+      script.src = `${url}${sep}callback=${cbName}`;
+      script.onerror = () => {
+        if (!settled) {
+          settled = true;
+          clearTimeout(timer);
+          cleanup();
+          reject(new Error('JSONP script load error'));
+        }
+      };
+      document.head.appendChild(script);
+    });
+  }
+
+  // Smart fetch: tries CORS fetch first, falls back to JSONP automatically
+  async function smartFetch(url) {
+    try {
+      const res = await fetch(url, {
+        method: 'GET',
+        mode: 'cors',
+        redirect: 'follow',
+        headers: { 'Accept': 'application/json' }
       });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return await res.json();
+    } catch (corsErr) {
+      console.log('[SVV RNR] CORS fetch failed, trying JSONP:', corsErr.message);
+      return await fetchJsonP(url);
+    }
+  }
+
+  // Parse and map rows from Google Sheet or Cloudflare Worker into RNR_DATA
+  function applyRnrFromSheet(sheetRows) {
+    if (!Array.isArray(sheetRows) || sheetRows.length === 0) return 0;
+    const grouped = { greeter: [], manager: [], telecaller: [] };
+
+    sheetRows.forEach((row, idx) => {
+      const cat = String(row.Role_Category || row.role_category || row.category || '').toLowerCase().trim();
+      const targetCat = cat.includes('greet') ? 'greeter' :
+                        cat.includes('manag') ? 'manager' :
+                        cat.includes('tele')  ? 'telecaller' : '';
+      if (!targetCat) return;
+
+      grouped[targetCat].push({
+        sno: parseInt(row.SNo || row.S_No || row.sno) || (grouped[targetCat].length + 1),
+        areaEn: row.Area_English || row.Focus_Area_English || row.areaEn || row.Area || '',
+        areaTa: row.Area_Tamil || row.Focus_Area_Tamil || row.areaTa || '',
+        roleEn: row.Role_English || row.Responsibility_English || row.roleEn || row.Responsibility || '',
+        roleTa: row.Role_Tamil || row.Responsibility_Tamil || row.roleTa || '',
+        remarks: row.Remarks_KPI || row.Benchmark_Remarks || row.remarks || ''
+      });
+    });
+
+    let totalLoaded = 0;
+    ['greeter', 'manager', 'telecaller'].forEach(k => {
+      if (grouped[k].length > 0) {
+        RNR_DATA[k] = grouped[k];
+        totalLoaded += grouped[k].length;
+      }
+    });
+
+    if (totalLoaded > 0) {
+      try { localStorage.setItem('svv_rnr_data', JSON.stringify(RNR_DATA)); } catch (_) {}
+      populateAreaDropdown();
+      renderTable();
+    }
+    return totalLoaded;
+  }
+
+  // Direct Google Sheets Visualization API reader (Zero intermediate setup)
+  async function fetchGoogleSheetGviz(sheetId, sheetName) {
+    try {
+      const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}&t=${Date.now()}`;
+      const res = await fetch(url);
+      if (!res.ok) return null;
+      const text = await res.text();
+      const start = text.indexOf('{');
+      const end = text.lastIndexOf('}');
+      if (start === -1 || end === -1) return null;
+      const raw = JSON.parse(text.substring(start, end + 1));
+      if (!raw.table || !raw.table.cols || !raw.table.rows) return null;
+      const headers = raw.table.cols.map(c => (c.label || c.id || '').trim());
+      return raw.table.rows.map(r => {
+        const obj = {};
+        headers.forEach((h, idx) => {
+          if (h && r.c && r.c[idx]) {
+            obj[h] = r.c[idx].f !== undefined ? r.c[idx].f : (r.c[idx].v !== undefined ? r.c[idx].v : '');
+          }
+        });
+        return obj;
+      });
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // Load cached RNR data from localStorage on startup
+  function loadCachedRnr() {
+    try {
+      const cached = localStorage.getItem('svv_rnr_data');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed && typeof parsed === 'object') {
+          if (Array.isArray(parsed.greeter) && parsed.greeter.length > 0) RNR_DATA.greeter = parsed.greeter;
+          if (Array.isArray(parsed.manager) && parsed.manager.length > 0) RNR_DATA.manager = parsed.manager;
+          if (Array.isArray(parsed.telecaller) && parsed.telecaller.length > 0) RNR_DATA.telecaller = parsed.telecaller;
+        }
+      }
+      // Check last full cloud sync payload
+      const cloudCached = localStorage.getItem('svv_last_cloud_data');
+      if (cloudCached) {
+        const parsedCloud = JSON.parse(cloudCached);
+        if (parsedCloud && Array.isArray(parsedCloud.rnr) && parsedCloud.rnr.length > 0) {
+          applyRnrFromSheet(parsedCloud.rnr);
+        }
+      }
+    } catch (_) {}
+  }
+
+  // Dynamic Google Sheet & Cloudflare Gateway Integration with Real-Time Auto-Sync
+  let lastRnrHash = '';
+  function computeHash(data) {
+    return JSON.stringify(data || '').length + '_' + JSON.stringify(data || '').slice(0, 50);
+  }
+
+  async function syncWithGoogleSheet(isAutoSync = false) {
+    const workerUrl = (localStorage.getItem('svv_cf_worker_url') || 'https://svv-crm-gateway.subavallivilas-candb.workers.dev').trim();
+    const gsheetUrl = (localStorage.getItem('svv_gsheet_url') || 'https://script.google.com/macros/s/AKfycbxScZV2koc5d68t1F9851fRi-H_60r3UJe_GwilkdDFR-2K-710v2IdB1PiHpUUztJEiA/exec').trim();
+    const sheetId = (localStorage.getItem('svv_gsheet_id') || '1KIaNXXZvjMVFbdQVI0KAmH7lS4Xm_jLsD3I5wzUyJ9U').trim();
+    
+    if (!isAutoSync) {
+      if (dom.syncStatusText) dom.syncStatusText.textContent = "Syncing with GSheet...";
+      showToast("Connecting to Suba Valli Vilas Google Sheet...");
+    }
+
+    let fetchedData = null;
+
+    // Step 1: Direct Google Sheet Gviz API fetch (fastest & zero intermediate setup)
+    if (sheetId) {
+      try {
+        const gvizRows = await fetchGoogleSheetGviz(sheetId, 'RNR_MASTER');
+        if (Array.isArray(gvizRows) && gvizRows.length > 0) {
+          fetchedData = gvizRows;
+        }
+      } catch (_) {}
+    }
+
+    // Step 2: Cloudflare Worker Gateway pull
+    if (!fetchedData && workerUrl) {
+      try {
+        const pullUrl = `${workerUrl.replace(/\/+$/, '')}/api/rnr`;
+        const res = await fetch(pullUrl, { method: 'GET', headers: { 'Accept': 'application/json' } });
+        if (res.ok) {
+          const cloud = await res.json();
+          if (Array.isArray(cloud) && cloud.length > 0) {
+            fetchedData = cloud;
+          } else if (cloud && Array.isArray(cloud.rnr) && cloud.rnr.length > 0) {
+            fetchedData = cloud.rnr;
+          }
+        }
+      } catch (workerErr) {
+        console.warn('[SVV RNR Gateway Pull]', workerErr.message);
+      }
+    }
+
+    // Step 3: Google Apps Script direct pull fallback
+    if (!fetchedData && gsheetUrl) {
+      try {
+        const targetUrl = `${gsheetUrl}${gsheetUrl.includes('?') ? '&' : '?'}action=GET_RNR`;
+        const resp = await smartFetch(targetUrl);
+        if (resp && resp.status === 'SUCCESS' && Array.isArray(resp.data) && resp.data.length > 0) {
+          fetchedData = resp.data;
+        } else if (Array.isArray(resp) && resp.length > 0) {
+          fetchedData = resp;
+        }
+      } catch (gasErr) {
+        console.warn('[SVV RNR Direct Pull]', gasErr.message);
+      }
+    }
+
+    if (fetchedData && fetchedData.length > 0) {
+      const newHash = computeHash(fetchedData);
+      const hasChanged = (newHash !== lastRnrHash);
+      lastRnrHash = newHash;
+
+      const count = applyRnrFromSheet(fetchedData);
+      if (dom.syncStatusText) dom.syncStatusText.textContent = "🟢 Live (Auto-Synced)";
+      if (!isAutoSync) {
+        showToast(`✅ RNR points synchronized with Google Sheet (${count} points)!`);
+      } else if (hasChanged) {
+        showToast(`🟢 Sheet Update Applied: RNR refreshed live (${count} points)!`);
+      }
+    } else {
+      loadCachedRnr();
+      if (dom.syncStatusText) dom.syncStatusText.textContent = "Offline (Cached)";
+      if (!isAutoSync) showToast("ℹ️ Loaded official RNR points from local storage cache.");
+    }
+  }
+
+  function startAutoSyncPolling() {
+    // 1. Instantly check whenever user returns to app tab after editing sheet
+    window.addEventListener('focus', () => {
+      syncWithGoogleSheet(true);
+    });
+    // 2. Continuous 30-second background polling
+    setInterval(() => {
+      syncWithGoogleSheet(true);
+    }, 30000);
   }
 
   // Event Listeners
@@ -838,11 +1055,13 @@
   }
 
   function init() {
+    loadCachedRnr();
     initEvents();
     populateAreaDropdown();
     renderTable();
-    // Auto-check gsheet on launch
+    // Auto-check gsheet on launch and start real-time polling
     setTimeout(syncWithGoogleSheet, 800);
+    startAutoSyncPolling();
   }
 
   if (document.readyState === 'loading') {

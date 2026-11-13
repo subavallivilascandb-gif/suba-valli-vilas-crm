@@ -1,0 +1,1472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Suba Valli Vilas | CRM Mission Control – Gamified Training League</title>
+  <link rel="icon" type="image/png" href="svv-logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Noto+Sans+Tamil:wght@400;500;600;700;800&family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="governance-shared.css">
+  <style>
+    /* ==========================================================================
+       CYBERPUNK-MEETS-ROYAL JEWELLERY GAMING PALETTE (BRIGHT & VIBRANT)
+       ========================================================================== */
+    :root {
+      --game-bg: #120202;
+      --game-card-bg: #1F0505;
+      --game-card-inner: #290808;
+      --game-card-border: rgba(197, 160, 89, 0.45);
+      --game-gold: #FFD700;
+      --game-champagne: #FFE082;
+      --game-maroon-glow: #9B111E;
+      --game-neon-cyan: #00F0FF;
+      --game-neon-green: #00E676;
+      --game-neon-amber: #FFB300;
+      --game-neon-red: #FF1744;
+      --game-neon-purple: #D500F9;
+      --font-game: 'Orbitron', 'Cinzel', sans-serif;
+      --font-ta: 'Noto Sans Tamil', sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at 50% 20%, #2A0505 0%, #120202 70%, #080101 100%) !important;
+      color: #F8FAFC !important;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, var(--font-ta), sans-serif;
+    }
+
+    /* Game HUD Top Banner */
+    .game-hud {
+      background: rgba(25, 4, 4, 0.92);
+      backdrop-filter: blur(14px);
+      border-bottom: 2px solid var(--game-gold);
+      padding: 12px 24px;
+      position: sticky;
+      top: 66px;
+      z-index: 900;
+      box-shadow: 0 4px 25px rgba(0,0,0,0.6);
+    }
+    .game-hud-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .hud-player-badge {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 6px 14px;
+      border-radius: 30px;
+      border: 1.5px solid var(--game-gold);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .hud-player-badge:hover {
+      background: rgba(255, 215, 0, 0.2);
+      transform: translateY(-2px);
+      box-shadow: 0 0 16px rgba(255, 215, 0, 0.4);
+    }
+    .hud-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #7F1D1D, #D97706);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.35rem;
+      border: 2px solid var(--game-gold);
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    }
+    .hud-player-name {
+      font-weight: 800;
+      color: #FFFFFF;
+      font-size: 0.95rem;
+    }
+    .hud-player-role {
+      font-size: 0.72rem;
+      color: var(--game-champagne);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .hud-stats-group {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .hud-stat-pill {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 4px 14px;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1.5px solid rgba(255, 215, 0, 0.3);
+    }
+    .hud-stat-label {
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: #CBD5E1;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .hud-stat-value {
+      font-family: var(--font-game);
+      font-size: 1.25rem;
+      font-weight: 900;
+      color: var(--game-gold);
+      letter-spacing: 0.5px;
+    }
+    .hud-streak-value {
+      color: #FF9100;
+      text-shadow: 0 0 12px rgba(255, 145, 0, 0.7);
+    }
+
+    /* Main Container */
+    .game-container {
+      max-width: 1350px;
+      margin: 24px auto;
+      padding: 0 20px;
+      flex: 1;
+      width: 100%;
+    }
+
+    /* Tagline Strip */
+    .game-tagline-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(90deg, rgba(120, 10, 10, 0.95), rgba(41, 8, 8, 0.95));
+      border: 1.5px solid var(--game-gold);
+      border-radius: 14px;
+      padding: 12px 22px;
+      margin-bottom: 18px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    }
+    .tagline-text {
+      font-family: var(--font-game);
+      font-size: 0.95rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: var(--game-gold);
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .tagline-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    /* ==========================================================================
+       CARTOON STAFF SHOWCASE RIBBON (ALL HEROES DISPLAYED)
+       ========================================================================== */
+    .cartoon-roster-strip {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      overflow-x: auto;
+      padding: 10px 4px 14px 4px;
+      margin-bottom: 20px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--game-gold) rgba(0,0,0,0.5);
+    }
+    .roster-mini-card {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(30, 4, 4, 0.85);
+      border: 2px solid var(--game-card-border);
+      border-radius: 14px;
+      padding: 8px 14px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .roster-mini-card:hover {
+      transform: translateY(-4px) scale(1.04);
+      border-color: var(--game-gold);
+      box-shadow: 0 8px 20px rgba(255, 215, 0, 0.4);
+    }
+    .roster-avatar-box {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      background: rgba(0,0,0,0.5);
+      border: 2px solid var(--game-gold);
+      box-shadow: 0 0 10px rgba(255,215,0,0.3);
+    }
+    .roster-info-box {
+      display: flex;
+      flex-direction: column;
+    }
+    .roster-badge-tag {
+      font-size: 0.68rem;
+      font-weight: 800;
+      color: var(--game-gold);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .roster-name-text {
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: #FFFFFF;
+      white-space: nowrap;
+    }
+    .roster-role-sub {
+      font-size: 0.72rem;
+      color: #CBD5E1;
+      white-space: nowrap;
+    }
+
+    /* Role & Level Selector Bar */
+    .role-level-strip {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(25, 3, 3, 0.85);
+      border: 1.5px solid var(--game-card-border);
+      border-radius: 14px;
+      padding: 14px 20px;
+      margin-bottom: 20px;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .role-selector-group, .level-selector-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .strip-label {
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--game-champagne);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .role-pill-btn {
+      padding: 8px 16px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1.5px solid rgba(197, 160, 89, 0.35);
+      color: #E2E8F0;
+      font-size: 0.85rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .role-pill-btn:hover {
+      background: rgba(197, 160, 89, 0.2);
+      border-color: var(--game-gold);
+      color: #FFFFFF;
+      transform: translateY(-2px);
+    }
+    .role-pill-btn.active {
+      background: linear-gradient(135deg, #8B0000 0%, #D4AF37 100%);
+      border: 2px solid var(--game-gold);
+      color: #FFFFFF;
+      box-shadow: 0 0 16px rgba(255, 215, 0, 0.5);
+    }
+    .level-pill-btn {
+      padding: 8px 16px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1.5px solid rgba(197, 160, 89, 0.3);
+      color: #94A3B8;
+      font-size: 0.82rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .level-pill-btn:hover {
+      border-color: var(--game-gold);
+      color: #FFF;
+      transform: translateY(-2px);
+    }
+    .level-pill-btn.active {
+      background: rgba(255, 215, 0, 0.25);
+      border-color: var(--game-gold);
+      color: var(--game-gold);
+      box-shadow: 0 0 14px rgba(255, 215, 0, 0.4);
+    }
+
+    /* 3D Interactive Cyber-Gold Dice Arena */
+    .dice-arena {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(135deg, rgba(60, 6, 6, 0.9), rgba(20, 2, 2, 0.95));
+      border: 2px solid var(--game-gold);
+      border-radius: 16px;
+      padding: 18px 24px;
+      margin-bottom: 24px;
+      gap: 18px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+      position: relative;
+      overflow: hidden;
+    }
+    .dice-wrapper {
+      width: 64px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .dice-box {
+      width: 58px;
+      height: 58px;
+      background: linear-gradient(145deg, #FFFDE7, #FFD700, #B8860B);
+      border: 3px solid #FFE57F;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-game);
+      font-size: 2.3rem;
+      color: #4A0303;
+      box-shadow: 0 6px 20px rgba(255, 215, 0, 0.6), inset 0 2px 5px rgba(255,255,255,0.9);
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .dice-box:hover {
+      transform: scale(1.1) rotate(6deg);
+      box-shadow: 0 0 25px rgba(255, 215, 0, 0.9);
+    }
+    .dice-box.rolling {
+      animation: diceRollTumble 0.75s ease-out;
+    }
+    @keyframes diceRollTumble {
+      0% { transform: rotate(0deg) scale(1); }
+      20% { transform: rotate(180deg) scale(1.28) translateY(-10px); }
+      40% { transform: rotate(360deg) scale(0.9) translateY(6px); }
+      60% { transform: rotate(540deg) scale(1.22) translateY(-8px); }
+      80% { transform: rotate(720deg) scale(1.08); }
+      100% { transform: rotate(900deg) scale(1); }
+    }
+    .dice-info-block {
+      flex: 1;
+    }
+    .dice-info-title {
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .dice-info-sub {
+      font-size: 0.9rem;
+      color: #CBD5E1;
+      margin-top: 4px;
+      line-height: 1.45;
+    }
+    .dice-modifier-pill {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 0.78rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .modifier-gold { background: rgba(255, 215, 0, 0.25); color: var(--game-gold); border: 1.5px solid var(--game-gold); }
+    .modifier-speed { background: rgba(0, 240, 255, 0.25); color: var(--game-neon-cyan); border: 1.5px solid var(--game-neon-cyan); }
+    .modifier-boss { background: rgba(255, 23, 68, 0.25); color: var(--game-neon-red); border: 1.5px solid var(--game-neon-red); }
+    .modifier-raci { background: rgba(213, 0, 249, 0.25); color: var(--game-neon-purple); border: 1.5px solid var(--game-neon-purple); }
+
+    /* Level Progress Bar */
+    .level-meter-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .level-meter-bg {
+      flex: 1;
+      height: 10px;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 5px;
+      overflow: hidden;
+      border: 1px solid var(--game-gold);
+    }
+    .level-meter-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #FFB300, #00E676);
+      width: 0%;
+      transition: width 0.4s ease;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 230, 118, 0.6);
+    }
+
+    /* Mission Progress Ribbon */
+    .mission-ribbon {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .mission-node {
+      background: var(--game-card-bg);
+      border: 1.5px solid var(--game-card-border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .mission-node:hover {
+      transform: translateY(-3px);
+      border-color: var(--game-gold);
+      box-shadow: 0 6px 18px rgba(255, 215, 0, 0.3);
+    }
+    .mission-node.active {
+      background: linear-gradient(135deg, #580505 0%, #800000 100%);
+      border: 2px solid var(--game-gold);
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.45);
+    }
+    .mission-node.completed {
+      border-color: var(--game-neon-green);
+    }
+    .mission-node-num {
+      font-size: 0.75rem;
+      font-weight: 900;
+      color: #94A3B8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .mission-node.active .mission-node-num {
+      color: var(--game-gold);
+    }
+    .mission-node.completed .mission-node-num {
+      color: var(--game-neon-green);
+    }
+    .mission-node-title {
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: #FFFFFF;
+      margin: 4px 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .mission-node-pts {
+      font-family: var(--font-game);
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: var(--game-champagne);
+    }
+
+    /* Mission Stage Box */
+    .mission-stage {
+      background: var(--game-card-bg);
+      border: 2px solid var(--game-card-border);
+      border-radius: 18px;
+      padding: 28px 32px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.65);
+      position: relative;
+    }
+
+    /* Stage Header & Timer */
+    .stage-hdr {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 20px;
+      border-bottom: 1.5px solid rgba(255, 215, 0, 0.3);
+      padding-bottom: 16px;
+    }
+    .stage-badge-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .stage-pill {
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+    }
+    .stage-pill-rnr {
+      background: rgba(255, 215, 0, 0.2);
+      border: 1.5px solid var(--game-gold);
+      color: var(--game-gold);
+    }
+    .stage-pill-pts {
+      background: rgba(0, 230, 118, 0.2);
+      border: 1.5px solid var(--game-neon-green);
+      color: var(--game-neon-green);
+    }
+    .stage-timer-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .stage-timer-clock {
+      font-family: var(--font-game);
+      font-size: 1.25rem;
+      font-weight: 900;
+      color: var(--game-gold);
+      background: rgba(0,0,0,0.5);
+      padding: 6px 14px;
+      border-radius: 8px;
+      border: 1.5px solid var(--game-gold);
+    }
+    .pulse-danger {
+      color: var(--game-neon-red) !important;
+      border-color: var(--game-neon-red) !important;
+      animation: pulseAlert 0.5s infinite alternate;
+    }
+    @keyframes pulseAlert {
+      from { transform: scale(1); box-shadow: 0 0 5px rgba(255, 23, 68, 0.5); }
+      to { transform: scale(1.05); box-shadow: 0 0 20px rgba(255, 23, 68, 0.9); }
+    }
+
+    .scenario-headline {
+      font-family: var(--font-game);
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: var(--game-gold);
+      margin-bottom: 8px;
+      line-height: 1.35;
+    }
+    .scenario-subhead {
+      font-size: 0.95rem;
+      color: #CBD5E1;
+      margin-bottom: 22px;
+      line-height: 1.55;
+    }
+
+    /* ==========================================================================
+       VOICE ASSISTANT BAR (BILINGUAL TAMIL & ENGLISH AUDIO NARRATION)
+       ========================================================================== */
+    .voice-assistant-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(135deg, rgba(35, 4, 4, 0.95), rgba(60, 10, 10, 0.95));
+      border: 1.5px solid var(--game-gold);
+      border-radius: 14px;
+      padding: 10px 16px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    }
+    .voice-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.84rem;
+      font-weight: 800;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+    .voice-btn-ta {
+      background: linear-gradient(135deg, #059669, #10B981);
+      color: #FFFFFF;
+    }
+    .voice-btn-ta:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 14px rgba(16, 185, 129, 0.7);
+    }
+    .voice-btn-en {
+      background: linear-gradient(135deg, #0284C7, #38BDF8);
+      color: #FFFFFF;
+    }
+    .voice-btn-en:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 14px rgba(56, 189, 248, 0.7);
+    }
+    .voice-btn-stop {
+      background: rgba(239, 68, 68, 0.25);
+      border: 1px solid #EF4444;
+      color: #FFA3A9;
+    }
+    .voice-mini-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.65);
+      border: 2px solid var(--game-gold);
+      color: var(--game-gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.05rem;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.2s;
+      flex-shrink: 0;
+    }
+    .voice-mini-btn:hover {
+      transform: scale(1.18);
+      background: var(--game-gold);
+      color: #000;
+    }
+    .voice-wave-anim {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      margin-left: 6px;
+    }
+    .voice-wave-bar {
+      width: 3px;
+      height: 12px;
+      background: var(--game-gold);
+      border-radius: 2px;
+      animation: soundWave 0.6s infinite alternate;
+    }
+    .voice-wave-bar:nth-child(2) { animation-delay: 0.2s; height: 18px; }
+    .voice-wave-bar:nth-child(3) { animation-delay: 0.4s; height: 10px; }
+    @keyframes soundWave {
+      from { height: 6px; }
+      to { height: 20px; }
+    }
+
+    /* Bilingual Scenario Box */
+    .bilingual-box {
+      background: rgba(90, 8, 8, 0.45);
+      border-left: 5px solid var(--game-gold);
+      border-radius: 12px;
+      padding: 18px 22px;
+      margin-bottom: 24px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+    }
+    .bilingual-ta {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #FFFFFF;
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+    .bilingual-en {
+      font-size: 0.98rem;
+      color: var(--game-champagne);
+      line-height: 1.5;
+    }
+
+    /* ==========================================================================
+       CARTOON CHARACTER SELECTION CARDS (BRIGHT & HIGHLY ENGAGING)
+       ========================================================================== */
+    .cartoon-choices-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .cartoon-card {
+      background: #1C0505;
+      border-radius: 18px;
+      padding: 16px 18px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      border: 3px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+    }
+    .cartoon-card:hover {
+      transform: translateY(-6px) scale(1.02);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+    }
+    .cartoon-card.correct {
+      border-color: #00E676 !important;
+      background: linear-gradient(135deg, rgba(6, 78, 59, 0.95), rgba(4, 120, 87, 0.8)) !important;
+      box-shadow: 0 0 28px rgba(0, 230, 118, 0.8) !important;
+    }
+    .cartoon-card.incorrect {
+      border-color: #FF1744 !important;
+      background: linear-gradient(135deg, rgba(127, 29, 29, 0.95), rgba(185, 28, 28, 0.8)) !important;
+      box-shadow: 0 0 24px rgba(255, 23, 68, 0.7) !important;
+    }
+    .cartoon-avatar-box {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      flex-shrink: 0;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6);
+      animation: cartoonBob 2.8s infinite ease-in-out;
+    }
+    @keyframes cartoonBob {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-7px); }
+    }
+    .cartoon-content {
+      flex: 1;
+    }
+    .cartoon-badge-pill {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 0.72rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+      background: rgba(0,0,0,0.4);
+      border: 1px solid rgba(255,255,255,0.25);
+    }
+    .cartoon-name-ta {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #FFFFFF;
+      line-height: 1.3;
+    }
+    .cartoon-name-en {
+      font-size: 0.82rem;
+      color: #CBD5E1;
+      margin-bottom: 4px;
+    }
+    .cartoon-power-desc {
+      font-size: 0.78rem;
+      color: var(--game-champagne);
+      line-height: 1.35;
+    }
+
+    /* STAFF CARTOON COLOR THEMES */
+    .theme-gold { border-color: #FFD700; background: linear-gradient(145deg, #2D1A00, #452402); }
+    .theme-gold .cartoon-avatar-box { background: linear-gradient(135deg, #FFD700, #B45309); border: 2.5px solid #FFFDE7; }
+    .theme-gold .cartoon-badge-pill { color: #FFD700; border-color: #FFD700; }
+
+    .theme-amber { border-color: #FB923C; background: linear-gradient(145deg, #331500, #451A03); }
+    .theme-amber .cartoon-avatar-box { background: linear-gradient(135deg, #FB923C, #C2410C); border: 2.5px solid #FED7AA; }
+    .theme-amber .cartoon-badge-pill { color: #FB923C; border-color: #FB923C; }
+
+    .theme-cyan { border-color: #00F0FF; background: linear-gradient(145deg, #022C3A, #083344); }
+    .theme-cyan .cartoon-avatar-box { background: linear-gradient(135deg, #00F0FF, #0369A1); border: 2.5px solid #BAE6FD; }
+    .theme-cyan .cartoon-badge-pill { color: #00F0FF; border-color: #00F0FF; }
+
+    .theme-emerald { border-color: #00E676; background: linear-gradient(145deg, #022C1A, #064E3B); }
+    .theme-emerald .cartoon-avatar-box { background: linear-gradient(135deg, #00E676, #047857); border: 2.5px solid #A7F3D0; }
+    .theme-emerald .cartoon-badge-pill { color: #00E676; border-color: #00E676; }
+
+    .theme-magenta { border-color: #EC4899; background: linear-gradient(145deg, #36021A, #500724); }
+    .theme-magenta .cartoon-avatar-box { background: linear-gradient(135deg, #EC4899, #9D174D); border: 2.5px solid #FBCFE8; }
+    .theme-magenta .cartoon-badge-pill { color: #EC4899; border-color: #EC4899; }
+
+    .theme-purple { border-color: #D500F9; background: linear-gradient(145deg, #26023A, #3B0764); }
+    .theme-purple .cartoon-avatar-box { background: linear-gradient(135deg, #D500F9, #6B21A8); border: 2.5px solid #E9D5FF; }
+    .theme-purple .cartoon-badge-pill { color: #D500F9; border-color: #D500F9; }
+
+    .theme-coral { border-color: #FF1744; background: linear-gradient(145deg, #360A0A, #551111); }
+    .theme-coral .cartoon-avatar-box { background: linear-gradient(135deg, #FF1744, #991B1B); border: 2.5px solid #FECACA; }
+    .theme-coral .cartoon-badge-pill { color: #FF1744; border-color: #FF1744; }
+
+    /* ==========================================================================
+       RACI CARTOON MATCHING METHOD (SUPER EASY 5-ROLE CARTOON SELECTORS)
+       ========================================================================== */
+    .raci-cartoon-board {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    .raci-cartoon-row {
+      display: grid;
+      grid-template-columns: 280px 40px 1fr;
+      align-items: center;
+      gap: 16px;
+      background: rgba(30, 4, 4, 0.7);
+      border: 2px solid var(--game-card-border);
+      border-radius: 16px;
+      padding: 14px 20px;
+      transition: all 0.25s ease;
+    }
+    .raci-cartoon-row:hover {
+      background: rgba(197, 160, 89, 0.12);
+      border-color: var(--game-gold);
+    }
+    .raci-cartoon-row.match-correct {
+      border: 2.5px solid var(--game-neon-green) !important;
+      background: rgba(0, 230, 118, 0.18) !important;
+      box-shadow: 0 0 20px rgba(0, 230, 118, 0.4) !important;
+    }
+    .raci-cartoon-row.match-incorrect {
+      border: 2.5px solid var(--game-neon-red) !important;
+      background: rgba(255, 23, 68, 0.18) !important;
+      box-shadow: 0 0 20px rgba(255, 23, 68, 0.4) !important;
+    }
+    .raci-role-badge-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .role-code-pill {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-game);
+      font-size: 1.25rem;
+      font-weight: 900;
+      color: #FFFFFF;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+      flex-shrink: 0;
+    }
+    .role-code-r1 { background: linear-gradient(135deg, #B91C1C, #EF4444); border: 2px solid #FCA5A5; }
+    .role-code-r2 { background: linear-gradient(135deg, #D97706, #F59E0B); border: 2px solid #FDE68A; }
+    .role-code-a  { background: linear-gradient(135deg, #15803D, #22C55E); border: 2px solid #BBF7D0; }
+    .role-code-c  { background: linear-gradient(135deg, #0284C7, #38BDF8); border: 2px solid #BAE6FD; }
+    .role-code-i  { background: linear-gradient(135deg, #7C3AED, #A855F7); border: 2px solid #E9D5FF; }
+
+    .role-title-ta {
+      font-size: 1rem;
+      font-weight: 800;
+      color: #FFFFFF;
+    }
+    .role-title-en {
+      font-size: 0.76rem;
+      color: var(--game-champagne);
+    }
+    .raci-cartoon-select {
+      background: #140202;
+      color: #FFFFFF;
+      border: 2px solid var(--game-gold);
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      width: 100%;
+      cursor: pointer;
+      outline: none;
+      transition: all 0.2s;
+    }
+    .raci-cartoon-select:focus {
+      border-color: #00F0FF;
+      box-shadow: 0 0 16px rgba(0, 240, 255, 0.5);
+    }
+
+    @media (max-width: 820px) {
+      .raci-cartoon-row {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      .match-connector {
+        display: none;
+      }
+    }
+
+    /* Sub-Stepper & Question Pills */
+    .quiz-stepper {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+    }
+    .quiz-step-pill {
+      padding: 8px 18px;
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1.5px solid rgba(197, 160, 89, 0.35);
+      color: #CBD5E1;
+      font-size: 0.85rem;
+      font-weight: 800;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .quiz-step-pill:hover {
+      border-color: var(--game-gold);
+      color: #FFFFFF;
+      background: rgba(197, 160, 89, 0.15);
+      transform: translateY(-2px);
+    }
+    .quiz-step-pill.active {
+      background: rgba(255, 215, 0, 0.25);
+      border-color: var(--game-gold);
+      color: var(--game-gold);
+      box-shadow: 0 0 14px rgba(255, 215, 0, 0.35);
+    }
+    .quiz-step-pill.completed {
+      border-color: var(--game-neon-green);
+      color: var(--game-neon-green);
+      background: rgba(0, 230, 118, 0.15);
+    }
+
+    /* Detective Dossier */
+    .dossier-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .dossier-card {
+      background: rgba(30, 4, 4, 0.7);
+      border: 2px solid var(--game-card-border);
+      border-radius: 14px;
+      padding: 18px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+    .dossier-card:hover {
+      background: rgba(197, 160, 89, 0.15);
+      border-color: var(--game-gold);
+      transform: translateY(-3px);
+    }
+    .dossier-card.selected-error {
+      border: 2.5px solid var(--game-neon-red);
+      background: rgba(255, 23, 68, 0.2);
+      box-shadow: 0 0 20px rgba(255, 23, 68, 0.6);
+    }
+    .dossier-tag {
+      font-size: 0.74rem;
+      font-weight: 900;
+      color: var(--game-gold);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    /* Explanation & Feedback Banner */
+    .feedback-banner {
+      border-radius: 14px;
+      padding: 18px 24px;
+      margin-bottom: 22px;
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    .feedback-banner.show {
+      display: block;
+    }
+    .feedback-banner.correct {
+      background: rgba(0, 230, 118, 0.2);
+      border: 2px solid var(--game-neon-green);
+      color: #A7F3D0;
+      box-shadow: 0 0 20px rgba(0, 230, 118, 0.4);
+    }
+    .feedback-banner.incorrect {
+      background: rgba(255, 23, 68, 0.2);
+      border: 2px solid var(--game-neon-red);
+      color: #FECACA;
+      box-shadow: 0 0 20px rgba(255, 23, 68, 0.4);
+    }
+    .feedback-title {
+      font-size: 1.2rem;
+      font-weight: 900;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .feedback-desc {
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    /* Stage Action Buttons */
+    .stage-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1.5px solid rgba(255, 215, 0, 0.3);
+      padding-top: 20px;
+    }
+    .btn-game {
+      font-family: var(--font-game);
+      font-size: 0.92rem;
+      font-weight: 900;
+      padding: 12px 24px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .btn-game-gold {
+      background: linear-gradient(135deg, #FFD700 0%, #D4AF37 50%, #B8860B 100%);
+      color: #1A0404;
+      box-shadow: 0 4px 18px rgba(255, 215, 0, 0.5);
+    }
+    .btn-game-gold:hover {
+      background: linear-gradient(135deg, #FFFDE7 0%, #FFD700 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(255, 215, 0, 0.8);
+    }
+    .btn-game-outline {
+      background: transparent;
+      border: 1.5px solid var(--game-card-border);
+      color: #CBD5E1;
+    }
+    .btn-game-outline:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--game-gold);
+      color: #FFFFFF;
+    }
+
+    /* Modal Overlay */
+    .game-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.88);
+      backdrop-filter: blur(10px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      padding: 20px;
+    }
+    .game-modal.active {
+      display: flex;
+    }
+    .game-modal-box {
+      background: #180303;
+      border: 2.5px solid var(--game-gold);
+      border-radius: 20px;
+      max-width: 800px;
+      width: 100%;
+      padding: 30px;
+      box-shadow: 0 0 50px rgba(255, 215, 0, 0.4);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-hdr {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      border-bottom: 1.5px solid rgba(255, 215, 0, 0.3);
+      padding-bottom: 14px;
+    }
+    .modal-title {
+      font-family: var(--font-game);
+      font-size: 1.35rem;
+      font-weight: 900;
+      color: var(--game-gold);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.8rem;
+      color: #CBD5E1;
+      cursor: pointer;
+    }
+    .modal-close:hover {
+      color: #FFFFFF;
+    }
+    .staff-select-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin-top: 14px;
+    }
+    .staff-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1.5px solid var(--game-card-border);
+      border-radius: 12px;
+      padding: 14px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .staff-card:hover, .staff-card.selected {
+      background: rgba(255, 215, 0, 0.25);
+      border-color: var(--game-gold);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 18px rgba(255, 215, 0, 0.35);
+    }
+
+    /* All Questions Modal Specific */
+    .q-filter-tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 16px;
+    }
+    .q-tab-btn {
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--game-card-border);
+      color: #CBD5E1;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .q-tab-btn.active {
+      background: var(--game-gold);
+      color: #000;
+      border-color: var(--game-gold);
+    }
+    .q-drawer-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .q-drawer-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 12px 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .q-drawer-item:hover {
+      background: rgba(255, 215, 0, 0.15);
+      border-color: var(--game-gold);
+      transform: translateX(4px);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 900px) {
+      .mission-ribbon { grid-template-columns: repeat(3, 1fr); }
+      .dossier-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- UNIFIED TOP NAVIGATION -->
+  <header class="gov-top-bar">
+    <div class="gov-bar-inner">
+      <a href="crm-hub.html" class="gov-brand">
+        <div class="gov-cb-badge" title="Consulting & Beyond (C&B)">
+          <img src="cb-logo.png" alt="C&B Consulting & Beyond">
+        </div>
+        <div class="gov-logo-badge" title="Suba Valli Vilas Jewellery">
+          <img src="svv-logo.png" alt="Suba Valli Vilas">
+        </div>
+        <div>
+          <div class="gov-brand-title">SUBA VALLI VILAS</div>
+          <div class="gov-brand-sub">CRM GOVERNANCE &amp; MANAGEMENT SUITE</div>
+        </div>
+      </a>
+
+      <nav class="gov-nav-links">
+        <a href="index.html" class="gov-nav-link nav-home"><span>🏠</span> Main App</a>
+        <a href="crm-hub.html" class="gov-nav-link"><span>🏛️</span> Hub</a>
+        <a href="game.html" class="gov-nav-link active" style="color:var(--game-gold); border-bottom-color:var(--game-gold);"><span>🎮</span> Mission League</a>
+        <a href="mis-report.html" class="gov-nav-link"><span>📊</span> MIS Report</a>
+        <a href="rnr.html" class="gov-nav-link"><span>📋</span> RNR</a>
+        <a href="raci.html" class="gov-nav-link"><span>🎯</span> RACI</a>
+        <a href="kpi.html" class="gov-nav-link"><span>📈</span> KPI</a>
+        <a href="training.html" class="gov-nav-link"><span>🎓</span> Training Kit</a>
+      </nav>
+
+      <div class="gov-bar-actions">
+        <div class="gov-sync-badge" id="btnSyncGSheet" title="Sync live session scores to Google Sheets">
+          <span class="gov-sync-dot"></span>
+          <span id="syncStatusText">Scores Linked</span>
+        </div>
+        <button class="btn-gov btn-gov-gold no-print" onclick="window.print()">🖨️ Print Report</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- GAME HUD TOP BAR -->
+  <div class="game-hud">
+    <div class="game-hud-inner">
+      <!-- Player Profile Switcher -->
+      <div class="hud-player-badge" id="hudPlayerSelectBtn" title="Click to Switch Player Profile">
+        <div class="hud-avatar" id="hudAvatarIcon">👑</div>
+        <div>
+          <div class="hud-player-name" id="hudPlayerName">Selvi (CRM Manager)</div>
+          <div class="hud-player-role" id="hudPlayerLevel">Level 3 • CRM Champion</div>
+        </div>
+        <span style="font-size:0.75rem; color:var(--game-champagne); margin-left:4px;">▼</span>
+      </div>
+
+      <!-- Live Game Stats -->
+      <div class="hud-stats-group">
+        <div class="hud-stat-pill">
+          <span class="hud-stat-label">Base Score</span>
+          <span class="hud-stat-value" id="hudBaseScore">0 / 100</span>
+        </div>
+        <div class="hud-stat-pill">
+          <span class="hud-stat-label">Bonus Pts</span>
+          <span class="hud-stat-value" id="hudBonusScore">+0</span>
+        </div>
+        <div class="hud-stat-pill">
+          <span class="hud-stat-label">Streak</span>
+          <span class="hud-stat-value hud-streak-value" id="hudStreak">🔥 0</span>
+        </div>
+        <div class="hud-stat-pill">
+          <span class="hud-stat-label">Badges</span>
+          <span class="hud-stat-value" id="hudBadgesCount" style="color:#38BDF8;">🏆 0</span>
+        </div>
+      </div>
+
+      <!-- HUD Control Buttons -->
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <button class="btn-game btn-game-gold" id="btnOpenAllQuestions" style="padding:8px 14px; font-size:0.78rem;">
+          📚 எல்லாக் கேள்விகளும் (All 55 Qs)
+        </button>
+        <button class="btn-game btn-game-outline" id="btnOpenLeaderboard" style="padding:8px 14px; font-size:0.78rem;">
+          🏆 Leaderboard
+        </button>
+        <button class="btn-game btn-game-outline" id="btnOpenBadges" style="padding:8px 14px; font-size:0.78rem;">
+          🎖️ Badges
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN GAME CONTAINER -->
+  <main class="game-container">
+
+    <!-- Tagline Bar -->
+    <div class="game-tagline-bar">
+      <div>
+        <span class="tagline-text">⚡ SVV MISSION CONTROL: Play the Role. Make the Decision. Own the Result.</span>
+      </div>
+      <div class="tagline-actions">
+        <button class="btn-game btn-game-outline" id="btnRestartSession" style="padding:6px 12px; font-size:0.75rem;">🔄 Reset Mission</button>
+      </div>
+    </div>
+
+    <!-- CARTOON STAFF SHOWCASE RIBBON (ALL HEROES DISPLAYED) -->
+    <div class="cartoon-roster-strip" id="cartoonRosterRibbon">
+      <!-- Injected dynamically by game.js with voice buttons & avatars -->
+    </div>
+
+    <!-- ROLE & LEVEL SELECTOR BAR -->
+    <div class="role-level-strip">
+      <div class="role-selector-group">
+        <span class="strip-label">Playing As:</span>
+        <button class="role-pill-btn active" id="btnRoleStaff" onclick="window.SVV_GAME.selectRole('staff')">
+          <span>🌟</span> CRM Staff (Greeter)
+        </button>
+        <button class="role-pill-btn" id="btnRoleManager" onclick="window.SVV_GAME.selectRole('manager')">
+          <span>👑</span> CRM Manager
+        </button>
+        <button class="role-pill-btn" id="btnRoleTelecaller" onclick="window.SVV_GAME.selectRole('telecaller')">
+          <span>📞</span> Telecaller Desk
+        </button>
+        <button class="role-pill-btn" id="btnRoleAll" onclick="window.SVV_GAME.selectRole('all')">
+          <span>🎖️</span> Master (All Roles)
+        </button>
+      </div>
+
+      <div class="level-selector-group">
+        <span class="strip-label">Level Tier:</span>
+        <button class="level-pill-btn active" id="btnLevelTier1" onclick="window.SVV_GAME.selectLevel(1)">
+          Level 1: Foundation
+        </button>
+        <button class="level-pill-btn" id="btnLevelTier2" onclick="window.SVV_GAME.selectLevel(2)">
+          Level 2: Operations
+        </button>
+        <button class="level-pill-btn" id="btnLevelTier3" onclick="window.SVV_GAME.selectLevel(3)">
+          Level 3: Governance
+        </button>
+      </div>
+    </div>
+
+    <!-- 3D INTERACTIVE CYBER-GOLD DICE ARENA -->
+    <div class="dice-arena">
+      <div style="display:flex; align-items:center; gap:16px;">
+        <div class="dice-wrapper">
+          <div class="dice-box" id="diceBoxBtn" onclick="window.SVV_GAME.rollDice()" title="Click to Roll Golden Dice!">
+            <span id="diceFaceIcon">🎲</span>
+          </div>
+        </div>
+        <div class="dice-info-block">
+          <div class="dice-info-title">
+            <span id="diceHeadline">🎲 Roll the Golden Dice to Draw Your Challenge</span>
+            <span class="dice-modifier-pill modifier-gold" id="diceModifierBadge">Ready to Roll</span>
+          </div>
+          <div class="dice-info-sub" id="diceSubText">
+            Questions are shuffled dynamically based on your selected role (<strong style="color:var(--game-gold);" id="activeRoleNameLabel">CRM Staff</strong>) and Level tier.
+          </div>
+          <div class="level-meter-wrap">
+            <span style="font-size:0.75rem; color:#94A3B8; font-weight:700;">Level Progress:</span>
+            <div class="level-meter-bg">
+              <div class="level-meter-fill" id="levelProgressFill" style="width: 25%;"></div>
+            </div>
+            <span style="font-size:0.75rem; color:var(--game-gold); font-weight:800;" id="levelProgressText">1 / 5 Challenges</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+        <button class="btn-game btn-game-gold" id="btnRollDiceAction" onclick="window.SVV_GAME.rollDice()" style="padding:12px 22px; font-size:0.95rem; box-shadow:0 0 16px rgba(255,215,0,0.35);">
+          🎲 Roll Dice &amp; Play
+        </button>
+        <button class="btn-game btn-game-outline" onclick="window.SVV_GAME.shuffleCurrentDeck()" title="Shuffle questions deck" style="padding:12px 14px; font-size:0.85rem;">
+          🔀 Reshuffle Deck
+        </button>
+      </div>
+    </div>
+
+    <!-- 6 Mission Navigation Nodes -->
+    <div class="mission-ribbon" id="missionRibbon">
+      <!-- Rendered dynamically by game.js -->
+    </div>
+
+    <!-- Active Mission Stage Container -->
+    <section class="mission-stage" id="missionStage">
+      <!-- Dynamic Game Content Rendered by game.js -->
+    </section>
+
+  </main>
+
+  <!-- MODAL: ALL QUESTIONS DIRECTORY (55+ RNR & RACI QUESTIONS) -->
+  <div class="game-modal" id="modalAllQuestions">
+    <div class="game-modal-box" style="max-width:850px;">
+      <div class="modal-hdr">
+        <h3 class="modal-title">📚 CRM Training Questions Directory (55+ Questions)</h3>
+        <button class="modal-close" onclick="closeModal('modalAllQuestions')">&times;</button>
+      </div>
+      <p style="font-size:0.88rem; color:#CBD5E1; margin-bottom:14px;">
+        Choose any question or process to practice directly, or filter by role and difficulty level.
+      </p>
+
+      <div class="q-filter-tabs">
+        <button class="q-tab-btn active" onclick="window.SVV_GAME.filterQuestionsDrawer('all', this)">🌟 All Questions (எல்லாம்)</button>
+        <button class="q-tab-btn" onclick="window.SVV_GAME.filterQuestionsDrawer('greeter', this)">👭 Greeters (வரவேற்பு)</button>
+        <button class="q-tab-btn" onclick="window.SVV_GAME.filterQuestionsDrawer('manager', this)">👑 Manager (மேலாளர்)</button>
+        <button class="q-tab-btn" onclick="window.SVV_GAME.filterQuestionsDrawer('telecaller', this)">🎧 Telecaller (அழைப்பு)</button>
+        <button class="q-tab-btn" onclick="window.SVV_GAME.filterQuestionsDrawer('raci', this)">📋 All 17 RACI Processes</button>
+      </div>
+
+      <div class="q-drawer-list" id="drawerQuestionsList">
+        <!-- Injected via game.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: PLAYER SELECTOR -->
+  <div class="game-modal" id="modalPlayerSelector">
+    <div class="game-modal-box">
+      <div class="modal-hdr">
+        <h3 class="modal-title">👤 Select Staff Player</h3>
+        <button class="modal-close" onclick="closeModal('modalPlayerSelector')">&times;</button>
+      </div>
+      <p style="font-size:0.9rem; color:#94A3B8;">Choose your profile to resume your missions, track your individual score, and compete in the SVV Mission League.</p>
+      <div class="staff-select-grid" id="staffSelectList">
+        <!-- Injected via game.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: LEADERBOARD -->
+  <div class="game-modal" id="modalLeaderboard">
+    <div class="game-modal-box" style="max-width:750px;">
+      <div class="modal-hdr">
+        <h3 class="modal-title">🏆 SVV Mission League Leaderboard</h3>
+        <button class="modal-close" onclick="closeModal('modalLeaderboard')">&times;</button>
+      </div>
+      <p style="font-size:0.85rem; color:#94A3B8; margin-bottom:14px;">Rankings based on Base Points (Understanding of RNR/RACI/KPI) + Speed, Streak &amp; Perfect Mission Bonuses.</p>
+      <table class="mis-table" style="background:#140202; color:#FFFFFF; width:100%;">
+        <thead>
+          <tr style="border-bottom:1px solid rgba(197, 160, 89, 0.4);">
+            <th style="padding:10px; text-align:center;">Rank</th>
+            <th style="padding:10px;">Player</th>
+            <th style="padding:10px;">Role</th>
+            <th style="padding:10px; text-align:right;">Base Pts</th>
+            <th style="padding:10px; text-align:right;">Bonuses</th>
+            <th style="padding:10px; text-align:right;">Total Score</th>
+            <th style="padding:10px; text-align:center;">Status</th>
+          </tr>
+        </thead>
+        <tbody id="leaderboardTableBody">
+          <!-- Injected via game.js -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- MODAL: ACHIEVEMENTS & BADGES -->
+  <div class="game-modal" id="modalBadges">
+    <div class="game-modal-box">
+      <div class="modal-hdr">
+        <h3 class="modal-title">🎖️ Your Unlocked Badges</h3>
+        <button class="modal-close" onclick="closeModal('modalBadges')">&times;</button>
+      </div>
+      <div id="badgesContainer" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px;">
+        <!-- Injected via game.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Audio Context for Game Synthesizer & Speech Engine -->
+  <script src="game.js"></script>
+  <script>
+    function closeModal(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.remove('active');
+    }
+    document.getElementById('hudPlayerSelectBtn').addEventListener('click', () => {
+      document.getElementById('modalPlayerSelector').classList.add('active');
+    });
+    document.getElementById('btnOpenLeaderboard').addEventListener('click', () => {
+      document.getElementById('modalLeaderboard').classList.add('active');
+      window.SVV_GAME && window.SVV_GAME.renderLeaderboard();
+    });
+    document.getElementById('btnOpenBadges').addEventListener('click', () => {
+      document.getElementById('modalBadges').classList.add('active');
+      window.SVV_GAME && window.SVV_GAME.renderBadges();
+    });
+    const btnAllQ = document.getElementById('btnOpenAllQuestions');
+    if (btnAllQ) {
+      btnAllQ.addEventListener('click', () => {
+        document.getElementById('modalAllQuestions').classList.add('active');
+        window.SVV_GAME && window.SVV_GAME.renderAllQuestionsDrawer();
+      });
+    }
+  </script>
+</body>
+</html>

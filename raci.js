@@ -21,7 +21,8 @@
     { key: "md", name: "Managing Director", role: "Executive Leadership", staffCode: "MD" }
   ];
 
-  const RACI_DATA = [
+  // Master RACI Data - Consulting & Beyond (Syncs live from Google Sheet)
+  let RACI_DATA = [
     {
       sno: 1,
       processEn: "Greet every customer within 10 seconds and offer help without being pushy.",
@@ -312,26 +313,226 @@
     `).join('');
   }
 
-  function syncWithGoogleSheet() {
-    const gsheetUrl = localStorage.getItem('svv_gsheet_url') || 'https://script.google.com/macros/s/AKfycbxScZV2koc5d68t1F9851fRi-H_60r3UJe_GwilkdDFR-2K-710v2IdB1PiHpUUztJEiA/exec';
-    if (dom.syncText) dom.syncText.textContent = "Connecting to Sheet...";
-    showToast("Verifying RACI matrix with Google Sheet backend...");
+  // JSONP Fallback for Google Apps Script Web App redirects
+  function fetchJsonP(url, timeoutMs = 8000) {
+    return new Promise((resolve, reject) => {
+      const cbName = 'svv_raci_cb_' + Math.random().toString(36).substring(2, 9);
+      const script = document.createElement('script');
+      let settled = false;
 
-    localStorage.setItem('svv_raci_data', JSON.stringify(RACI_DATA));
+      const cleanup = () => {
+        try { script.remove(); } catch(e) {}
+        try { delete window[cbName]; } catch(e) {}
+      };
 
-    fetch(`${gsheetUrl}?action=PING`)
-      .then(res => res.json())
-      .then(data => {
-        if (dom.syncText) dom.syncText.textContent = "Synced with GSheet";
-        showToast("✅ RACI matrix synchronized with Google Sheet database!");
-      })
-      .catch(() => {
-        if (dom.syncText) dom.syncText.textContent = "Cached (Offline)";
-        showToast("ℹ️ Loaded RACI matrix from secure local cache.");
+      const timer = setTimeout(() => {
+        if (!settled) {
+          settled = true;
+          cleanup();
+          reject(new Error('JSONP timeout after ' + timeoutMs + 'ms'));
+        }
+      }, timeoutMs);
+
+      window[cbName] = (data) => {
+        if (!settled) {
+          settled = true;
+          clearTimeout(timer);
+          cleanup();
+          resolve(data);
+        }
+      };
+
+      const sep = url.includes('?') ? '&' : '?';
+      script.src = `${url}${sep}callback=${cbName}`;
+      script.onerror = () => {
+        if (!settled) {
+          settled = true;
+          clearTimeout(timer);
+          cleanup();
+          reject(new Error('JSONP script load error'));
+        }
+      };
+      document.head.appendChild(script);
+    });
+  }
+
+  // Smart fetch: tries CORS fetch first, falls back to JSONP automatically
+  async function smartFetch(url) {
+    try {
+      const res = await fetch(url, {
+        method: 'GET',
+        mode: 'cors',
+        redirect: 'follow',
+        headers: { 'Accept': 'application/json' }
       });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return await res.json();
+    } catch (corsErr) {
+      console.log('[SVV RACI] CORS fetch failed, trying JSONP:', corsErr.message);
+      return await fetchJsonP(url);
+    }
+  }
+
+  // Map Google Sheet rows to RACI_DATA format
+  function applyRaciFromSheet(sheetRows) {
+    if (!Array.isArray(sheetRows) || sheetRows.length === 0) return 0;
+
+    const mapped = sheetRows.map((r, i) => ({
+      sno: parseInt(r.Process_No || r.ProcessNo || r.SNo || r.sno) || (i + 1),
+      processEn: r.Process_Name_English || r.Process_English || r.processEn || r.Process || '',
+      processTa: r.Process_Name_Tamil || r.Process_Tamil || r.processTa || '',
+      r1: r.Responsible_Primary || r.Responsible_R1 || r.r1 || '—',
+      r2: r.Responsible_Secondary || r.Responsible_R2 || r.r2 || '—',
+      accountable: r.Accountable_A || r.Accountable || r.accountable || '—',
+      consulted: r.Consulted_C || r.Consulted || r.consulted || '—',
+      informed: r.Informed_I || r.Informed || r.informed || '—'
+    })).filter(r => r.processEn);
+
+    if (mapped.length > 0) {
+      RACI_DATA = mapped;
+      try { localStorage.setItem('svv_raci_data', JSON.stringify(RACI_DATA)); } catch (_) {}
+      renderTable();
+    }
+    return mapped.length;
+  }
+
+  // Direct Google Sheets Visualization API reader (Zero intermediate setup)
+  async function fetchGoogleSheetGviz(sheetId, sheetName) {
+    try {
+      const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}&t=${Date.now()}`;
+      const res = await fetch(url);
+      if (!res.ok) return null;
+      const text = await res.text();
+      const start = text.indexOf('{');
+      const end = text.lastIndexOf('}');
+      if (start === -1 || end === -1) return null;
+      const raw = JSON.parse(text.substring(start, end + 1));
+      if (!raw.table || !raw.table.cols || !raw.table.rows) return null;
+      const headers = raw.table.cols.map(c => (c.label || c.id || '').trim());
+      return raw.table.rows.map(r => {
+        const obj = {};
+        headers.forEach((h, idx) => {
+          if (h && r.c && r.c[idx]) {
+            obj[h] = r.c[idx].f !== undefined ? r.c[idx].f : (r.c[idx].v !== undefined ? r.c[idx].v : '');
+          }
+        });
+        return obj;
+      });
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function loadCachedRaci() {
+    try {
+      const cached = localStorage.getItem('svv_raci_data');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          RACI_DATA = parsed;
+        }
+      }
+      const cloudCached = localStorage.getItem('svv_last_cloud_data');
+      if (cloudCached) {
+        const parsedCloud = JSON.parse(cloudCached);
+        if (parsedCloud && Array.isArray(parsedCloud.raci) && parsedCloud.raci.length > 0) {
+          applyRaciFromSheet(parsedCloud.raci);
+        }
+      }
+    } catch (_) {}
+  }
+
+  // Dynamic Google Sheet & Cloudflare Gateway Integration with Real-Time Auto-Sync
+  let lastRaciHash = '';
+  function computeHash(data) {
+    return JSON.stringify(data || '').length + '_' + JSON.stringify(data || '').slice(0, 50);
+  }
+
+  async function syncWithGoogleSheet(isAutoSync = false) {
+    const workerUrl = (localStorage.getItem('svv_cf_worker_url') || 'https://svv-crm-gateway.subavallivilas-candb.workers.dev').trim();
+    const gsheetUrl = (localStorage.getItem('svv_gsheet_url') || 'https://script.google.com/macros/s/AKfycbxScZV2koc5d68t1F9851fRi-H_60r3UJe_GwilkdDFR-2K-710v2IdB1PiHpUUztJEiA/exec').trim();
+    const sheetId = (localStorage.getItem('svv_gsheet_id') || '1KIaNXXZvjMVFbdQVI0KAmH7lS4Xm_jLsD3I5wzUyJ9U').trim();
+
+    if (!isAutoSync) {
+      if (dom.syncText) dom.syncText.textContent = "Connecting to Sheet...";
+      showToast("Verifying RACI matrix with Google Sheet backend...");
+    }
+
+    let fetchedData = null;
+
+    // Step 1: Direct Google Sheet Gviz API fetch (fastest & zero intermediate setup)
+    if (sheetId) {
+      try {
+        const gvizRows = await fetchGoogleSheetGviz(sheetId, 'RACI_MASTER');
+        if (Array.isArray(gvizRows) && gvizRows.length > 0) {
+          fetchedData = gvizRows;
+        }
+      } catch (_) {}
+    }
+
+    // Step 2: Try Cloudflare Worker Gateway pull
+    if (!fetchedData && workerUrl) {
+      try {
+        const pullUrl = `${workerUrl.replace(/\/+$/, '')}/api/raci`;
+        const res = await fetch(pullUrl, { method: 'GET', headers: { 'Accept': 'application/json' } });
+        if (res.ok) {
+          const cloud = await res.json();
+          if (Array.isArray(cloud) && cloud.length > 0) {
+            fetchedData = cloud;
+          } else if (cloud && Array.isArray(cloud.raci) && cloud.raci.length > 0) {
+            fetchedData = cloud.raci;
+          }
+        }
+      } catch (workerErr) {
+        console.warn('[SVV RACI Gateway Pull]', workerErr.message);
+      }
+    }
+
+    // Step 3: Try Google Apps Script direct pull fallback
+    if (!fetchedData && gsheetUrl) {
+      try {
+        const targetUrl = `${gsheetUrl}${gsheetUrl.includes('?') ? '&' : '?'}action=GET_RACI`;
+        const resp = await smartFetch(targetUrl);
+        if (resp && resp.status === 'SUCCESS' && Array.isArray(resp.data) && resp.data.length > 0) {
+          fetchedData = resp.data;
+        } else if (Array.isArray(resp) && resp.length > 0) {
+          fetchedData = resp;
+        }
+      } catch (gasErr) {
+        console.warn('[SVV RACI Direct Pull]', gasErr.message);
+      }
+    }
+
+    if (fetchedData && fetchedData.length > 0) {
+      const newHash = computeHash(fetchedData);
+      const hasChanged = (newHash !== lastRaciHash);
+      lastRaciHash = newHash;
+
+      const count = applyRaciFromSheet(fetchedData);
+      if (dom.syncText) dom.syncText.textContent = "🟢 Live (Auto-Synced)";
+      if (!isAutoSync) {
+        showToast(`✅ RACI matrix synchronized with Google Sheet (${count} processes)!`);
+      } else if (hasChanged) {
+        showToast(`🟢 Sheet Update Applied: RACI matrix refreshed live (${count} processes)!`);
+      }
+    } else {
+      loadCachedRaci();
+      if (dom.syncText) dom.syncText.textContent = "Cached (Offline)";
+      if (!isAutoSync) showToast("ℹ️ Loaded RACI matrix from secure local cache.");
+    }
+  }
+
+  function startAutoSyncPolling() {
+    window.addEventListener('focus', () => {
+      syncWithGoogleSheet(true);
+    });
+    setInterval(() => {
+      syncWithGoogleSheet(true);
+    }, 30000);
   }
 
   function init() {
+    loadCachedRaci();
     renderMemberChips();
     renderTable();
 
@@ -347,6 +548,7 @@
     }
 
     setTimeout(syncWithGoogleSheet, 800);
+    startAutoSyncPolling();
   }
 
   if (document.readyState === 'loading') {

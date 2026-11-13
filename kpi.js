@@ -1038,6 +1038,81 @@
     }, 30000);
   }
 
+  // Save Weightages, Actuals & Push Evaluation to KPI_ENTRY_LOG
+  async function saveKpis() {
+    try {
+      localStorage.setItem('svv_staff_kpis', JSON.stringify(staffKpis));
+      localStorage.setItem('svv_base_incentive', String(baseIncentivePool));
+
+      const staff = STAFF_ROSTER.find(s => s.id === currentStaffId) || { id: currentStaffId, name: 'Staff', roleType: activeRoleType, roleTitle: 'CRM Staff', evaluator: 'Manager' };
+      const list = staffKpis[currentStaffId] || [];
+      let totalWeight = 0;
+      let totalScore = 0;
+      list.forEach(k => {
+        totalWeight += parseFloat(k.weightage) || 0;
+        totalScore += calculateRowScore(k);
+      });
+
+      const roundedScore = Math.min(100, Math.round(totalScore * 10) / 10);
+      const band = getRatingBand(roundedScore);
+      const earnedIncentive = Math.round(baseIncentivePool * (roundedScore / 100));
+
+      showToast(`💾 Saved locally! Syncing evaluation to KPI_ENTRY_LOG...`);
+
+      const workerUrl = (localStorage.getItem('svv_cf_worker_url') || 'https://svv-crm-gateway.subavallivilas-candb.workers.dev').trim();
+      const gsheetUrl = (localStorage.getItem('svv_gsheet_url') || 'https://script.google.com/macros/s/AKfycbxScZV2koc5d68t1F9851fRi-H_60r3UJe_GwilkdDFR-2K-710v2IdB1PiHpUUztJEiA/exec').trim();
+
+      const pushPayload = {
+        action: 'SAVE_KPI',
+        evaluation: {
+          entryId: 'KPI-' + Date.now().toString().slice(-6),
+          date: new Date().toISOString().split('T')[0],
+          month: new Date().toLocaleString('default', { month: 'short', year: 'numeric' }),
+          staffId: staff.id,
+          staffName: staff.name,
+          roleCategory: staff.roleType,
+          baseIncentive: baseIncentivePool,
+          totalScore: roundedScore,
+          ratingBand: band.label,
+          earnedIncentive: earnedIncentive,
+          details: JSON.stringify(list),
+          remarks: `Evaluation recorded via CRM app for ${staff.name}`
+        },
+        timestamp: new Date().toISOString()
+      };
+
+      if (workerUrl) {
+        try {
+          await fetch(`${workerUrl.replace(/\/+$/, '')}/api/push`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(pushPayload)
+          });
+        } catch (workerErr) {
+          console.warn('[KPI Push Worker]', workerErr.message);
+        }
+      }
+
+      if (gsheetUrl) {
+        try {
+          await fetch(gsheetUrl, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(pushPayload)
+          });
+        } catch (gasErr) {
+          console.warn('[KPI Push GAS]', gasErr.message);
+        }
+      }
+
+      showToast(`✅ KPI evaluation saved & logged to Google Sheet (KPI_ENTRY_LOG)!`);
+    } catch (err) {
+      console.error('[saveKpis error]', err);
+      showToast(`⚠️ Error saving KPI: ${err.message}`);
+    }
+  }
+
   // Generate & Print luxury staff PDF scorecard
   function generateStaffPdf() {
     const staff = STAFF_ROSTER.find(s => s.id === currentStaffId);

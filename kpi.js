@@ -562,11 +562,73 @@
     { id: "MGR-001", name: "Selvi", roleType: "manager", roleTitle: "CRM Manager (Lead)", evaluator: "Store Manager (Karthik)" }
   ];
 
+  // Default Initial KPI Appraisal History
+  const DEFAULT_KPI_HISTORY = [
+    {
+      entryId: "KPI-202611-001",
+      date: "2026-11-05",
+      month: "Nov 2026",
+      staffId: "STAFF-001",
+      staffName: "Ramya",
+      roleTitle: "CRM Staff 1 (Showroom Greeter)",
+      evaluator: "Selvi (CRM Manager)",
+      baseIncentive: 1000,
+      totalScore: 92.5,
+      ratingBand: "Excellent (சிறப்பு)",
+      earnedIncentive: 925,
+      remarks: "Outstanding greeting speed and feedback count."
+    },
+    {
+      entryId: "KPI-202611-002",
+      date: "2026-11-08",
+      month: "Nov 2026",
+      staffId: "STAFF-002",
+      staffName: "Madhumitha",
+      roleTitle: "CRM Staff 2 (Showroom Greeter)",
+      evaluator: "Selvi (CRM Manager)",
+      baseIncentive: 1000,
+      totalScore: 88.0,
+      ratingBand: "Good (நன்று)",
+      earnedIncentive: 880,
+      remarks: "Consistently well-groomed and accurate divert documentation."
+    },
+    {
+      entryId: "KPI-202610-001",
+      date: "2026-10-31",
+      month: "Oct 2026",
+      staffId: "STAFF-001",
+      staffName: "Ramya",
+      roleTitle: "CRM Staff 1 (Showroom Greeter)",
+      evaluator: "Selvi (CRM Manager)",
+      baseIncentive: 1000,
+      totalScore: 95.0,
+      ratingBand: "Excellent (சிறப்பு)",
+      earnedIncentive: 950,
+      remarks: "Top greeter in October festival footfall."
+    },
+    {
+      entryId: "KPI-202610-002",
+      date: "2026-10-31",
+      month: "Oct 2026",
+      staffId: "TEL-001",
+      staffName: "Saranya",
+      roleTitle: "CRM Telecaller Desk",
+      evaluator: "Selvi (CRM Manager)",
+      baseIncentive: 1000,
+      totalScore: 91.0,
+      ratingBand: "Excellent (சிறப்பு)",
+      earnedIncentive: 910,
+      remarks: "Exceeded 80 completed calls daily."
+    }
+  ];
+
   // Working state
   let currentStaffId = "STAFF-001";
   let activeRoleType = "greeter";
   let staffKpis = {}; // staffId -> array of kpis with weightage and actual
   let baseIncentivePool = 1000; // default ₹1000 base incentive
+  let kpiHistoryRows = [];
+  let currentBreakdownRecord = null;
 
   // Initialize state from local cache or defaults
   function initState() {
@@ -587,6 +649,13 @@
 
     const cachedBase = localStorage.getItem('svv_base_incentive');
     if (cachedBase) baseIncentivePool = parseFloat(cachedBase) || 1000;
+
+    const cachedHist = localStorage.getItem('svv_kpi_history');
+    if (cachedHist) {
+      try { kpiHistoryRows = JSON.parse(cachedHist); } catch (_) { kpiHistoryRows = DEFAULT_KPI_HISTORY; }
+    } else {
+      kpiHistoryRows = JSON.parse(JSON.stringify(DEFAULT_KPI_HISTORY));
+    }
   }
 
   // Calculate score for a single row
@@ -636,6 +705,20 @@
     tableBody: document.getElementById('kpiTableBody'),
     btnPrintStaffPdf: document.getElementById('btnPrintStaffPdf'),
     btnSaveKpi: document.getElementById('btnSaveKpi'),
+    filterHistoryMonth: document.getElementById('filterHistoryMonth'),
+    filterHistoryStaff: document.getElementById('filterHistoryStaff'),
+    filterHistorySearch: document.getElementById('filterHistorySearch'),
+    historyCountDisplay: document.getElementById('historyCountDisplay'),
+    historyAvgScoreDisplay: document.getElementById('historyAvgScoreDisplay'),
+    historyTotalIncentiveDisplay: document.getElementById('historyTotalIncentiveDisplay'),
+    kpiHistoryTableBody: document.getElementById('kpiHistoryTableBody'),
+    modalKpiBreakdown: document.getElementById('modalKpiBreakdown'),
+    breakdownModalTitle: document.getElementById('breakdownModalTitle'),
+    breakdownMetaInfo: document.getElementById('breakdownMetaInfo'),
+    breakdownTableBody: document.getElementById('breakdownTableBody'),
+    btnCloseBreakdownModal: document.getElementById('btnCloseBreakdownModal'),
+    btnDismissBreakdownModal: document.getElementById('btnDismissBreakdownModal'),
+    btnPrintBreakdownPdf: document.getElementById('btnPrintBreakdownPdf'),
     btnSyncGSheet: document.getElementById('btnSyncGSheet'),
     syncStatusText: document.getElementById('syncStatusText'),
     toast: document.getElementById('govToast')
@@ -952,6 +1035,34 @@
     return JSON.stringify(data || '').length + '_' + JSON.stringify(data || '').slice(0, 50);
   }
 
+  // Map Google Sheet rows from KPI_ENTRY_LOG
+  function applyKpiLogsFromSheet(sheetRows) {
+    if (!Array.isArray(sheetRows) || sheetRows.length === 0) return 0;
+    const mapped = sheetRows.map(r => ({
+      entryId: r.Entry_ID || r.entryId || r.id || ('KPI-' + Math.random().toString(36).slice(2, 8)),
+      date: r.Date || r.date || '',
+      month: r.Month || r.month || '',
+      staffId: r.Staff_ID || r.staffId || '',
+      staffName: r.Staff_Name || r.staffName || '',
+      roleTitle: r.Role_Title || r.roleTitle || r.Role_Category || '',
+      roleCategory: r.Role_Category || r.roleCategory || '',
+      evaluator: r.Evaluator || r.evaluator || 'Selvi (CRM Manager)',
+      baseIncentive: parseFloat(r.Base_Incentive || r.baseIncentive) || 1000,
+      totalScore: parseFloat(r.Total_Score || r.totalScore) || 0,
+      ratingBand: r.Rating_Band || r.ratingBand || '',
+      earnedIncentive: parseFloat(r.Earned_Incentive || r.earnedIncentive) || 0,
+      details: r.Evaluation_Details_JSON || r.details || null,
+      remarks: r.Remarks || r.remarks || ''
+    })).filter(r => r.entryId && (r.staffName || r.staffId));
+
+    if (mapped.length > 0) {
+      kpiHistoryRows = mapped;
+      try { localStorage.setItem('svv_kpi_history', JSON.stringify(kpiHistoryRows)); } catch (_) {}
+      renderKpiHistoryTable();
+    }
+    return mapped.length;
+  }
+
   async function syncWithGoogleSheet(isAutoSync = false) {
     const workerUrl = (localStorage.getItem('svv_cf_worker_url') || 'https://svv-crm-gateway.subavallivilas-candb.workers.dev').trim();
     const gsheetUrl = (localStorage.getItem('svv_gsheet_url') || 'https://script.google.com/macros/s/AKfycbxScZV2koc5d68t1F9851fRi-H_60r3UJe_GwilkdDFR-2K-710v2IdB1PiHpUUztJEiA/exec').trim();
@@ -974,6 +1085,12 @@
         if (Array.isArray(gvizRows) && gvizRows.length > 0) {
           fetchedData = gvizRows;
         }
+
+        // Fetch KPI_ENTRY_LOG history
+        const gvizLogRows = await fetchGoogleSheetGviz(sheetId, 'KPI_ENTRY_LOG');
+        if (Array.isArray(gvizLogRows) && gvizLogRows.length > 0) {
+          applyKpiLogsFromSheet(gvizLogRows);
+        }
       } catch (_) {}
     }
 
@@ -988,6 +1105,9 @@
             fetchedData = cloud;
           } else if (cloud && Array.isArray(cloud.kpi) && cloud.kpi.length > 0) {
             fetchedData = cloud.kpi;
+          }
+          if (cloud && Array.isArray(cloud.kpi_entry_log) && cloud.kpi_entry_log.length > 0) {
+            applyKpiLogsFromSheet(cloud.kpi_entry_log);
           }
         }
       } catch (workerErr) {
@@ -1008,6 +1128,14 @@
       } catch (gasErr) {
         console.warn('[SVV KPI Direct Pull]', gasErr.message);
       }
+
+      try {
+        const targetLogUrl = `${gsheetUrl}${gsheetUrl.includes('?') ? '&' : '?'}action=GET_KPI_LOGS`;
+        const respLog = await smartFetch(targetLogUrl);
+        if (respLog && respLog.status === 'SUCCESS' && Array.isArray(respLog.data) && respLog.data.length > 0) {
+          applyKpiLogsFromSheet(respLog.data);
+        }
+      } catch (_) {}
     }
 
     if (fetchedData && fetchedData.length > 0) {
@@ -1038,6 +1166,414 @@
     }, 30000);
   }
 
+  // ============================================================================
+  // MONTH-WISE & STAFF-WISE APPRAISAL HISTORY REGISTER
+  // ============================================================================
+  function renderKpiHistoryTable() {
+    if (!dom.kpiHistoryTableBody) return;
+
+    const filterMonth = dom.filterHistoryMonth ? dom.filterHistoryMonth.value.trim() : '';
+    const filterStaff = dom.filterHistoryStaff ? dom.filterHistoryStaff.value.trim() : '';
+    const filterSearch = dom.filterHistorySearch ? dom.filterHistorySearch.value.trim().toLowerCase() : '';
+
+    const filtered = kpiHistoryRows.filter(row => {
+      if (filterMonth && row.month !== filterMonth) return false;
+      if (filterStaff && row.staffId !== filterStaff) return false;
+      if (filterSearch) {
+        const rowStr = `${row.entryId || ''} ${row.staffName || ''} ${row.roleTitle || ''} ${row.evaluator || ''} ${row.ratingBand || ''} ${row.remarks || ''}`.toLowerCase();
+        if (!rowStr.includes(filterSearch)) return false;
+      }
+      return true;
+    });
+
+    // Update Summary Metrics
+    if (dom.historyCountDisplay) {
+      dom.historyCountDisplay.textContent = filtered.length;
+    }
+
+    if (dom.historyAvgScoreDisplay) {
+      if (filtered.length > 0) {
+        const sum = filtered.reduce((acc, r) => acc + (parseFloat(r.totalScore) || 0), 0);
+        const avg = (sum / filtered.length).toFixed(1);
+        dom.historyAvgScoreDisplay.textContent = `${avg} / 100`;
+      } else {
+        dom.historyAvgScoreDisplay.textContent = `—`;
+      }
+    }
+
+    if (dom.historyTotalIncentiveDisplay) {
+      const totalInc = filtered.reduce((acc, r) => acc + (parseFloat(r.earnedIncentive) || 0), 0);
+      dom.historyTotalIncentiveDisplay.textContent = `₹ ${totalInc.toLocaleString('en-IN')}`;
+    }
+
+    if (filtered.length === 0) {
+      dom.kpiHistoryTableBody.innerHTML = `
+        <tr>
+          <td colspan="11" style="text-align:center; padding:28px 16px; color:#64748B;">
+            <div style="font-size:1.4rem; margin-bottom:6px;">🔍</div>
+            <strong>No KPI appraisal logs found matching selected filters.</strong><br>
+            <span style="font-size:0.82rem;">Select another month or staff member, or perform an appraisal above and click <em>"Save &amp; Log Evaluation"</em>.</span>
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    dom.kpiHistoryTableBody.innerHTML = filtered.map(row => {
+      const band = getRatingBand(parseFloat(row.totalScore) || 0);
+      const bandLabel = row.ratingBand || band.label;
+      const bandClass = band.class;
+
+      return `
+        <tr>
+          <td style="text-align:center; font-family:monospace; font-weight:700; color:#580505; font-size:0.85rem;">${escapeHtml(row.entryId)}</td>
+          <td style="text-align:center; font-size:0.85rem; color:#475569;">${escapeHtml(row.date)}</td>
+          <td style="text-align:center;">
+            <span class="gov-badge gov-badge-gold" style="font-size:0.78rem;">${escapeHtml(row.month)}</span>
+          </td>
+          <td>
+            <div style="font-weight:700; color:#1E293B;">${escapeHtml(row.staffName)}</div>
+            <div style="font-size:0.75rem; color:#64748B; font-family:monospace;">${escapeHtml(row.staffId)}</div>
+          </td>
+          <td style="font-size:0.84rem; color:#334155;">${escapeHtml(row.roleTitle || row.roleCategory)}</td>
+          <td style="text-align:right; font-size:0.86rem; color:#475569;">₹ ${(parseFloat(row.baseIncentive) || 1000).toLocaleString('en-IN')}</td>
+          <td style="text-align:center; font-weight:800; color:#15803D; font-size:0.95rem;">
+            ${(parseFloat(row.totalScore) || 0).toFixed(1)}
+          </td>
+          <td style="text-align:center;">
+            <span class="gov-badge ${bandClass}" style="font-size:0.75rem;">${escapeHtml(bandLabel)}</span>
+          </td>
+          <td style="text-align:right; font-weight:800; color:#B45309; font-size:1rem; background:#FFFBF2;">
+            ₹ ${(parseFloat(row.earnedIncentive) || 0).toLocaleString('en-IN')}
+          </td>
+          <td style="font-size:0.82rem; color:#475569;">${escapeHtml(row.evaluator || 'CRM Manager')}</td>
+          <td style="text-align:center; white-space:nowrap;">
+            <div style="display:inline-flex; gap:6px;">
+              <button type="button" class="btn-gov btn-gov-gold btn-sm btn-kpi-view" data-entry-id="${escapeHtml(row.entryId)}" title="View Metric Breakdown">👁️ View</button>
+              <button type="button" class="btn-gov btn-gov-outline btn-sm btn-kpi-pdf" data-entry-id="${escapeHtml(row.entryId)}" title="Print Scorecard PDF">📄 PDF</button>
+              <button type="button" class="btn-gov btn-gov-outline btn-sm btn-kpi-del" data-entry-id="${escapeHtml(row.entryId)}" style="color:#DC2626; border-color:#FECACA;" title="Delete Appraisal Log">🗑️</button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join('');
+
+    // Attach row button events
+    dom.kpiHistoryTableBody.querySelectorAll('.btn-kpi-view').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const eid = btn.getAttribute('data-entry-id');
+        viewKpiBreakdown(eid);
+      });
+    });
+
+    dom.kpiHistoryTableBody.querySelectorAll('.btn-kpi-pdf').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const eid = btn.getAttribute('data-entry-id');
+        generateHistoryPdf(eid);
+      });
+    });
+
+    dom.kpiHistoryTableBody.querySelectorAll('.btn-kpi-del').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const eid = btn.getAttribute('data-entry-id');
+        deleteKpiLog(eid);
+      });
+    });
+  }
+
+  // View individual metric score breakdown for a historical appraisal
+  function viewKpiBreakdown(entryId) {
+    const entry = kpiHistoryRows.find(r => r.entryId === entryId);
+    if (!entry || !dom.modalKpiBreakdown) return;
+    currentBreakdownRecord = entry;
+
+    if (dom.breakdownModalTitle) {
+      dom.breakdownModalTitle.textContent = `📊 KPI Evaluation Breakdown — ${entry.staffName} (${entry.month})`;
+    }
+
+    const band = getRatingBand(parseFloat(entry.totalScore) || 0);
+    const bandLabel = entry.ratingBand || band.label;
+
+    if (dom.breakdownMetaInfo) {
+      dom.breakdownMetaInfo.innerHTML = `
+        <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+          <div><strong>Staff Member:</strong> ${escapeHtml(entry.staffName)} <span style="font-family:monospace; color:#64748B;">(${escapeHtml(entry.staffId)})</span> &bull; <strong>Role:</strong> ${escapeHtml(entry.roleTitle || entry.roleCategory)}</div>
+          <div><strong>Month:</strong> <span class="gov-badge gov-badge-gold">${escapeHtml(entry.month)}</span> &bull; <strong>Date:</strong> ${escapeHtml(entry.date)}</div>
+        </div>
+        <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-top:8px; border-top:1px dashed #E5D5B5; padding-top:8px;">
+          <div><strong>Appraisal Score:</strong> <span style="font-weight:bold; color:#15803D; font-size:1.05rem;">${(parseFloat(entry.totalScore) || 0).toFixed(1)} / 100</span> &bull; <span class="gov-badge ${band.class}">${escapeHtml(bandLabel)}</span></div>
+          <div><strong>Base Pool:</strong> ₹${(parseFloat(entry.baseIncentive) || 1000).toLocaleString('en-IN')} ➔ <strong>Earned Incentive:</strong> <span style="font-weight:bold; color:#B45309; font-size:1.05rem;">₹${(parseFloat(entry.earnedIncentive) || 0).toLocaleString('en-IN')}</span></div>
+          <div><strong>Evaluator:</strong> ${escapeHtml(entry.evaluator || 'CRM Manager')}</div>
+        </div>
+        ${entry.remarks ? `<div style="margin-top:6px; font-size:0.82rem; color:#64748B; background:#FFFBF2; padding:4px 8px; border-radius:4px;"><em>Remarks: ${escapeHtml(entry.remarks)}</em></div>` : ''}
+      `;
+    }
+
+    // Parse details list
+    let list = [];
+    if (entry.details) {
+      if (typeof entry.details === 'string') {
+        try { list = JSON.parse(entry.details); } catch (_) { list = []; }
+      } else if (Array.isArray(entry.details)) {
+        list = entry.details;
+      }
+    }
+
+    // Fallback if details not recorded in older rows: use current staff KPIs or role template
+    if (!list || list.length === 0) {
+      const matchedStaff = STAFF_ROSTER.find(s => s.id === entry.staffId);
+      const role = matchedStaff ? matchedStaff.roleType : (entry.roleCategory ? (entry.roleCategory.includes('manag') ? 'manager' : entry.roleCategory.includes('tele') ? 'telecaller' : 'greeter') : 'greeter');
+      list = (staffKpis[entry.staffId] && staffKpis[entry.staffId].length > 0) ? staffKpis[entry.staffId] : (KPI_CONFIG[role] || []);
+    }
+
+    if (dom.breakdownTableBody) {
+      dom.breakdownTableBody.innerHTML = list.map((kpi, idx) => {
+        const w = parseFloat(kpi.weightage) || 0;
+        const s = calculateRowScore(kpi);
+        return `
+          <tr>
+            <td style="text-align:center; font-weight:700; color:#580505;">${idx + 1}</td>
+            <td>
+              <div style="font-weight:700; color:#1E293B;">${escapeHtml(kpi.kpiEn || kpi.kpi || '')}</div>
+              <div style="font-family:'Noto Sans Tamil', serif; font-size:0.8rem; color:#64748B;">${escapeHtml(kpi.kpiTa || '')}</div>
+              <div style="font-size:0.75rem; color:#475569;">${escapeHtml(kpi.areaEn || '')}</div>
+            </td>
+            <td style="text-align:center; font-weight:600; color:#0F172A;">${escapeHtml(kpi.targetDisplay || kpi.targetVal || '100%')}</td>
+            <td style="text-align:center; font-weight:700;">${w}%</td>
+            <td style="text-align:center; font-weight:700;">${kpi.actual !== undefined ? kpi.actual : '—'}</td>
+            <td style="text-align:right; font-weight:800; color:#15803D;">${s.toFixed(1)}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    dom.modalKpiBreakdown.classList.add('active');
+    dom.modalKpiBreakdown.style.display = 'flex';
+  }
+
+  function closeBreakdownModal() {
+    if (dom.modalKpiBreakdown) {
+      dom.modalKpiBreakdown.classList.remove('active');
+      dom.modalKpiBreakdown.style.display = 'none';
+    }
+  }
+
+  // Generate & Print luxury staff PDF scorecard from a historical entry
+  function generateHistoryPdf(entryId) {
+    const entry = kpiHistoryRows.find(r => r.entryId === entryId);
+    if (!entry) return;
+
+    let list = [];
+    if (entry.details) {
+      if (typeof entry.details === 'string') {
+        try { list = JSON.parse(entry.details); } catch (_) { list = []; }
+      } else if (Array.isArray(entry.details)) {
+        list = entry.details;
+      }
+    }
+    if (!list || list.length === 0) {
+      const matchedStaff = STAFF_ROSTER.find(s => s.id === entry.staffId);
+      const role = matchedStaff ? matchedStaff.roleType : 'greeter';
+      list = (staffKpis[entry.staffId] && staffKpis[entry.staffId].length > 0) ? staffKpis[entry.staffId] : (KPI_CONFIG[role] || []);
+    }
+
+    const band = getRatingBand(parseFloat(entry.totalScore) || 0);
+    const bandLabel = entry.ratingBand || band.label;
+    const baseIncentive = parseFloat(entry.baseIncentive) || 1000;
+    const earnedIncentive = parseFloat(entry.earnedIncentive) || Math.round(baseIncentive * ((parseFloat(entry.totalScore) || 0) / 100));
+
+    const printWin = window.open('', '_blank', 'width=950,height=1100');
+    if (!printWin) {
+      alert("Please allow popups to generate and download the KPI PDF report.");
+      return;
+    }
+
+    let totalWeight = 0;
+    const rowsHtml = list.map((k, i) => {
+      const w = parseFloat(k.weightage) || 0;
+      totalWeight += w;
+      return `
+        <tr>
+          <td style="text-align:center; padding:8px; border:1px solid #E2E8F0; font-weight:bold;">${i + 1}</td>
+          <td style="padding:8px; border:1px solid #E2E8F0;">
+            <strong>${escapeHtml(k.kpiEn || k.kpi)}</strong><br>
+            <small style="color:#64748B;">${escapeHtml(k.kpiTa || '')}</small>
+          </td>
+          <td style="text-align:center; padding:8px; border:1px solid #E2E8F0;">${escapeHtml(k.targetDisplay || k.targetVal)}</td>
+          <td style="text-align:center; padding:8px; border:1px solid #E2E8F0; font-weight:bold;">${w}%</td>
+          <td style="text-align:center; padding:8px; border:1px solid #E2E8F0;">${k.actual !== undefined ? k.actual : '—'}</td>
+          <td style="text-align:right; padding:8px; border:1px solid #E2E8F0; font-weight:bold; color:#15803D;">${calculateRowScore(k).toFixed(1)}</td>
+        </tr>
+      `;
+    }).join('');
+
+    printWin.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>KPI Scorecard - ${escapeHtml(entry.staffName)} - ${escapeHtml(entry.month)}</title>
+        <style>
+          @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@400;600&display=swap');
+          * { box-sizing: border-box; }
+          body { font-family: 'Cambria', 'Noto Sans Tamil', serif; padding: 24px; color: #1E293B; background: #FFF; }
+          .header { border-bottom: 2px solid #C5A059; padding-bottom: 14px; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center; }
+          .brand-title { font-family: 'Cambria', Georgia, serif; font-size: 22px; font-weight: bold; color: #580505; }
+          .badge { padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: bold; display: inline-block; }
+          .summary-box { background: #FAF8F5; border: 1.5px solid #C5A059; border-radius: 10px; padding: 16px; margin-bottom: 20px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; text-align: center; }
+          table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 13px; }
+          th { background: #580505; color: #FFF; padding: 9px; font-size: 12px; text-align: left; }
+          .sig-row { display: flex; justify-content: space-between; margin-top: 48px; padding-top: 24px; border-top: 1px dashed #CCC; }
+          .sig-col { text-align: center; width: 200px; }
+          .sig-line { border-bottom: 1px solid #333; margin-bottom: 6px; height: 35px; }
+          @media print { .no-print { display: none; } body { padding: 0; } }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div style="display:flex; align-items:center; gap:16px;">
+            <img src="cb-logo.png" alt="C&B Logo" style="height:44px; width:auto; border:1px solid #E2E8F0; border-radius:6px; padding:3px 6px;">
+            <img src="svv-logo.png" alt="SVV Logo" style="height:44px; width:auto; border:1px solid #E2E8F0; border-radius:6px; padding:2px;">
+            <div>
+              <div class="brand-title">SUBA VALLI VILAS JEWELLERY</div>
+              <div style="font-size:12px; color:#580505; font-weight:bold;">CRM EMPLOYEE KPI PERFORMANCE &amp; INCENTIVE CARD</div>
+              <div style="font-size:11px; color:#64748B;">Cuddalore Showroom • Consulting &amp; Beyond (C&amp;B) Governance</div>
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:12px; font-weight:bold;">Month: ${escapeHtml(entry.month)}</div>
+            <div style="font-size:11px; color:#64748B;">Appraisal ID: ${escapeHtml(entry.entryId)} | Date: ${escapeHtml(entry.date)}</div>
+          </div>
+        </div>
+
+        <div style="background:#FFFBF2; border:1px solid #E5D5B5; padding:12px 16px; border-radius:8px; margin-bottom:16px; display:flex; justify-content:space-between;">
+          <div>
+            <strong>Staff Name:</strong> ${escapeHtml(entry.staffName)} (${escapeHtml(entry.staffId)})<br>
+            <strong>Role:</strong> ${escapeHtml(entry.roleTitle || entry.roleCategory)}
+          </div>
+          <div style="text-align:right;">
+            <strong>Evaluated By:</strong> ${escapeHtml(entry.evaluator || 'CRM Manager')}<br>
+            <strong>Scheme:</strong> Monthly Performance Incentive
+          </div>
+        </div>
+
+        <div class="summary-box">
+          <div>
+            <div style="font-size:11px; color:#64748B;">KPI SCORE</div>
+            <div style="font-size:24px; font-weight:bold; color:#580505;">${(parseFloat(entry.totalScore) || 0).toFixed(1)} / 100</div>
+          </div>
+          <div>
+            <div style="font-size:11px; color:#64748B;">PERFORMANCE RATING</div>
+            <div style="font-size:14px; font-weight:bold; margin-top:6px; color:#15803D;">${escapeHtml(bandLabel)}</div>
+          </div>
+          <div>
+            <div style="font-size:11px; color:#64748B;">ELIGIBLE BASE INCENTIVE</div>
+            <div style="font-size:18px; font-weight:bold; color:#1E293B; margin-top:4px;">₹ ${baseIncentive.toLocaleString('en-IN')}</div>
+          </div>
+          <div>
+            <div style="font-size:11px; color:#64748B;">EARNED INCENTIVE PAYOUT</div>
+            <div style="font-size:24px; font-weight:bold; color:#15803D;">₹ ${earnedIncentive.toLocaleString('en-IN')}</div>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th style="width:35px; text-align:center;">#</th>
+              <th>KPI Metric &amp; Description (முக்கிய குறிகாட்டி)</th>
+              <th style="width:100px; text-align:center;">Target</th>
+              <th style="width:75px; text-align:center;">Weightage</th>
+              <th style="width:70px; text-align:center;">Actual</th>
+              <th style="width:70px; text-align:right;">Score</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rowsHtml}
+          </tbody>
+          <tfoot>
+            <tr style="background:#F8FAFC; font-weight:bold;">
+              <td colspan="3" style="text-align:right; padding:8px; border:1px solid #E2E8F0;">TOTAL SCORE (அனைத்து மதிப்பெண்):</td>
+              <td style="text-align:center; padding:8px; border:1px solid #E2E8F0;">${totalWeight}%</td>
+              <td style="padding:8px; border:1px solid #E2E8F0;">—</td>
+              <td style="text-align:right; padding:8px; border:1px solid #E2E8F0; color:#15803D; font-size:15px;">${(parseFloat(entry.totalScore) || 0).toFixed(1)}</td>
+            </tr>
+          </tfoot>
+        </table>
+
+        <div style="background:#F8FAFC; border:1px solid #E2E8F0; padding:10px 14px; border-radius:6px; font-size:11px; color:#475569;">
+          <strong>Incentive Payout Policy:</strong> Score = Weightage × (Actual ÷ Target), capped at Weightage. 
+          Earned Incentive = Base Amount (₹${baseIncentive}) × (${(parseFloat(entry.totalScore) || 0).toFixed(1)}% ÷ 100) = ₹${earnedIncentive}.
+        </div>
+
+        <div class="sig-row">
+          <div class="sig-col">
+            <div class="sig-line"></div>
+            <div style="font-size:11px;"><strong>${escapeHtml(entry.staffName)}</strong><br>Staff Signature</div>
+          </div>
+          <div class="sig-col">
+            <div class="sig-line"></div>
+            <div style="font-size:11px;"><strong>${escapeHtml(entry.evaluator || 'CRM Manager')}</strong><br>Evaluator Signature</div>
+          </div>
+          <div class="sig-col">
+            <div class="sig-line"></div>
+            <div style="font-size:11px;"><strong>Managing Director / Store Head</strong><br>Authorized Signatory</div>
+          </div>
+        </div>
+
+        <div class="no-print" style="margin-top:24px; text-align:center;">
+          <button onclick="window.print()" style="padding:10px 24px; font-size:14px; font-weight:bold; background:#580505; color:#FFF; border:none; border-radius:6px; cursor:pointer;">
+            🖨️ Print / Save as PDF
+          </button>
+        </div>
+      </body>
+      </html>
+    `);
+    printWin.document.close();
+  }
+
+  // Delete a KPI evaluation record from local storage and sync to Google Sheet
+  async function deleteKpiLog(entryId) {
+    if (!confirm(`Are you sure you want to delete KPI appraisal record "${entryId}"? This will remove it from the register and Google Sheet.`)) return;
+
+    kpiHistoryRows = kpiHistoryRows.filter(r => r.entryId !== entryId);
+    try { localStorage.setItem('svv_kpi_history', JSON.stringify(kpiHistoryRows)); } catch (_) {}
+    renderKpiHistoryTable();
+    showToast(`🗑️ Deleted ${entryId}! Syncing with Google Sheets...`);
+
+    const workerUrl = (localStorage.getItem('svv_cf_worker_url') || 'https://svv-crm-gateway.subavallivilas-candb.workers.dev').trim();
+    const gsheetUrl = (localStorage.getItem('svv_gsheet_url') || 'https://script.google.com/macros/s/AKfycbxScZV2koc5d68t1F9851fRi-H_60r3UJe_GwilkdDFR-2K-710v2IdB1PiHpUUztJEiA/exec').trim();
+
+    const delPayload = {
+      action: 'DELETE_KPI_EVALUATION',
+      entryId: entryId,
+      timestamp: new Date().toISOString()
+    };
+
+    if (workerUrl) {
+      try {
+        await fetch(`${workerUrl.replace(/\/+$/, '')}/api/kpi/delete`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(delPayload)
+        });
+      } catch (err) {
+        console.warn('[KPI Delete Worker]', err.message);
+      }
+    }
+
+    if (gsheetUrl) {
+      try {
+        await fetch(gsheetUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(delPayload)
+        });
+      } catch (err) {
+        console.warn('[KPI Delete GAS]', err.message);
+      }
+    }
+  }
+
   // Save Weightages, Actuals & Push Evaluation to KPI_ENTRY_LOG
   async function saveKpis() {
     try {
@@ -1057,6 +1593,32 @@
       const band = getRatingBand(roundedScore);
       const earnedIncentive = Math.round(baseIncentivePool * (roundedScore / 100));
 
+      const newEntryId = 'KPI-' + Date.now().toString().slice(-6);
+      const monthStr = new Date().toLocaleString('en-US', { month: 'short', year: 'numeric' });
+      const dateStr = new Date().toISOString().split('T')[0];
+
+      const newRecord = {
+        entryId: newEntryId,
+        date: dateStr,
+        month: monthStr,
+        staffId: staff.id,
+        staffName: staff.name,
+        roleTitle: staff.roleTitle,
+        roleCategory: staff.roleType,
+        evaluator: staff.evaluator,
+        baseIncentive: baseIncentivePool,
+        totalScore: roundedScore,
+        ratingBand: band.label,
+        earnedIncentive: earnedIncentive,
+        details: JSON.stringify(list),
+        remarks: `Evaluation recorded via CRM app for ${staff.name}`
+      };
+
+      // Add to history and refresh history view immediately
+      kpiHistoryRows.unshift(newRecord);
+      try { localStorage.setItem('svv_kpi_history', JSON.stringify(kpiHistoryRows)); } catch (_) {}
+      renderKpiHistoryTable();
+
       showToast(`💾 Saved locally! Syncing evaluation to KPI_ENTRY_LOG...`);
 
       const workerUrl = (localStorage.getItem('svv_cf_worker_url') || 'https://svv-crm-gateway.subavallivilas-candb.workers.dev').trim();
@@ -1064,20 +1626,7 @@
 
       const pushPayload = {
         action: 'SAVE_KPI',
-        evaluation: {
-          entryId: 'KPI-' + Date.now().toString().slice(-6),
-          date: new Date().toISOString().split('T')[0],
-          month: new Date().toLocaleString('default', { month: 'short', year: 'numeric' }),
-          staffId: staff.id,
-          staffName: staff.name,
-          roleCategory: staff.roleType,
-          baseIncentive: baseIncentivePool,
-          totalScore: roundedScore,
-          ratingBand: band.label,
-          earnedIncentive: earnedIncentive,
-          details: JSON.stringify(list),
-          remarks: `Evaluation recorded via CRM app for ${staff.name}`
-        },
+        evaluation: newRecord,
         timestamp: new Date().toISOString()
       };
 
@@ -1113,7 +1662,7 @@
     }
   }
 
-  // Generate & Print luxury staff PDF scorecard
+  // Generate & Print luxury staff PDF scorecard for active staff selection
   function generateStaffPdf() {
     const staff = STAFF_ROSTER.find(s => s.id === currentStaffId);
     if (!staff) return;
@@ -1183,7 +1732,7 @@
             </div>
           </div>
           <div style="text-align:right;">
-            <div style="font-size:12px; font-weight:bold;">Month: September / October 2026</div>
+            <div style="font-size:12px; font-weight:bold;">Month: ${new Date().toLocaleString('en-US', { month: 'short', year: 'numeric' })}</div>
             <div style="font-size:11px; color:#64748B;">Generated: ${new Date().toLocaleDateString('en-GB')}</div>
           </div>
         </div>
@@ -1321,8 +1870,38 @@
       dom.btnSyncGSheet.addEventListener('click', syncWithGoogleSheet);
     }
 
+    // History Register Filter Listeners
+    if (dom.filterHistoryMonth) {
+      dom.filterHistoryMonth.addEventListener('change', renderKpiHistoryTable);
+    }
+    if (dom.filterHistoryStaff) {
+      dom.filterHistoryStaff.addEventListener('change', renderKpiHistoryTable);
+    }
+    if (dom.filterHistorySearch) {
+      dom.filterHistorySearch.addEventListener('input', renderKpiHistoryTable);
+    }
+
+    // History Breakdown Modal Listeners
+    if (dom.btnCloseBreakdownModal) {
+      dom.btnCloseBreakdownModal.addEventListener('click', closeBreakdownModal);
+    }
+    if (dom.btnDismissBreakdownModal) {
+      dom.btnDismissBreakdownModal.addEventListener('click', closeBreakdownModal);
+    }
+    if (dom.btnPrintBreakdownPdf) {
+      dom.btnPrintBreakdownPdf.addEventListener('click', () => {
+        if (currentBreakdownRecord) generateHistoryPdf(currentBreakdownRecord.entryId);
+      });
+    }
+    if (dom.modalKpiBreakdown) {
+      dom.modalKpiBreakdown.addEventListener('click', (e) => {
+        if (e.target === dom.modalKpiBreakdown) closeBreakdownModal();
+      });
+    }
+
     renderStaffInfo();
     renderTable();
+    renderKpiHistoryTable();
     setTimeout(syncWithGoogleSheet, 800);
     startAutoSyncPolling();
   }

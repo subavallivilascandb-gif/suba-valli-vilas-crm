@@ -302,6 +302,9 @@
     trackerTableBody: document.getElementById('trackerTableBody'),
     btnAddLogModal: document.getElementById('btnOpenAddLogModal'),
     modalAddLog: document.getElementById('modalAddLog'),
+    modalLogTitle: document.getElementById('modalLogTitle'),
+    btnSubmitLog: document.getElementById('btnSubmitLog'),
+    logSessionId: document.getElementById('logSessionId'),
     btnCloseModal: document.getElementById('btnCloseModal'),
     btnCancelModal: document.getElementById('btnCancelModal'),
     formAddLog: document.getElementById('formAddLog'),
@@ -312,6 +315,8 @@
     logAbsentees: document.getElementById('logAbsentees'),
     logTakeaway: document.getElementById('logTakeaway'),
     logAction: document.getElementById('logAction'),
+    filterTrackerMonth: document.getElementById('filterTrackerMonth'),
+    filterTrackerSearch: document.getElementById('filterTrackerSearch'),
     btnSyncGSheet: document.getElementById('btnSyncGSheet'),
     syncStatusText: document.getElementById('syncStatusText'),
     toast: document.getElementById('govToast')
@@ -427,24 +432,60 @@
   function renderTrackerTable() {
     if (!dom.trackerTableBody) return;
 
-    if (trackerRows.length === 0) {
-      dom.trackerTableBody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:32px; color:#64748B;">No daily briefing records logged yet. Click '+ Add Briefing Entry' above.</td></tr>`;
+    const monthVal = dom.filterTrackerMonth ? dom.filterTrackerMonth.value : '';
+    const searchVal = dom.filterTrackerSearch ? dom.filterTrackerSearch.value.trim().toLowerCase() : '';
+
+    const filtered = trackerRows.filter(r => {
+      if (monthVal && (!r.date || !r.date.startsWith(monthVal))) return false;
+      if (searchVal) {
+        const hay = `${r.date} ${r.trainer} ${r.topic} ${r.keyTakeaway} ${r.absentees} ${r.actionTaken}`.toLowerCase();
+        if (!hay.includes(searchVal)) return false;
+      }
+      return true;
+    });
+
+    if (filtered.length === 0) {
+      dom.trackerTableBody.innerHTML = `<tr><td colspan="10" style="text-align:center; padding:32px; color:#64748B;">No daily briefing records match your filter. Click '+ Add Today\'s Entry' above.</td></tr>`;
       return;
     }
 
-    dom.trackerTableBody.innerHTML = trackerRows.map((r, i) => `
-      <tr>
-        <td style="text-align:center; font-weight:700; color:#580505;">${r.date}</td>
-        <td><strong>${escapeHtml(r.trainer)}</strong></td>
-        <td><span class="gov-badge gov-badge-gold">${escapeHtml(r.topic)}</span></td>
-        <td style="text-align:center; font-weight:700;">${r.staffCount}</td>
-        <td style="color:${r.absentees === 'None' ? '#15803D' : '#B91C1C'};">${escapeHtml(r.absentees)}</td>
-        <td style="max-width:240px; font-size:0.84rem;">${escapeHtml(r.keyTakeaway)}</td>
-        <td style="text-align:center; font-weight:600; font-size:0.82rem; color:#580505;">${escapeHtml(r.trainerSig)}</td>
-        <td style="text-align:center; font-weight:600; font-size:0.82rem; color:#15803D;">${escapeHtml(r.pcSig)}</td>
-        <td style="font-size:0.84rem; color:#475569;">${escapeHtml(r.actionTaken)}</td>
-      </tr>
-    `).join('');
+    dom.trackerTableBody.innerHTML = filtered.map((r, i) => {
+      const sid = r.sessionId || ('TRN-' + (r.date || '20261113').replace(/[^0-9]/g, '') + '-' + (i + 1));
+      r.sessionId = sid;
+      return `
+        <tr>
+          <td style="text-align:center; font-weight:700; color:#580505;">${escapeHtml(r.date)}</td>
+          <td><strong>${escapeHtml(r.trainer)}</strong></td>
+          <td><span class="gov-badge gov-badge-gold">${escapeHtml(r.topic)}</span></td>
+          <td style="text-align:center; font-weight:700;">${r.staffCount}</td>
+          <td style="color:${r.absentees === 'None' ? '#15803D' : '#B91C1C'};">${escapeHtml(r.absentees)}</td>
+          <td style="max-width:240px; font-size:0.84rem;">${escapeHtml(r.keyTakeaway)}</td>
+          <td style="text-align:center; font-weight:600; font-size:0.82rem; color:#580505;">${escapeHtml(r.trainerSig)}</td>
+          <td style="text-align:center; font-weight:600; font-size:0.82rem; color:#15803D;">${escapeHtml(r.pcSig)}</td>
+          <td style="font-size:0.84rem; color:#475569;">${escapeHtml(r.actionTaken)}</td>
+          <td style="text-align:center; white-space:nowrap;">
+            <button type="button" class="btn-gov btn-gov-gold btn-sm btn-edit-log" data-sid="${escapeHtml(sid)}" style="padding:4px 8px; font-size:0.75rem; margin-right:4px; font-weight:700;">✏️ Edit</button>
+            <button type="button" class="btn-gov btn-gov-red btn-sm btn-delete-log" data-sid="${escapeHtml(sid)}" style="padding:4px 8px; font-size:0.75rem; background:#DC2626; color:#FFF; border:none; font-weight:700; cursor:pointer;">🗑️ Delete</button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+
+    dom.trackerTableBody.querySelectorAll('.btn-edit-log').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const sid = btn.getAttribute('data-sid');
+        openEditModal(sid);
+      });
+    });
+
+    dom.trackerTableBody.querySelectorAll('.btn-delete-log').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const sid = btn.getAttribute('data-sid');
+        handleDeleteLog(sid);
+      });
+    });
   }
 
   // JSONP Fallback for Google Apps Script Web App redirects
@@ -570,74 +611,173 @@
     } catch (_) {}
   }
 
-  async function handleAddLog(e) {
-    e.preventDefault();
-
-    const newEntry = {
-      date: dom.logDate.value || new Date().toISOString().split('T')[0],
-      trainer: dom.logTrainer.value || "Selvi (CRM Manager)",
-      topic: dom.logTopic.value || "Module 1: Grooming & Discipline",
-      staffCount: parseInt(dom.logStaffCount.value) || 5,
-      absentees: dom.logAbsentees.value.trim() || "None",
-      keyTakeaway: dom.logTakeaway.value.trim() || "Briefing conducted successfully.",
-      trainerSig: "Selvi",
-      pcSig: "Approved",
-      actionTaken: dom.logAction.value.trim() || "Follow-up on floor."
-    };
-
-    trackerRows.unshift(newEntry);
-    localStorage.setItem('svv_training_tracker', JSON.stringify(trackerRows));
-
-    renderTrackerTable();
-    closeModal();
-    showToast("✅ Daily briefing recorded and saved to training register!");
-
-    // Push to Cloudflare Worker & Google Sheet
-    const workerUrl = (localStorage.getItem('svv_cf_worker_url') || 'https://svv-crm-gateway.subavallivilas-candb.workers.dev').trim();
-    const gsheetUrl = (localStorage.getItem('svv_gsheet_url') || 'https://script.google.com/macros/s/AKfycbxScZV2koc5d68t1F9851fRi-H_60r3UJe_GwilkdDFR-2K-710v2IdB1PiHpUUztJEiA/exec').trim();
-
-    const pushPayload = {
-      action: 'SAVE_TRAINING_LOG',
-      log: newEntry,
-      timestamp: new Date().toISOString()
-    };
-
-    if (workerUrl) {
-      try {
-        await fetch(`${workerUrl.replace(/\/+$/, '')}/api/push`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(pushPayload)
-        });
-        showToast("☁️ Pushed daily briefing to Cloud Database!");
-      } catch (err) {
-        console.warn('[Training Push Worker]', err.message);
-      }
-    }
-
-    if (gsheetUrl) {
-      try {
-        await fetch(gsheetUrl, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(pushPayload)
-        });
-      } catch (err) {
-        console.warn('[Training Push GAS]', err.message);
-      }
-    }
+  function openModal() {
+    if (!dom.modalAddLog) return;
+    if (dom.logSessionId) dom.logSessionId.value = '';
+    if (dom.modalLogTitle) dom.modalLogTitle.textContent = "✍️ Log Daily Morning Briefing";
+    if (dom.btnSubmitLog) dom.btnSubmitLog.textContent = "💾 Save to Briefing Register";
+    if (dom.logDate) dom.logDate.value = new Date().toISOString().split('T')[0];
+    if (dom.logTrainer) dom.logTrainer.value = "Selvi (CRM Manager)";
+    if (dom.logStaffCount) dom.logStaffCount.value = "5";
+    if (dom.logAbsentees) dom.logAbsentees.value = "None";
+    if (dom.logTakeaway) dom.logTakeaway.value = "";
+    if (dom.logAction) dom.logAction.value = "Follow-up on floor.";
+    dom.modalAddLog.classList.add('active');
   }
 
-  function openModal() {
-    if (dom.modalAddLog) {
-      dom.logDate.value = new Date().toISOString().split('T')[0];
-      dom.modalAddLog.classList.add('active');
-    }
+  function openEditModal(sessionId) {
+    if (!dom.modalAddLog) return;
+    const entry = trackerRows.find(r => r.sessionId === sessionId);
+    if (!entry) return;
+
+    if (dom.logSessionId) dom.logSessionId.value = entry.sessionId;
+    if (dom.modalLogTitle) dom.modalLogTitle.textContent = `✏️ Edit Morning Briefing Log (${entry.sessionId})`;
+    if (dom.btnSubmitLog) dom.btnSubmitLog.textContent = "💾 Update Briefing Entry";
+    if (dom.logDate) dom.logDate.value = entry.date;
+    if (dom.logTrainer) dom.logTrainer.value = entry.trainer;
+    if (dom.logTopic) dom.logTopic.value = entry.topic;
+    if (dom.logStaffCount) dom.logStaffCount.value = entry.staffCount;
+    if (dom.logAbsentees) dom.logAbsentees.value = entry.absentees;
+    if (dom.logTakeaway) dom.logTakeaway.value = entry.keyTakeaway;
+    if (dom.logAction) dom.logAction.value = entry.actionTaken;
+    dom.modalAddLog.classList.add('active');
   }
 
   function closeModal() {
     if (dom.modalAddLog) dom.modalAddLog.classList.remove('active');
+  }
+
+  async function handleSaveOrUpdateLog(e) {
+    e.preventDefault();
+
+    const sid = dom.logSessionId ? dom.logSessionId.value.trim() : '';
+    const workerUrl = (localStorage.getItem('svv_cf_worker_url') || 'https://svv-crm-gateway.subavallivilas-candb.workers.dev').trim();
+    const gsheetUrl = (localStorage.getItem('svv_gsheet_url') || 'https://script.google.com/macros/s/AKfycbxScZV2koc5d68t1F9851fRi-H_60r3UJe_GwilkdDFR-2K-710v2IdB1PiHpUUztJEiA/exec').trim();
+
+    if (sid) {
+      // UPDATE EXISTING
+      const idx = trackerRows.findIndex(r => r.sessionId === sid);
+      if (idx !== -1) {
+        trackerRows[idx] = {
+          sessionId: sid,
+          date: dom.logDate.value || trackerRows[idx].date,
+          trainer: dom.logTrainer.value.trim() || trackerRows[idx].trainer,
+          topic: dom.logTopic.value || trackerRows[idx].topic,
+          staffCount: parseInt(dom.logStaffCount.value) || trackerRows[idx].staffCount,
+          absentees: dom.logAbsentees.value.trim() || trackerRows[idx].absentees,
+          keyTakeaway: dom.logTakeaway.value.trim() || trackerRows[idx].keyTakeaway,
+          trainerSig: trackerRows[idx].trainerSig || "Selvi",
+          pcSig: trackerRows[idx].pcSig || "Approved",
+          actionTaken: dom.logAction.value.trim() || trackerRows[idx].actionTaken
+        };
+
+        localStorage.setItem('svv_training_tracker', JSON.stringify(trackerRows));
+        renderTrackerTable();
+        closeModal();
+        showToast(`✅ Briefing record ${sid} updated! Syncing to Google Sheet...`);
+
+        const updatePayload = {
+          action: 'UPDATE_TRAINING_LOG',
+          sessionId: sid,
+          log: trackerRows[idx],
+          timestamp: new Date().toISOString()
+        };
+
+        if (workerUrl) {
+          fetch(`${workerUrl.replace(/\/+$/, '')}/api/push`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updatePayload)
+          }).catch(() => {});
+        }
+        if (gsheetUrl) {
+          fetch(gsheetUrl, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updatePayload)
+          }).catch(() => {});
+        }
+      }
+    } else {
+      // ADD NEW ENTRY
+      const newSid = 'TRN-' + Date.now().toString().slice(-6);
+      const newEntry = {
+        sessionId: newSid,
+        date: dom.logDate.value || new Date().toISOString().split('T')[0],
+        trainer: dom.logTrainer.value || "Selvi (CRM Manager)",
+        topic: dom.logTopic.value || "Module 1: Grooming & Discipline",
+        staffCount: parseInt(dom.logStaffCount.value) || 5,
+        absentees: dom.logAbsentees.value.trim() || "None",
+        keyTakeaway: dom.logTakeaway.value.trim() || "Briefing conducted successfully.",
+        trainerSig: "Selvi",
+        pcSig: "Approved",
+        actionTaken: dom.logAction.value.trim() || "Follow-up on floor."
+      };
+
+      trackerRows.unshift(newEntry);
+      localStorage.setItem('svv_training_tracker', JSON.stringify(trackerRows));
+      renderTrackerTable();
+      closeModal();
+      showToast("✅ Daily briefing recorded & logged to Google Sheet!");
+
+      const pushPayload = {
+        action: 'SAVE_TRAINING_LOG',
+        sessionId: newSid,
+        log: newEntry,
+        timestamp: new Date().toISOString()
+      };
+
+      if (workerUrl) {
+        fetch(`${workerUrl.replace(/\/+$/, '')}/api/push`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(pushPayload)
+        }).catch(() => {});
+      }
+      if (gsheetUrl) {
+        fetch(gsheetUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(pushPayload)
+        }).catch(() => {});
+      }
+    }
+  }
+
+  async function handleDeleteLog(sessionId) {
+    if (!confirm(`Are you sure you want to delete briefing record "${sessionId}"? This will also remove it from Google Sheets.`)) return;
+
+    trackerRows = trackerRows.filter(r => r.sessionId !== sessionId);
+    localStorage.setItem('svv_training_tracker', JSON.stringify(trackerRows));
+    renderTrackerTable();
+    showToast(`🗑️ Deleted ${sessionId}! Syncing to Google Sheet...`);
+
+    const workerUrl = (localStorage.getItem('svv_cf_worker_url') || 'https://svv-crm-gateway.subavallivilas-candb.workers.dev').trim();
+    const gsheetUrl = (localStorage.getItem('svv_gsheet_url') || 'https://script.google.com/macros/s/AKfycbxScZV2koc5d68t1F9851fRi-H_60r3UJe_GwilkdDFR-2K-710v2IdB1PiHpUUztJEiA/exec').trim();
+
+    const delPayload = {
+      action: 'DELETE_TRAINING_LOG',
+      sessionId: sessionId,
+      timestamp: new Date().toISOString()
+    };
+
+    if (workerUrl) {
+      fetch(`${workerUrl.replace(/\/+$/, '')}/api/push`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(delPayload)
+      }).catch(() => {});
+    }
+    if (gsheetUrl) {
+      fetch(gsheetUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(delPayload)
+      }).catch(() => {});
+    }
   }
 
   // Dynamic Google Sheet & Cloudflare Gateway Integration with Real-Time Auto-Sync
@@ -751,7 +891,9 @@
     if (dom.btnAddLogModal) dom.btnAddLogModal.addEventListener('click', openModal);
     if (dom.btnCloseModal) dom.btnCloseModal.addEventListener('click', closeModal);
     if (dom.btnCancelModal) dom.btnCancelModal.addEventListener('click', closeModal);
-    if (dom.formAddLog) dom.formAddLog.addEventListener('submit', handleAddLog);
+    if (dom.formAddLog) dom.formAddLog.addEventListener('submit', handleSaveOrUpdateLog);
+    if (dom.filterTrackerMonth) dom.filterTrackerMonth.addEventListener('change', renderTrackerTable);
+    if (dom.filterTrackerSearch) dom.filterTrackerSearch.addEventListener('input', renderTrackerTable);
     if (dom.btnSyncGSheet) dom.btnSyncGSheet.addEventListener('click', () => syncWithGoogleSheet(false));
     setTimeout(() => syncWithGoogleSheet(true), 800);
     startAutoSyncPolling();

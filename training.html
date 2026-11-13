@@ -152,14 +152,21 @@
 
     <!-- DAILY BRIEFING TRACKER TABLE -->
     <div class="gov-card" style="margin-top: 24px;">
-      <div class="gov-card-header">
-        <h2 class="gov-card-title">
-          <span>📋 Daily Briefing Tracker Register (தினசரி கூட்டப் பதிவேடு)</span>
-          <span class="gov-badge gov-badge-gold">Operational Compliance</span>
-        </h2>
-        <button class="btn-gov btn-gov-primary btn-sm no-print" onclick="document.getElementById('btnOpenAddLogModal').click()">
-          + Add Today's Entry
-        </button>
+      <div class="gov-card-header" style="flex-wrap: wrap; gap: 12px;">
+        <div>
+          <h2 class="gov-card-title">
+            <span>📋 Daily Briefing Tracker Register (தினசரி கூட்டப் பதிவேடு)</span>
+            <span class="gov-badge gov-badge-gold">Operational Compliance</span>
+          </h2>
+          <div style="font-size:0.82rem; color:var(--svv-muted); margin-top:2px;">Logged directly into Google Sheets (TRAINING_TRACKER) with Full Edit &amp; Delete Management</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <input type="month" id="filterTrackerMonth" class="gov-input" style="padding:5px 10px; font-size:0.82rem;" title="Filter by Month">
+          <input type="text" id="filterTrackerSearch" class="gov-input" placeholder="🔍 Search Topic / Trainer..." style="padding:5px 10px; font-size:0.82rem; min-width:180px;">
+          <button class="btn-gov btn-gov-primary btn-sm no-print" id="btnOpenAddLogModal">
+            + Add Today's Entry
+          </button>
+        </div>
       </div>
 
       <div class="gov-table-wrap">
@@ -169,12 +176,13 @@
               <th style="width: 100px; text-align: center;">Date / தேதி</th>
               <th style="min-width: 150px;">Trainer / பயிற்றுவிப்பவர்</th>
               <th style="min-width: 180px;">Topic Covered / தலைப்பு</th>
-              <th style="width: 80px; text-align: center;">Present</th>
-              <th style="min-width: 110px;">Absentees</th>
+              <th style="width: 75px; text-align: center;">Present</th>
+              <th style="min-width: 105px;">Absentees</th>
               <th style="min-width: 200px;">Key Takeaway / முக்கிய கருத்து</th>
-              <th style="width: 90px; text-align: center;">Trainer Sig</th>
-              <th style="width: 90px; text-align: center;">PC Sig</th>
-              <th style="min-width: 150px;">Action Taken</th>
+              <th style="width: 85px; text-align: center;">Trainer Sig</th>
+              <th style="width: 85px; text-align: center;">PC Sig</th>
+              <th style="min-width: 140px;">Action Taken</th>
+              <th style="width: 130px; text-align: center;">Actions / நடவடிக்கை</th>
             </tr>
           </thead>
           <tbody id="trackerTableBody">
@@ -229,14 +237,15 @@
     </div>
   </main>
 
-  <!-- ADD BRIEFING LOG MODAL -->
+  <!-- ADD / EDIT BRIEFING LOG MODAL -->
   <div class="gov-modal-overlay" id="modalAddLog">
     <div class="gov-modal-card">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-        <h3 style="font-family:var(--font-serif); color:var(--svv-maroon);">✍️ Log Daily Morning Briefing</h3>
+        <h3 id="modalLogTitle" style="font-family:var(--font-serif); color:var(--svv-maroon);">✍️ Log Daily Morning Briefing</h3>
         <button type="button" class="btn-gov btn-gov-outline btn-sm" id="btnCloseModal">✕</button>
       </div>
       <form id="formAddLog">
+        <input type="hidden" id="logSessionId">
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
           <div>
             <label style="font-size:0.82rem; font-weight:700;">Date:</label>
@@ -289,7 +298,7 @@
 
         <div style="display:flex; justify-content:flex-end; gap:10px;">
           <button type="button" class="btn-gov btn-gov-outline" id="btnCancelModal">Cancel</button>
-          <button type="submit" class="btn-gov btn-gov-primary">💾 Save to Briefing Register</button>
+          <button type="submit" class="btn-gov btn-gov-primary" id="btnSubmitLog">💾 Save to Briefing Register</button>
         </div>
       </form>
     </div>
